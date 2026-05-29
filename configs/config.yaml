@@ -1,0 +1,322 @@
+﻿paths:
+  data:
+    raw: data/raw
+    processed: data/processed
+    vectors: data/vectors
+  models:
+    drain: models/drain
+    bilstm: models/bilstm
+    isolation_forest: models/isolation_forest
+    xgboost: models/xgboost
+    deeplog: models/deeplog
+    embeddings: models/embeddings
+  outputs:
+    reports: outputs/reports
+    visualizations: outputs/visualizations
+data:
+  dataset: harrison
+  train_ratio: 0.7
+  val_ratio: 0.1
+  split_mode: truncated_ordered_pre_split
+  sequence_length: 50
+  temporal_sequence_length: 50
+  statistical_sequence_length: 30
+  batch_size: 256
+  source_filter_profile: ''
+  source_filter_profiles:
+    web_linux_auth_focus:
+      include_patterns:
+      - /apache2/
+      - /auth\.log$
+      - /audit/audit\.log$
+      - /openvpn\.log$
+      exclude_patterns:
+      - attacker_0/logs/attacks\.log$
+drain:
+  depth: 4
+  sim_th: 0.4
+  max_children: 100
+  regex:
+  - <IP>
+  - <NUM>
+  - <HEXID>
+features:
+  statistical_behavior_context_window: 12
+  statistical:
+  - log_frequency
+  - entropy
+  - normalized_entropy
+  - template_count
+  - dominant_ratio
+  - repetition_ratio
+  - switch_rate
+  - top2_concentration
+  - param_variance
+  - time_interval
+  - time_burstiness
+  - auth_failure_ratio
+  - auth_success_ratio
+  - privileged_command_ratio
+  - web_probe_ratio
+  - suspicious_keyword_ratio
+  - auth_failure_density
+  - success_after_fail_chain
+  - session_after_fail_chain
+  semantic:
+    model_name: sentence-transformers/all-MiniLM-L6-v2
+    local_files_only: true
+    force_hash_fallback: true
+    embedding_dim: 384
+    max_length: 512
+    sequence_context_window: 1
+    distillation:
+      enabled: false
+      min_tokens: 4
+    risk_anchors:
+    - failed password for invalid user
+    - authentication failure detected from suspicious source
+    - privilege escalation sudo root abuse
+    - sql injection or xss payload blocked
+    - malware command and control traffic
+    - webshell upload or remote code execution attempt
+    - credential stuffing or brute force login attack
+    - abnormal outbound connection or data exfiltration
+    - service timeout and repeated retry failure
+    - network unreachable or connection reset by peer
+    - disk io error or resource exhaustion event
+    - kernel panic or segmentation fault crash
+    - distributed service unavailable or replica inconsistency
+    - hdfs packet responder terminated unexpectedly
+    - hdfs block transfer failed during replication
+    - namenode metadata inconsistency or block report abnormal
+    - datanode write pipeline failure or lease recovery event
+    - block allocation failure in distributed storage cluster
+    domain_anchors:
+      security:
+      - failed password for invalid user
+      - authentication failure from suspicious source
+      - privilege escalation via sudo or root abuse
+      - sql injection or xss payload attack
+      - malware command and control traffic
+      - webshell upload or remote code execution
+      - credential stuffing brute force login
+      - abnormal outbound connection or data exfiltration
+      system:
+      - service timeout and repeated retry failure
+      - network unreachable or connection reset by peer
+      - disk io error or storage failure
+      - kernel panic or segmentation fault crash
+      - out of memory or resource exhaustion event
+      - distributed service unavailable
+      - openstack service component failure
+      hdfs:
+      - hdfs packet responder terminated unexpectedly
+      - hdfs block transfer failed during replication
+      - namenode metadata inconsistency or block report abnormal
+      - datanode write pipeline failure or lease recovery event
+      - block allocation failure in distributed storage cluster
+      - replication queue pressure or missing replica
+      bgl:
+      - ras kernel fatal hardware failure
+      - ras app fatal generating core
+      - instruction cache parity error corrected
+      - double hummer alignment exception
+      - node card assembly information failure
+      - memory ecc or ce sym hardware warning
+      generic:
+      - generic suspicious log anomaly
+      - generic system exception
+      - generic warning or failure event
+models:
+  bilstm:
+    input_size: 64
+    hidden_size: 32
+    num_layers: 1
+    dropout: 0.3
+    attention_size: 64
+    bidirectional: true
+    learning_rate: 0.001
+    epochs: 3
+    early_stopping_patience: 2
+    infer_batch_size: 128
+    max_pos_weight: 50.0
+    default_threshold: 0.68
+    use_calibrated_temporal_score: false
+    temporal_proxy_blend: 0.25
+    temporal_min_std: 0.02
+    temporal_calibration_threshold_cap: 0.8
+    temporal_low_std_prob_blend: 0.7
+  isolation_forest:
+    n_estimators: 100
+    max_samples: 256
+    contamination: 0.1
+    random_state: 42
+    infer_batch_size: 200000
+    fast_infer_enabled: false
+    skip_frequency_over_sequences: 300000
+    relative_blend: 0.0
+  xgboost:
+    n_estimators: 100
+    max_depth: 6
+    learning_rate: 0.1
+    subsample: 0.8
+    colsample_bytree: 0.8
+    use_cross_features: true
+    use_stat_parts: true
+    include_legacy_stat_in_meta: true
+    use_gpu: false
+    reg_alpha: 0.1
+    reg_lambda: 2.0
+    min_child_weight: 2.0
+    gamma: 0.1
+    objective: binary:logistic
+    eval_metric: auc
+    early_stopping_rounds: 10
+  deeplog:
+    embedding_dim: 64
+    hidden_size: 64
+    num_layers: 1
+    batch_size: 256
+    infer_batch_size: 256
+    learning_rate: 0.001
+    epochs: 5
+    early_stopping_patience: 2
+experiment:
+  random_seed: 42
+  max_sequences: 30000
+  max_train_samples: 24000
+  max_test_samples: 6000
+  metrics:
+  - precision
+  - recall
+  - f1_score
+  - auc_roc
+  - inference_time
+  cross_validation:
+    enabled: true
+    n_folds: 5
+rag:
+  case_base:
+    file: data/rag/attack_cases.jsonl
+    index_file: data/vectors/rag_attack_cases.npz
+    default_datasets:
+    - fox
+    - harrison
+    - santos
+    - russellmitchell
+    max_new_cases: 150
+    min_template_count: 3
+    incremental_append: true
+    auto_case_review_status_default: pending
+    auto_case_label_source: labeled_data
+    auto_case_require_security_or_system_hint: false
+    auto_case_require_template_quality: true
+  vector_store:
+    index_type: IVFFlat
+    nlist: 100
+    nprobe: 10
+  retrieval:
+    top_k: 3
+    similarity_threshold: 0.7
+    raw_score_threshold: 0.65
+    ui_candidate_min_raw_score: 0.4
+    allow_top1_fallback: false
+  llm:
+    provider: deepseek
+    api_key: ''
+    model: deepseek-chat
+    temperature: 0.7
+    max_tokens: 2000
+ai_judge:
+  use_llm: true
+  default_profile: kimi
+  profiles:
+    default:
+      provider: deepseek
+      model: deepseek-chat
+      base_url: https://api.deepseek.com
+      api_key: ''
+      temperature: 0.2
+      max_tokens: 300
+      qa_max_tokens: 3000
+      report_max_tokens: 8000
+      request_timeout: 90.0
+    kimi:
+      provider: custom
+      model: kimi-k2.6
+      base_url: https://api.moonshot.cn/v1
+      api_key: ''
+      temperature: 1.0
+      max_tokens: 300
+      qa_max_tokens: 3000
+      report_max_tokens: 8000
+      request_timeout: 90.0
+  provider: custom
+  model: kimi-k2.6
+  base_url: https://api.moonshot.cn/v1
+  api_key: ''
+  temperature: 1.0
+  max_tokens: 300
+  qa_max_tokens: 3000
+  report_max_tokens: 8000
+  request_timeout: 90.0
+frontend:
+  title: Security Log Analysis System
+  page_icon: shield
+  layout: wide
+  controls:
+    default_threshold: 0.68
+    default_sequence_length: 50
+    default_rag_query_count: 12
+    apply_domain_thresholds: false
+    domain_thresholds:
+      security: 0.45
+      hdfs: 0.5
+      system: 0.55
+      bgl: 0.65
+      generic: 0.6
+  upload:
+    allowed_extensions:
+    - log
+    - txt
+    - text
+    - jsonl
+    - json
+    - csv
+    - tsv
+    - xlsx
+    - xls
+    - parquet
+    - gz
+    - zip
+    max_file_size_mb: 200
+  visualization:
+    heatmap_cmap: YlOrRd
+    figure_size:
+    - 12
+    - 6
+    dpi: 100
+collector:
+  mode: all
+  max_lines_per_file: 200000
+  linux_patterns:
+  - /var/log/syslog
+  - /var/log/messages
+  - /var/log/auth.log
+  - /var/log/secure
+  - /var/log/kern.log
+  - data/raw/linux/source/*.log
+  - data/raw/linux/source/*.txt
+  web_patterns:
+  - /var/log/nginx/access.log
+  - /var/log/nginx/error.log
+  - /var/log/apache2/access.log
+  - /var/log/apache2/error.log
+  - /var/log/httpd/access_log
+  - /var/log/httpd/error_log
+  - data/raw/web/source/*.log
+  - data/raw/web/source/*.txt
+logging:
+  level: INFO
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  file: outputs/system.log

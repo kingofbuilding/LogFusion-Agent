@@ -1,0 +1,70 @@
+logging:
+  level: INFO
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  file: outputs/reports/public_benchmarks/public_hdfs.log
+
+paths:
+  data:
+    raw: data/raw
+    processed: data/processed
+  outputs:
+    reports: outputs/reports/public_benchmarks
+  models:
+    isolation_forest: models/public_benchmarks/iforest
+    deeplog: models/public_benchmarks/deeplog
+
+experiment:
+  random_seed: 42
+
+drain:
+  depth: 4
+  sim_th: 0.4
+  max_children: 100
+
+features:
+  semantic:
+    model_name: sentence-transformers/all-MiniLM-L6-v2
+    embedding_dim: 384
+    local_files_only: true
+    force_hash_fallback: false
+
+models:
+  gru:
+    input_size: 128
+    hidden_size: 128
+    num_layers: 2
+    dropout: 0.2
+    attention_size: 64
+  public_temporal:
+    batch_size: 128
+    epochs: 6
+    learning_rate: 0.001
+    patience: 2
+  isolation_forest:
+    n_estimators: 200
+    max_samples: 256
+    contamination: 0.1
+    random_state: 42
+  xgboost:
+    n_estimators: 200
+    max_depth: 4
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    use_cross_features: false
+    use_gpu: true
+
+benchmarks:
+  public_logs:
+    dataset: hdfs
+    train_ratio: 0.6
+    val_ratio: 0.2
+    max_sequence_length: 128
+    force_rebuild: false
+    temporal_rnn_type: lstm
+    outputs:
+      parsed_dir: outputs/reports/public_benchmarks/intermediate
+      sequence_dir: outputs/reports/public_benchmarks/intermediate
+    bgl:
+      window_minutes: 5
+      stride_minutes: 1
