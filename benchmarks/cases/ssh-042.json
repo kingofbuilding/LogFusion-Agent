@@ -1,0 +1,32 @@
+{
+  "case_id": "ssh-042",
+  "category": "multi_cluster",
+  "log_file": "ssh-042.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "correlated_success",
+    "must_find_event_ids": [
+      "E-19034b04bbdf034b",
+      "E-37b700f350d10fe1",
+      "E-80902853b51e0b12",
+      "E-77494bc75325e51e",
+      "E-a379ad07dacf2404",
+      "E-2f40c733ecb7d331",
+      "E-0b7c38ca70aa6817",
+      "E-690e2a1f1e29c283",
+      "E-c49a7af92701c69e"
+    ],
+    "must_link_event_ids": [
+      "E-c49a7af92701c69e"
+    ],
+    "must_not_link_event_ids": [],
+    "must_not_pair": [
+      [
+        "E-c49a7af92701c69e",
+        "E-0992bf57cb02e734"
+      ]
+    ]
+  },
+  "events": 68,
+  "design": "两个独立失败簇并存，只有第一个簇有后续成功，用于检查跨簇误配。"
+}

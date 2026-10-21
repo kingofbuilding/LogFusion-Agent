@@ -1,0 +1,26 @@
+{
+  "case_id": "ssh-016",
+  "category": "success_other_account",
+  "log_file": "ssh-016.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "no_correlated_success",
+    "must_find_event_ids": [
+      "E-65f64fb14219e31e",
+      "E-cff6e0d2b8833eb9",
+      "E-ec8ff295f1e7e691",
+      "E-36539dae1a43be4c",
+      "E-e1b0890bc9525508",
+      "E-246c8850cdc58465",
+      "E-955fcb13a7b002ce",
+      "E-15fbbc6576cbff12"
+    ],
+    "must_link_event_ids": [],
+    "must_not_link_event_ids": [
+      "E-3c04058cdddc1b03"
+    ],
+    "must_not_pair": []
+  },
+  "events": 61,
+  "design": "窗口后同 IP、同主机但另一账号登录，属于不应关联的干扰项。"
+}

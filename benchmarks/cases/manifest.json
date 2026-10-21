@@ -1,0 +1,18 @@
+{
+  "suite": "logfusion-agent-ssh-investigation",
+  "version": 1,
+  "seed": 20260115,
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "total": 42,
+  "counts": {
+    "bruteforce_then_success": 8,
+    "bruteforce_no_success": 6,
+    "success_other_account": 6,
+    "success_other_host": 6,
+    "success_outside_window": 5,
+    "benign_retries": 6,
+    "multi_cluster": 5
+  },
+  "generator": "benchmarks/generate_cases.py",
+  "note": "合成日志；标签仅存在于 .json 期望文件，工具只能看到 .jsonl"
+}

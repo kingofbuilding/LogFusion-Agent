@@ -1,0 +1,1263 @@
+{
+  "runs": [
+    {
+      "run": 1,
+      "exit_code": 2,
+      "wall_seconds": 4.96,
+      "run_id": "INV-01923f1d6a49",
+      "mode": "llm_tool_calling",
+      "status": "limited",
+      "stop_reason": "repeated_tool_call",
+      "elapsed_seconds": 1.687,
+      "tokens_used": 2275,
+      "judgment": {
+        "status": "skipped",
+        "reason": "investigation_incomplete"
+      },
+      "trace": [
+        {
+          "step": 1,
+          "tool": "aggregate_events",
+          "stage": "investigation",
+          "error": "ValueError",
+          "result_status": null
+        }
+      ],
+      "evidence_count": 0,
+      "case_count": 0
+    },
+    {
+      "run": 2,
+      "exit_code": 0,
+      "wall_seconds": 23.77,
+      "run_id": "INV-7bd4347ee1f9",
+      "mode": "llm_tool_calling",
+      "status": "completed",
+      "stop_reason": "planner_finished",
+      "elapsed_seconds": 20.875,
+      "tokens_used": 79170,
+      "judgment": {
+        "status": "completed",
+        "backend": "llm",
+        "model": "deepseek-flash",
+        "validation": "structure_and_reference_ids_only",
+        "content": {
+          "assessment": "suspicious",
+          "claims": [
+            {
+              "kind": "observation",
+              "statement": "2026-01-15T10:00:00 至 10:05:00，来源 198.51.100.23 对 server-a 上账号 alice 连续产生 6 次密码认证失败，每次间隔约 1 分钟，源端口递增（51000-51005）。",
+              "evidence_ids": [
+                "E-5fcf6783802ef82d",
+                "E-e03ea403b476a98e",
+                "E-d7b0efa8dfca53c1",
+                "E-458ac2028c361f3d",
+                "E-2955976d3c007362",
+                "E-99095cd52364dbf6"
+              ],
+              "case_ids": []
+            },
+            {
+              "kind": "observation",
+              "statement": "10:06:00，同一来源 198.51.100.23 以密码方式成功登录 server-a 的 alice 账号（sshd[205]，端口 52003），紧接在失败窗口之后。",
+              "evidence_ids": [
+                "E-8af75024d8b579bd"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "10:05:10 与 10:05:20，同一来源 198.51.100.23 分别以密码方式成功登录 server-a 的 bob 账号和 server-b 的 alice 账号；10:05:30 另有来源 203.0.113.77 以密码方式成功登录 server-a 的 alice 账号。",
+              "evidence_ids": [
+                "E-e77a4d5775351a73",
+                "E-8919af79aec499cb",
+                "E-9800023f0ed5a764"
+              ],
+              "case_ids": [
+                "CASE-SEC-007"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "10:07:00 server-a 上 alice（TTY=pts/1）与 10:08:00 server-b 上 alice（TTY=pts/2）分别执行 sudo 到 root 的 /usr/bin/id；10:09:00 server-a 上 bob（TTY=pts/3）同样执行 sudo /usr/bin/id；12:00:00 server-a 上 alice 在 pts/1 再次执行相同命令。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-28ee262fc00690bf",
+                "E-6155f87003dce806",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-005"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "09:59:00 存在 admin 从 192.0.2.10 使用公钥登录 server-a 的成功记录，与 198.51.100.23 的密码认证活动在来源与认证方式上不同。",
+              "evidence_ids": [
+                "E-b749dfc27a28e2ce"
+              ],
+              "case_ids": []
+            },
+            {
+              "kind": "hypothesis",
+              "statement": "198.51.100.23 对 alice 的连续失败后随即成功，可能表明密码被猜中或凭据泄露导致未授权登录；但合法用户输错密码后重试、或自动化脚本使用过期凭据同样可产生该模式，现有证据无法区分。",
+              "evidence_ids": [
+                "E-5fcf6783802ef82d",
+                "E-e03ea403b476a98e",
+                "E-d7b0efa8dfca53c1",
+                "E-458ac2028c361f3d",
+                "E-2955976d3c007362",
+                "E-99095cd52364dbf6",
+                "E-8af75024d8b579bd"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "kind": "hypothesis",
+              "statement": "同一来源在 10:05:10-10:06:00 的 40 秒内先后成功登录 server-a 的 bob、server-b 的 alice 与 server-a 的 alice，可能反映同一攻击者对多账号、多主机的横向尝试；但缺少会话 ID、进程与网络连接证据，无法确认这些登录是否相互关联或由同一操作者发起。",
+              "evidence_ids": [
+                "E-e77a4d5775351a73",
+                "E-8919af79aec499cb",
+                "E-8af75024d8b579bd",
+                "E-9800023f0ed5a764"
+              ],
+              "case_ids": [
+                "CASE-SEC-007"
+              ]
+            },
+            {
+              "kind": "hypothesis",
+              "statement": "登录后出现的 sudo /usr/bin/id 仅用于查询身份，属低危命令；但 alice 与 bob 均具备免密或已授权的 root 提权路径，若为未授权登录则构成提权前置条件，需结合 sudoers 与命令历史进一步判断。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-28ee262fc00690bf",
+                "E-6155f87003dce806",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-005"
+              ]
+            }
+          ],
+          "recommendations": [
+            {
+              "action": "人工核对 alice、bob 账号在 2026-01-15 10:00-12:00 的登录是否为本人操作，并向用户确认是否曾多次输错密码。",
+              "rationale": "失败后成功登录与多主机并发登录需要业务侧确认授权性，日志本身无法区分合法与未授权。",
+              "evidence_ids": [
+                "E-8af75024d8b579bd",
+                "E-e77a4d5775351a73",
+                "E-8919af79aec499cb",
+                "E-9800023f0ed5a764"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "action": "核查 198.51.100.23 与 203.0.113.77 的归属（是否为已知办公出口、VPN 或跳板），并检查边界防火墙/sshd 日志中该来源的完整连接历史。",
+              "rationale": "来源 IP 的可信度是判断登录是否异常的关键，当前仅有单条日志片段。",
+              "evidence_ids": [
+                "E-5fcf6783802ef82d",
+                "E-9800023f0ed5a764"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "action": "调取 server-a 与 server-b 上 alice、bob 的会话记录（wtmp/last、auditd、bash history、TTY pts/1-pts/3 对应会话），确认 sudo 命令是否由上述登录会话执行。",
+              "rationale": "缺少会话 ID 时无法把 sudo 记录与具体登录关联，需补齐会话级证据。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-28ee262fc00690bf",
+                "E-6155f87003dce806",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-005"
+              ]
+            },
+            {
+              "action": "审计 server-a、server-b 的 sudoers 配置与特权组成员，确认 alice、bob 的 root 提权授权范围是否符合最小权限原则。",
+              "rationale": "若登录确为未授权，现有提权路径会放大影响面。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-6155f87003dce806"
+              ],
+              "case_ids": [
+                "CASE-SEC-005"
+              ]
+            },
+            {
+              "action": "如确认非授权，建议轮换 alice、bob 的密码与相关密钥，并对 198.51.100.23 实施临时阻断或限速；同时评估为 SSH 启用失败锁定与多因素认证。",
+              "rationale": "密码认证在短时间内被反复尝试并成功，需降低凭据被继续滥用的风险。",
+              "evidence_ids": [
+                "E-99095cd52364dbf6",
+                "E-8af75024d8b579bd",
+                "E-e77a4d5775351a73"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            }
+          ],
+          "uncertainties": [
+            "缺少会话 ID / 进程 PID 关联，无法确认 10:07、10:08、10:09、12:00 的 sudo 记录分别对应哪一次 SSH 登录。",
+            "无法确认 198.51.100.23 与 203.0.113.77 的归属与可信度，也未提供该来源在 09:59 之前的连接历史。",
+            "未提供 alice、bob 账号的基线登录习惯（常用来源 IP、时段），无法判断本次登录是否偏离常态。",
+            "缺少登录后的完整命令历史、文件传输、进程与出站网络连接日志，无法评估是否发生进一步操作。",
+            "未提供 sshd 配置（是否启用失败锁定、是否允许密码认证）与 sudoers 内容，无法判断提权是否属预期授权。",
+            "12:00:00 的 sudo 记录与 10:07:00 记录间隔近两小时，中间日志缺失，无法判断该时段是否存在其他活动。"
+          ]
+        },
+        "preview": {
+          "event_ids": [
+            "E-5fcf6783802ef82d",
+            "E-e03ea403b476a98e",
+            "E-d7b0efa8dfca53c1",
+            "E-458ac2028c361f3d",
+            "E-2955976d3c007362",
+            "E-99095cd52364dbf6",
+            "E-8af75024d8b579bd",
+            "E-d57d6464073b85f2",
+            "E-b749dfc27a28e2ce",
+            "E-e77a4d5775351a73",
+            "E-8919af79aec499cb",
+            "E-9800023f0ed5a764",
+            "E-28ee262fc00690bf",
+            "E-6155f87003dce806",
+            "E-7248bbca29b351f4"
+          ],
+          "case_ids": [
+            "CASE-SEC-006",
+            "CASE-SEC-005",
+            "CASE-SEC-007"
+          ],
+          "events_truncated": false,
+          "raw_truncated": false
+        }
+      },
+      "trace": [
+        {
+          "step": 1,
+          "tool": "aggregate_events",
+          "stage": "investigation",
+          "error": "ValueError",
+          "result_status": null
+        },
+        {
+          "step": 2,
+          "tool": "detect_anomalies",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 3,
+          "tool": "aggregate_events",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 4,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 5,
+          "tool": "get_event_context",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 6,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 7,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 8,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 9,
+          "tool": "get_event_context",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 10,
+          "tool": "retrieve_cases",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 11,
+          "tool": "build_timeline",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 12,
+          "tool": "synthesize_judgment",
+          "stage": "agent_completion",
+          "error": null,
+          "result_status": "completed"
+        }
+      ],
+      "evidence_count": 15,
+      "case_count": 3
+    },
+    {
+      "run": 3,
+      "exit_code": 0,
+      "wall_seconds": 22.78,
+      "run_id": "INV-794aa8b1767c",
+      "mode": "llm_tool_calling",
+      "status": "completed",
+      "stop_reason": "planner_finished",
+      "elapsed_seconds": 19.922,
+      "tokens_used": 60291,
+      "judgment": {
+        "status": "completed",
+        "backend": "llm",
+        "model": "deepseek-flash",
+        "validation": "structure_and_reference_ids_only",
+        "content": {
+          "assessment": "suspicious",
+          "claims": [
+            {
+              "kind": "observation",
+              "statement": "2026-01-15T10:00:00 至 10:05:00，来源 198.51.100.23 对 server-a 上账号 alice 连续产生 6 次密码认证失败，每次间隔约 1 分钟，源端口递增（51000-51005）。",
+              "evidence_ids": [
+                "E-5fcf6783802ef82d",
+                "E-e03ea403b476a98e",
+                "E-d7b0efa8dfca53c1",
+                "E-458ac2028c361f3d",
+                "E-2955976d3c007362",
+                "E-99095cd52364dbf6"
+              ],
+              "case_ids": [
+                "CASE-SEC-012"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "10:06:00，同一来源 198.51.100.23 对 server-a 上 alice 出现密码认证成功（Accepted password，端口 52003），紧接在失败窗口之后。",
+              "evidence_ids": [
+                "E-8af75024d8b579bd"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "10:05:10 与 10:05:20，同一来源 198.51.100.23 分别以密码方式成功登录 server-a 的 bob 账号和 server-b 的 alice 账号；10:05:30 另有来源 203.0.113.77 以密码方式成功登录 server-a 的 alice 账号。",
+              "evidence_ids": [
+                "E-e77a4d5775351a73",
+                "E-8919af79aec499cb",
+                "E-9800023f0ed5a764"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "10:07:00 server-a 上 alice 通过 sudo 以 root 执行 /usr/bin/id（TTY=pts/1）；10:08:00 server-b 上 alice 通过 sudo 执行 /usr/bin/id（TTY=pts/2）；10:09:00 server-a 上 bob 通过 sudo 执行 /usr/bin/id（TTY=pts/3）；12:00:00 server-a 上 alice 再次通过 sudo 执行 /usr/bin/id（TTY=pts/1）。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-28ee262fc00690bf",
+                "E-6155f87003dce806",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-008"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "09:59:00，来源 192.0.2.10 以公钥方式成功登录 server-a 的 admin 账号，与上述密码认证事件来源不同。",
+              "evidence_ids": [
+                "E-b749dfc27a28e2ce"
+              ],
+              "case_ids": [
+                "CASE-SEC-013A"
+              ]
+            },
+            {
+              "kind": "hypothesis",
+              "statement": "198.51.100.23 对 alice 的 6 次失败后紧接成功，存在密码猜测/暴力破解后凭据命中的可能；但合法用户输错密码、旧缓存凭据或自动化脚本重试也可产生相同模式，尚不能确认凭据被盗。",
+              "evidence_ids": [
+                "E-5fcf6783802ef82d",
+                "E-e03ea403b476a98e",
+                "E-d7b0efa8dfca53c1",
+                "E-458ac2028c361f3d",
+                "E-2955976d3c007362",
+                "E-99095cd52364dbf6",
+                "E-8af75024d8b579bd"
+              ],
+              "case_ids": [
+                "CASE-SEC-012",
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "kind": "hypothesis",
+              "statement": "同一来源在约 30 秒内以密码方式成功登录 server-a 的 bob、server-b 的 alice，且另有第三来源登录 server-a 的 alice，提示可能存在多账号、多主机的横向或并行访问；但缺少会话 ID、登录后命令与网络连接证据，无法确认这些登录属于同一操作者或同一会话。",
+              "evidence_ids": [
+                "E-e77a4d5775351a73",
+                "E-8919af79aec499cb",
+                "E-9800023f0ed5a764",
+                "E-8af75024d8b579bd"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "kind": "hypothesis",
+              "statement": "sudo 记录中的命令均为 /usr/bin/id，属低影响信息收集类命令，可能只是权限验证或环境检查；但若与前述可疑登录关联，则可能是提权可用性探测。sudo 成功本身不证明恶意提权，且缺少会话 ID 无法确认其与哪次登录对应。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-28ee262fc00690bf",
+                "E-6155f87003dce806",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-008"
+              ]
+            }
+          ],
+          "recommendations": [
+            {
+              "action": "人工核对 alice、bob 账号在 2026-01-15 10:00-12:00 的登录是否为本人或授权运维操作，并向相关用户确认是否输错过密码。",
+              "rationale": "失败后成功登录与多账号登录需要业务侧确认授权性，日志本身无法区分合法与未授权。",
+              "evidence_ids": [
+                "E-8af75024d8b579bd",
+                "E-e77a4d5775351a73",
+                "E-8919af79aec499cb",
+                "E-9800023f0ed5a764"
+              ],
+              "case_ids": [
+                "CASE-SEC-006",
+                "CASE-SEC-012"
+              ]
+            },
+            {
+              "action": "核查 198.51.100.23 与 203.0.113.77 的资产归属、地理位置及是否为已知出口/跳板，必要时在边界临时阻断并观察。",
+              "rationale": "两个来源均以密码方式成功登录，需先确认其是否为可信来源。",
+              "evidence_ids": [
+                "E-8af75024d8b579bd",
+                "E-9800023f0ed5a764",
+                "E-e77a4d5775351a73"
+              ],
+              "case_ids": [
+                "CASE-SEC-012"
+              ]
+            },
+            {
+              "action": "调取 server-a 与 server-b 的完整 sshd 会话记录、auditd EXECVE、bash history 与网络连接日志，确认 pts/1、pts/2、pts/3 对应的登录会话及后续命令。",
+              "rationale": "当前 sudo 记录缺少会话 ID 与来源 IP，无法把特权命令绑定到具体登录。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-28ee262fc00690bf",
+                "E-6155f87003dce806",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-008"
+              ]
+            },
+            {
+              "action": "评估对 alice、bob 启用登录失败锁定、MFA 或改为密钥认证，并检查 sshd 是否暴露于公网及是否存在弱口令。",
+              "rationale": "密码认证在短时间内被多次尝试并成功，暴露面与认证强度需加固。",
+              "evidence_ids": [
+                "E-5fcf6783802ef82d",
+                "E-99095cd52364dbf6",
+                "E-8af75024d8b579bd"
+              ],
+              "case_ids": [
+                "CASE-SEC-012"
+              ]
+            },
+            {
+              "action": "审查 alice、bob 的 sudoers 授权范围，确认 /usr/bin/id 之外的提权能力是否必要，并核对 12:00 的 sudo 事件是否与 10:07 属同一会话。",
+              "rationale": "特权命令出现在可疑登录之后，需确认授权最小化与时间跨度异常。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-008"
+              ]
+            }
+          ],
+          "uncertainties": [
+            "缺少会话 ID 与 TTY 到登录的映射，无法确认 sudo 事件（E-d57d6464073b85f2、E-28ee262fc00690bf、E-6155f87003dce806、E-7248bbca29b351f4）分别由哪次登录会话执行。",
+            "无法确认 198.51.100.23 与 203.0.113.77 是否为授权来源，也缺少其地理位置与资产归属信息。",
+            "未提供登录后命令执行、文件变更、进程或外联网络日志，无法判断成功登录后是否发生进一步操作。",
+            "未提供 alice、bob 账号的基线登录习惯（常用来源、时段、认证方式），无法判断本次登录是否偏离常态。",
+            "未提供 sshd 配置（是否启用失败锁定、MFA、是否允许密码认证）及是否存在其他未记录来源的尝试。",
+            "12:00:00 的 sudo 事件与 10:07:00 事件相隔近两小时且 TTY 相同，无法确认是同一会话持续还是 TTY 复用。"
+          ]
+        },
+        "preview": {
+          "event_ids": [
+            "E-5fcf6783802ef82d",
+            "E-e03ea403b476a98e",
+            "E-d7b0efa8dfca53c1",
+            "E-458ac2028c361f3d",
+            "E-2955976d3c007362",
+            "E-99095cd52364dbf6",
+            "E-8af75024d8b579bd",
+            "E-d57d6464073b85f2",
+            "E-b749dfc27a28e2ce",
+            "E-e77a4d5775351a73",
+            "E-8919af79aec499cb",
+            "E-9800023f0ed5a764",
+            "E-28ee262fc00690bf",
+            "E-6155f87003dce806",
+            "E-7248bbca29b351f4"
+          ],
+          "case_ids": [
+            "CASE-SEC-006",
+            "CASE-SEC-012",
+            "CASE-SEC-013",
+            "CASE-SEC-013A",
+            "CASE-SEC-008"
+          ],
+          "events_truncated": false,
+          "raw_truncated": false
+        }
+      },
+      "trace": [
+        {
+          "step": 1,
+          "tool": "aggregate_events",
+          "stage": "investigation",
+          "error": "ValueError",
+          "result_status": null
+        },
+        {
+          "step": 2,
+          "tool": "detect_anomalies",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 3,
+          "tool": "aggregate_events",
+          "stage": "investigation",
+          "error": "ValueError",
+          "result_status": null
+        },
+        {
+          "step": 4,
+          "tool": "aggregate_events",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 5,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 6,
+          "tool": "get_event_context",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 7,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 8,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 9,
+          "tool": "retrieve_cases",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 10,
+          "tool": "build_timeline",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 11,
+          "tool": "synthesize_judgment",
+          "stage": "agent_completion",
+          "error": null,
+          "result_status": "completed"
+        }
+      ],
+      "evidence_count": 15,
+      "case_count": 5
+    },
+    {
+      "run": 4,
+      "exit_code": 0,
+      "wall_seconds": 20.66,
+      "run_id": "INV-e35f6ebce693",
+      "mode": "llm_tool_calling",
+      "status": "completed",
+      "stop_reason": "planner_finished",
+      "elapsed_seconds": 17.828,
+      "tokens_used": 57140,
+      "judgment": {
+        "status": "completed",
+        "backend": "llm",
+        "model": "deepseek-flash",
+        "validation": "structure_and_reference_ids_only",
+        "content": {
+          "assessment": "suspicious",
+          "claims": [
+            {
+              "kind": "observation",
+              "statement": "2026-01-15T10:00:00 至 10:05:00，来源 198.51.100.23 对 server-a 上账号 alice 连续产生 6 次密码认证失败，每次间隔约 1 分钟，源端口 51000-51005 递增。",
+              "evidence_ids": [
+                "E-5fcf6783802ef82d",
+                "E-e03ea403b476a98e",
+                "E-d7b0efa8dfca53c1",
+                "E-458ac2028c361f3d",
+                "E-2955976d3c007362",
+                "E-99095cd52364dbf6"
+              ],
+              "case_ids": [
+                "CASE-SEC-012"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "10:06:00，同一来源 198.51.100.23 以密码方式成功登录 server-a 的 alice 账号（sshd[205]，端口 52003），紧接在失败窗口之后。",
+              "evidence_ids": [
+                "E-8af75024d8b579bd"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "10:05:10 与 10:05:20，同一来源 198.51.100.23 分别以密码方式成功登录 server-a 的 bob 账号（sshd[202]）和 server-b 的 alice 账号（sshd[203]），与 alice 在 server-a 的失败尝试时间重叠。",
+              "evidence_ids": [
+                "E-e77a4d5775351a73",
+                "E-8919af79aec499cb"
+              ],
+              "case_ids": [
+                "CASE-SEC-007"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "10:05:30，另一来源 203.0.113.77 以密码方式成功登录 server-a 的 alice 账号（sshd[204]），与 198.51.100.23 的活动时间接近但来源不同。",
+              "evidence_ids": [
+                "E-9800023f0ed5a764"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "09:59:00，来源 192.0.2.10 以公钥方式成功登录 server-a 的 admin 账号（sshd[101]），早于上述密码认证活动。",
+              "evidence_ids": [
+                "E-b749dfc27a28e2ce"
+              ],
+              "case_ids": []
+            },
+            {
+              "kind": "observation",
+              "statement": "10:07:00 与 12:00:00，server-a 上 alice 通过 TTY=pts/1 执行 sudo /usr/bin/id；10:08:00 server-b 上 alice 通过 TTY=pts/2、10:09:00 server-a 上 bob 通过 TTY=pts/3 执行同类 sudo 命令。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-28ee262fc00690bf",
+                "E-6155f87003dce806",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-005",
+                "CASE-SEC-008"
+              ]
+            },
+            {
+              "kind": "hypothesis",
+              "statement": "198.51.100.23 可能对 alice 账号实施了密码猜测/暴力破解并最终获得有效凭据，随后在 server-a 与 server-b 上以 alice、bob 身份登录，呈现横向移动的可能迹象；但缺少会话 ID、失败原因与凭据来源证据，无法确认。",
+              "evidence_ids": [
+                "E-5fcf6783802ef82d",
+                "E-e03ea403b476a98e",
+                "E-d7b0efa8dfca53c1",
+                "E-458ac2028c361f3d",
+                "E-2955976d3c007362",
+                "E-99095cd52364dbf6",
+                "E-8af75024d8b579bd",
+                "E-e77a4d5775351a73",
+                "E-8919af79aec499cb"
+              ],
+              "case_ids": [
+                "CASE-SEC-012",
+                "CASE-SEC-006",
+                "CASE-SEC-007"
+              ]
+            },
+            {
+              "kind": "hypothesis",
+              "statement": "sudo /usr/bin/id 属于低敏感度的身份查询命令，可能只是常规运维或权限验证；但若由可疑登录会话发起，则可能是提权探测的前置步骤，需结合会话与 sudoers 配置进一步判断。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-28ee262fc00690bf",
+                "E-6155f87003dce806",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-005",
+                "CASE-SEC-008"
+              ]
+            }
+          ],
+          "recommendations": [
+            {
+              "action": "人工核对 198.51.100.23 与 203.0.113.77 的归属及是否为已知办公/运维出口，并向 alice、bob 确认 10:05-10:09 的登录是否为其本人操作。",
+              "rationale": "成功登录本身不证明未授权，需先确认来源与账号使用者的合法性。",
+              "evidence_ids": [
+                "E-8af75024d8b579bd",
+                "E-e77a4d5775351a73",
+                "E-8919af79aec499cb",
+                "E-9800023f0ed5a764"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "action": "调取 server-a 与 server-b 的完整 sshd 会话日志（含 session opened/closed、会话 ID、TTY 与源端口映射），确认 sudo 记录是否来自上述登录会话。",
+              "rationale": "当前缺少会话 ID，无法把 sudo 事件与具体登录会话绑定。",
+              "evidence_ids": [
+                "E-8af75024d8b579bd",
+                "E-d57d6464073b85f2",
+                "E-28ee262fc00690bf",
+                "E-6155f87003dce806",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-007"
+              ]
+            },
+            {
+              "action": "审查 alice、bob 的 sudoers 授权范围与特权组成员，并核查 /usr/bin/id 之外是否存在其他特权命令执行记录。",
+              "rationale": "评估最小权限落实情况，判断是否存在提权面扩大。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-28ee262fc00690bf",
+                "E-6155f87003dce806",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-005",
+                "CASE-SEC-008"
+              ]
+            },
+            {
+              "action": "如确认非授权，建议对 198.51.100.23 实施访问限制、重置 alice 与 bob 的密码并启用 MFA 或登录失败锁定策略。",
+              "rationale": "针对疑似密码猜测与凭据复用风险采取遏制措施（建议由人工执行，尚未执行）。",
+              "evidence_ids": [
+                "E-5fcf6783802ef82d",
+                "E-e03ea403b476a98e",
+                "E-d7b0efa8dfca53c1",
+                "E-458ac2028c361f3d",
+                "E-2955976d3c007362",
+                "E-99095cd52364dbf6",
+                "E-8af75024d8b579bd"
+              ],
+              "case_ids": [
+                "CASE-SEC-012"
+              ]
+            },
+            {
+              "action": "检查 server-a、server-b 在 10:06 之后的进程、网络连接、文件变更与登录历史，排查是否存在持久化或进一步横向移动。",
+              "rationale": "当前证据仅覆盖认证与 sudo 记录，缺少主机侧行为证据。",
+              "evidence_ids": [
+                "E-8af75024d8b579bd",
+                "E-8919af79aec499cb",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-007"
+              ]
+            }
+          ],
+          "uncertainties": [
+            "6 次失败与随后成功是否来自同一攻击者意图，还是合法用户密码输错后重试，缺少失败原因（如 invalid user、密码错误、密钥拒绝）区分。",
+            "198.51.100.23 与 203.0.113.77 的归属、地理位置及是否为组织已知出口未知。",
+            "sudo 事件缺少会话 ID 与源 IP，无法确认是否由 10:06 的 alice 登录会话执行。",
+            "alice 在 server-b 与 bob 在 server-a 的登录是否与 alice 在 server-a 的失败尝试属于同一操作者，缺少关联标识。",
+            "09:59 admin 公钥登录与后续活动是否存在关联未知，且其来源 192.0.2.10 的合法性未核实。",
+            "缺少主机侧进程、网络、文件与持久化证据，无法判断登录后是否发生实际恶意操作。"
+          ]
+        },
+        "preview": {
+          "event_ids": [
+            "E-5fcf6783802ef82d",
+            "E-e03ea403b476a98e",
+            "E-d7b0efa8dfca53c1",
+            "E-458ac2028c361f3d",
+            "E-2955976d3c007362",
+            "E-99095cd52364dbf6",
+            "E-8af75024d8b579bd",
+            "E-d57d6464073b85f2",
+            "E-b749dfc27a28e2ce",
+            "E-e77a4d5775351a73",
+            "E-8919af79aec499cb",
+            "E-9800023f0ed5a764",
+            "E-28ee262fc00690bf",
+            "E-6155f87003dce806",
+            "E-7248bbca29b351f4"
+          ],
+          "case_ids": [
+            "CASE-SEC-006",
+            "CASE-SEC-005",
+            "CASE-SEC-007",
+            "CASE-SEC-008",
+            "CASE-SEC-012"
+          ],
+          "events_truncated": false,
+          "raw_truncated": false
+        }
+      },
+      "trace": [
+        {
+          "step": 1,
+          "tool": "aggregate_events",
+          "stage": "investigation",
+          "error": "ValueError",
+          "result_status": null
+        },
+        {
+          "step": 2,
+          "tool": "detect_anomalies",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 3,
+          "tool": "aggregate_events",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 4,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 5,
+          "tool": "get_event_context",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 6,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 7,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 8,
+          "tool": "retrieve_cases",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 9,
+          "tool": "build_timeline",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 10,
+          "tool": "synthesize_judgment",
+          "stage": "agent_completion",
+          "error": null,
+          "result_status": "completed"
+        }
+      ],
+      "evidence_count": 15,
+      "case_count": 5
+    },
+    {
+      "run": 5,
+      "exit_code": 0,
+      "wall_seconds": 21.24,
+      "run_id": "INV-9c59be2af145",
+      "mode": "llm_tool_calling",
+      "status": "completed",
+      "stop_reason": "planner_finished",
+      "elapsed_seconds": 18.344,
+      "tokens_used": 71702,
+      "judgment": {
+        "status": "completed",
+        "backend": "llm",
+        "model": "deepseek-flash",
+        "validation": "structure_and_reference_ids_only",
+        "content": {
+          "assessment": "suspicious",
+          "claims": [
+            {
+              "kind": "observation",
+              "statement": "2026-01-15T10:00:00 至 10:05:00，来源 198.51.100.23 对 server-a 上账号 alice 连续产生 6 次密码认证失败，每次间隔约 1 分钟，源端口递增（51000-51005）。",
+              "evidence_ids": [
+                "E-5fcf6783802ef82d",
+                "E-e03ea403b476a98e",
+                "E-d7b0efa8dfca53c1",
+                "E-458ac2028c361f3d",
+                "E-2955976d3c007362",
+                "E-99095cd52364dbf6"
+              ],
+              "case_ids": [
+                "CASE-SEC-012"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "10:06:00，同一来源 198.51.100.23 以密码方式成功登录 server-a 的 alice 账号（sshd[205]，端口 52003），紧接在失败窗口之后。",
+              "evidence_ids": [
+                "E-8af75024d8b579bd"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "10:05:10 与 10:05:20，同一来源 198.51.100.23 分别以密码方式成功登录 server-a 的 bob 账号（sshd[202]）和 server-b 的 alice 账号（sshd[203]），与 server-a 上 alice 的失败尝试时间重叠。",
+              "evidence_ids": [
+                "E-e77a4d5775351a73",
+                "E-8919af79aec499cb"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "10:05:30，另一来源 203.0.113.77 以密码方式成功登录 server-a 的 alice 账号（sshd[204]），与 198.51.100.23 的活动时间接近但来源不同。",
+              "evidence_ids": [
+                "E-9800023f0ed5a764"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "09:59:00，来源 192.0.2.10 以公钥方式成功登录 server-a 的 admin 账号（sshd[101]），与上述密码认证活动来源不同。",
+              "evidence_ids": [
+                "E-b749dfc27a28e2ce"
+              ],
+              "case_ids": [
+                "CASE-SEC-013A"
+              ]
+            },
+            {
+              "kind": "observation",
+              "statement": "10:07:00 server-a 上 alice（TTY=pts/1）、10:08:00 server-b 上 alice（TTY=pts/2）、10:09:00 server-a 上 bob（TTY=pts/3）分别通过 sudo 以 root 执行 /usr/bin/id；12:00:00 server-a 上 alice 再次在 TTY=pts/1 执行相同命令。这些 sudo 记录本身不含来源 IP。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-28ee262fc00690bf",
+                "E-6155f87003dce806",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-008"
+              ]
+            },
+            {
+              "kind": "hypothesis",
+              "statement": "198.51.100.23 可能对 alice 账号实施了密码猜测并在成功后获得访问；但失败与成功之间缺少会话/进程关联，合法用户输错密码后重试、或自动化脚本使用过期凭据也可能产生相同序列。",
+              "evidence_ids": [
+                "E-5fcf6783802ef82d",
+                "E-e03ea403b476a98e",
+                "E-d7b0efa8dfca53c1",
+                "E-458ac2028c361f3d",
+                "E-2955976d3c007362",
+                "E-99095cd52364dbf6",
+                "E-8af75024d8b579bd"
+              ],
+              "case_ids": [
+                "CASE-SEC-012",
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "kind": "hypothesis",
+              "statement": "同一来源在数分钟内对多个账号（alice、bob）和多个主机（server-a、server-b）成功登录，可能表明凭据被批量复用或存在横向移动；但缺少会话 ID、登录后命令与网络连接证据，无法确认这些登录属于同一操作者或同一会话。",
+              "evidence_ids": [
+                "E-e77a4d5775351a73",
+                "E-8919af79aec499cb",
+                "E-8af75024d8b579bd",
+                "E-9800023f0ed5a764"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            }
+          ],
+          "recommendations": [
+            {
+              "action": "人工核对 alice、bob 账号在 2026-01-15 10:00-12:00 的登录是否由账号所有者本人发起，并确认 198.51.100.23 与 203.0.113.77 是否为已知办公/运维出口 IP。",
+              "rationale": "成功登录本身不证明未授权，需先与账号所有者及资产台账比对来源 IP 与时段。",
+              "evidence_ids": [
+                "E-8af75024d8b579bd",
+                "E-e77a4d5775351a73",
+                "E-8919af79aec499cb",
+                "E-9800023f0ed5a764"
+              ],
+              "case_ids": [
+                "CASE-SEC-006"
+              ]
+            },
+            {
+              "action": "在 server-a、server-b 上提取 sshd 会话日志（含 session ID、pts 分配）与 sudo 审计记录，确认 pts/1、pts/2、pts/3 分别对应哪次登录及来源 IP。",
+              "rationale": "当前 sudo 记录无来源 IP，无法判断特权命令是否由 198.51.100.23 的登录会话执行。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-28ee262fc00690bf",
+                "E-6155f87003dce806",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-008"
+              ]
+            },
+            {
+              "action": "如确认非授权，建议阻断 198.51.100.23 与 203.0.113.77 的 SSH 访问，并轮换 alice、bob 的密码与相关密钥。",
+              "rationale": "密码认证成功且来源可疑，凭据可能已泄露；此为建议动作，尚未执行。",
+              "evidence_ids": [
+                "E-8af75024d8b579bd",
+                "E-e77a4d5775351a73",
+                "E-8919af79aec499cb",
+                "E-9800023f0ed5a764"
+              ],
+              "case_ids": [
+                "CASE-SEC-012",
+                "CASE-SEC-013"
+              ]
+            },
+            {
+              "action": "为对外暴露的 SSH 启用失败锁定（如 fail2ban/pam_faillock）与 MFA，并评估禁用密码认证、仅允许公钥登录。",
+              "rationale": "6 次连续密码失败后即出现成功登录，说明当前缺少有效的暴力破解抑制。",
+              "evidence_ids": [
+                "E-5fcf6783802ef82d",
+                "E-e03ea403b476a98e",
+                "E-d7b0efa8dfca53c1",
+                "E-458ac2028c361f3d",
+                "E-2955976d3c007362",
+                "E-99095cd52364dbf6",
+                "E-8af75024d8b579bd"
+              ],
+              "case_ids": [
+                "CASE-SEC-012"
+              ]
+            },
+            {
+              "action": "审查 alice、bob 的 sudoers 授权范围，确认是否确需以 root 执行命令，并检查 10:07-12:00 期间是否有其他特权命令或文件变更。",
+              "rationale": "sudo 执行 /usr/bin/id 本身不构成提权证据，但需确认授权合理性与后续行为。",
+              "evidence_ids": [
+                "E-d57d6464073b85f2",
+                "E-28ee262fc00690bf",
+                "E-6155f87003dce806",
+                "E-7248bbca29b351f4"
+              ],
+              "case_ids": [
+                "CASE-SEC-008"
+              ]
+            }
+          ],
+          "uncertainties": [
+            "缺少 sshd 会话 ID 与 pts 分配记录，无法确认 10:06 的 alice 登录与 10:07 的 sudo 是否属于同一会话。",
+            "无法确认 198.51.100.23 与 203.0.113.77 是否为授权来源（如 VPN、跳板机或办公出口）。",
+            "未提供登录后执行的命令、进程树、文件变更或外联网络证据，无法评估成功登录后的实际影响。",
+            "未提供 10:09 至 12:00 之间的日志，12:00 的 sudo 记录与前述活动之间是否存在其他行为未知。",
+            "未提供失败尝试是否触发账户锁定、是否有其他账号被尝试（如 root）的信息。",
+            "未提供 admin 账号 09:59 公钥登录的授权基线，无法判断其是否异常。"
+          ]
+        },
+        "preview": {
+          "event_ids": [
+            "E-5fcf6783802ef82d",
+            "E-e03ea403b476a98e",
+            "E-d7b0efa8dfca53c1",
+            "E-458ac2028c361f3d",
+            "E-2955976d3c007362",
+            "E-99095cd52364dbf6",
+            "E-8af75024d8b579bd",
+            "E-d57d6464073b85f2",
+            "E-b749dfc27a28e2ce",
+            "E-e77a4d5775351a73",
+            "E-8919af79aec499cb",
+            "E-9800023f0ed5a764",
+            "E-28ee262fc00690bf",
+            "E-6155f87003dce806",
+            "E-7248bbca29b351f4"
+          ],
+          "case_ids": [
+            "CASE-SEC-006",
+            "CASE-SEC-012",
+            "CASE-SEC-013",
+            "CASE-SEC-013A",
+            "CASE-SEC-008"
+          ],
+          "events_truncated": false,
+          "raw_truncated": false
+        }
+      },
+      "trace": [
+        {
+          "step": 1,
+          "tool": "aggregate_events",
+          "stage": "investigation",
+          "error": "ValueError",
+          "result_status": null
+        },
+        {
+          "step": 2,
+          "tool": "detect_anomalies",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 3,
+          "tool": "aggregate_events",
+          "stage": "investigation",
+          "error": "ValueError",
+          "result_status": null
+        },
+        {
+          "step": 4,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 5,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 6,
+          "tool": "get_event_context",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 7,
+          "tool": "get_event_context",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 8,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 9,
+          "tool": "search_logs",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 10,
+          "tool": "retrieve_cases",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 11,
+          "tool": "build_timeline",
+          "stage": "investigation",
+          "error": null,
+          "result_status": null
+        },
+        {
+          "step": 12,
+          "tool": "synthesize_judgment",
+          "stage": "agent_completion",
+          "error": null,
+          "result_status": "completed"
+        }
+      ],
+      "evidence_count": 15,
+      "case_count": 5
+    }
+  ],
+  "generated_at": "2026-10-21T16:17:02Z",
+  "note": "Real provider run; no raw log text or credentials stored here."
+}

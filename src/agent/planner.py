@@ -34,7 +34,7 @@ class RulePlanner:
 
     def choose(self, goal, trace):
         if not trace:
-            return "detect_anomalies", {"limit": 20}
+            return "detect_anomalies", {"top_windows": 5}
         successful = [t for t in trace if not t.get("error")]
         if not any(t["tool"] == "aggregate_events" for t in successful):
             return "aggregate_events", {"window_minutes": 5, "min_failures": 5, "max_groups": 3}

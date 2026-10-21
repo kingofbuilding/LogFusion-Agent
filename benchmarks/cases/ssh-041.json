@@ -1,0 +1,30 @@
+{
+  "case_id": "ssh-041",
+  "category": "multi_cluster",
+  "log_file": "ssh-041.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "correlated_success",
+    "must_find_event_ids": [
+      "E-896db718bba3da31",
+      "E-ac109a6f49294f71",
+      "E-5f1d252f9e659295",
+      "E-bbe39971d20a42e1",
+      "E-3a6dd6530d7e9c89",
+      "E-9d667844d4456334",
+      "E-8a4b02bfb688400e"
+    ],
+    "must_link_event_ids": [
+      "E-8a4b02bfb688400e"
+    ],
+    "must_not_link_event_ids": [],
+    "must_not_pair": [
+      [
+        "E-8a4b02bfb688400e",
+        "E-2706e917733dccf7"
+      ]
+    ]
+  },
+  "events": 69,
+  "design": "两个独立失败簇并存，只有第一个簇有后续成功，用于检查跨簇误配。"
+}

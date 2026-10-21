@@ -13,6 +13,46 @@ from .events import EventStore, parse_time
 ROOT = Path(__file__).resolve().parents[2]
 
 
+class ToolArgumentError(ValueError):
+    """Only application-owned validation messages may be returned to the planner."""
+
+
+PARAMETER_BOUNDS = {
+    "limit": (1, 100), "max_groups": (1, 10), "top_k": (1, 10), "top_windows": (1, 10),
+    "window_minutes": (1, 60), "min_failures": (2, 100),
+    "before_minutes": (0, 60), "after_minutes": (0, 60),
+}
+
+# Defence in depth: every tool observation is capped before it reaches the planner, so a new tool
+# (for example a future web scenario) cannot inflate the conversation by returning a huge list.
+OBSERVATION_CHAR_LIMIT = 6000
+
+
+def _fit_observation(result: dict, limit: int = OBSERVATION_CHAR_LIMIT):
+    """Trim the first oversized list field until the serialized observation fits the cap."""
+    if not isinstance(result, dict) or len(json.dumps(result, ensure_ascii=False)) <= limit:
+        return result
+    for key in ("events", "windows", "groups", "cases", "scores"):
+        items = result.get(key)
+        if not isinstance(items, list) or not items:
+            continue
+        keep = len(items)
+        while keep > 0:
+            keep //= 2
+            trial = dict(result)
+            trial[key] = items[:keep]
+            trial["observation_truncated"] = True
+            trial["observation_note"] = f"观察体量超过 {limit} 字符，{key} 仅保留前 {keep} 条。"
+            if len(json.dumps(trial, ensure_ascii=False)) <= limit:
+                return trial
+    # Nothing could be trimmed below the cap: drop list details entirely.
+    fallback = {k: v for k, v in result.items() if not isinstance(v, list)}
+    fallback["observation_truncated"] = True
+    fallback["observation_note"] = f"观察体量超过 {limit} 字符，已省略全部列表明细。"
+    return fallback
+
+
+
 def failure_clusters(events, window_minutes: int = 5, min_failures: int = 5) -> list[dict]:
     """One maximum-density bounded window per (IP, user, host), with exact citations."""
     groups = defaultdict(list)
@@ -54,18 +94,42 @@ class InvestigationTools:
         self.evidence.update({e["event_id"]: e for e in result})
         return result
 
-    def detect_anomalies(self, limit: int = 30) -> dict:
+    def detect_anomalies(self, top_windows: int = 5) -> dict:
+        """Return at most ``top_windows`` ranked windows, not per-event raw scores.
+
+        A detector scores a sequence window; returning 30 scored lines per call inflated the planner
+        context and pushed runs into the token budget. The window span, its risk score and the view
+        that contributed most are enough to decide where to look; the events themselves are fetched
+        with search_logs / get_event_context.
+        """
         if self.detector is not None:
-            result = self.detector(self.store, limit)
-            for row in result.get("scores", []):
-                if row.get("event_id") not in self.store.by_id:
+            raw = self.detector(self.store, top_windows)
+            scores, spans = raw.get("scores", []), raw.get("windows", [])
+            for span in spans:
+                if span.get("end_event_id") not in self.store.by_id:
                     raise ValueError("Detector returned unknown event ID")
-                self._records([self.store.by_id[row["event_id"]]])
-            return result
+            windows = []
+            for span, row in zip(spans, scores):
+                views = {"statistical": float(row.get("stat_score", 0.0)),
+                         "temporal": float(row.get("temporal_score", 0.0)),
+                         "semantic": float(row.get("semantic_score", 0.0))}
+                windows.append({"start_event_id": span["start_event_id"],
+                                "end_event_id": span["end_event_id"],
+                                "risk_score": round(float(row["risk_score"]), 4),
+                                "dominant_view": max(views, key=views.get),
+                                "view_scores": {name: round(value, 4) for name, value in views.items()}})
+            total = int(raw.get("total_windows", len(windows)))
+            # Only the window anchors become evidence; the burst events still have to be queried.
+            self._records([self.store.by_id[w["end_event_id"]] for w in windows], top_windows)
+            return {"backend": raw.get("backend"), "model_loaded": bool(raw.get("model_loaded")),
+                    "windows": windows, "total_windows": total, "returned_windows": len(windows),
+                    "truncated": total > len(windows),
+                    "notice": "检测器按序列窗口打分：只返回跨度、最高分与主要贡献视图，不返回逐条原始分数；需用 search_logs / get_event_context 查询窗口内事件。"}
         selected = [e for e in self.store.events if e.event_type != "other"]
         return {"backend": "rule_signals", "model_loaded": False,
                 "notice": "规则候选信号，不是三视图模型评分或攻击概率。", "total": len(selected),
-                "events": self._records(selected, limit), "coverage": self.store.coverage()}
+                "events": self._records(selected, top_windows), "coverage": self.store.coverage()}
+
 
     def aggregate_events(self, window_minutes: int = 5, min_failures: int = 5, max_groups: int = 3) -> dict:
         if not 1 <= window_minutes <= 60 or not 2 <= min_failures <= 100:
@@ -149,29 +213,41 @@ class InvestigationTools:
 
     def call(self, name: str, arguments: dict) -> dict:
         if name not in TOOL_SCHEMAS or not isinstance(arguments, dict):
-            raise ValueError("Unknown tool or invalid arguments")
+            raise ToolArgumentError("Choose an allowed tool and provide an object of arguments.")
         fn = getattr(self, name)
-        inspect.signature(fn).bind(**arguments)
+        try:
+            inspect.signature(fn).bind(**arguments)
+        except TypeError:
+            raise ToolArgumentError("Required arguments are missing or unknown arguments were provided; follow the tool schema.") from None
         properties = TOOL_SCHEMAS[name]["function"]["parameters"]["properties"]
         for key, value in arguments.items():
             expected = properties[key]["type"]
             if (expected == "string" and not isinstance(value, str)) or (
                 expected == "integer" and (not isinstance(value, int) or isinstance(value, bool))):
-                raise ValueError(f"Invalid type for {key}")
-            if key in ("limit", "max_groups", "top_k") and not 1 <= value <= (10 if key in ("max_groups", "top_k") else 100):
-                raise ValueError(f"{key} outside allowed range")
-        return fn(**arguments)
+                raise ToolArgumentError(f"{key} must have type {expected}.")
+            if key in PARAMETER_BOUNDS:
+                low, high = PARAMETER_BOUNDS[key]
+                if not low <= value <= high:
+                    raise ToolArgumentError(f"{key} must be between {low} and {high}, inclusive.")
+        return _fit_observation(fn(**arguments))
 
 
 def _schema(name, description, properties, required=()):
+    fields = {}
+    for key, kind in properties.items():
+        field = {"type": kind}
+        if key in PARAMETER_BOUNDS:
+            low, high = PARAMETER_BOUNDS[key]
+            field.update(minimum=low, maximum=high, description=f"Inclusive range {low}..{high}.")
+        fields[key] = field
     return {"type": "function", "function": {"name": name, "description": description,
-            "parameters": {"type": "object", "properties": {
-                k: {"type": t} for k, t in properties.items()}, "required": list(required),
+            "parameters": {"type": "object", "properties": fields, "required": list(required),
                 "additionalProperties": False}}}
 
 
 TOOL_SCHEMAS = {s["function"]["name"]: s for s in [
-    _schema("detect_anomalies", "Identify candidate signals; backend explicitly says rule or model.", {"limit": "integer"}),
+    _schema("detect_anomalies", "Return the top-N risk windows from the three-view detector with span, score and dominant view. Fetch window events with search_logs.",
+            {"top_windows": "integer"}),
     _schema("aggregate_events", "Group SSH failures in a bounded time window by IP/user/host; start here to investigate brute force.",
             {"window_minutes": "integer", "min_failures": "integer", "max_groups": "integer"}),
     _schema("search_logs", "Search full logs, including low-risk successes. Exact filters; ISO times.",

@@ -1,0 +1,26 @@
+{
+  "case_id": "ssh-007",
+  "category": "bruteforce_then_success",
+  "log_file": "ssh-007.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "correlated_success",
+    "must_find_event_ids": [
+      "E-bdb5cbebb1e65484",
+      "E-4cc1410045deeb16",
+      "E-8a54cdf0e2262286",
+      "E-874d111c870d8736",
+      "E-dd4fc51532e94e87",
+      "E-bdc96530407a20a0",
+      "E-50ab45ad6bdef6b9",
+      "E-90a33781d3a95f03"
+    ],
+    "must_link_event_ids": [
+      "E-90a33781d3a95f03"
+    ],
+    "must_not_link_event_ids": [],
+    "must_not_pair": []
+  },
+  "events": 61,
+  "design": "6-8 次同 IP/账号/主机失败后 15 分钟内同实体成功登录，属于应建立关联的阳性用例。"
+}

@@ -1,0 +1,59 @@
+{"timestamp": "2026-01-18T08:30:32Z", "host": "bastion-01", "message": "sshd[27206]: pam_unix(sshd:session): session opened for user bob by (uid=0)"}
+{"timestamp": "2026-01-18T08:32:22Z", "host": "web-01", "message": "sshd[5561]: pam_unix(sshd:session): session opened for user deploy by (uid=0)"}
+{"timestamp": "2026-01-18T08:32:55Z", "host": "bastion-01", "message": "sshd[23740]: Accepted publickey for dave from 192.0.2.206 port 51865 ssh2"}
+{"timestamp": "2026-01-18T08:34:58Z", "host": "db-01", "message": "sshd[27350]: Disconnected from authenticating user monitor 192.0.2.6 port 56595"}
+{"timestamp": "2026-01-18T08:38:08Z", "host": "db-01", "message": "sshd[26098]: Accepted publickey for alice from 192.0.2.152 port 43324 ssh2"}
+{"timestamp": "2026-01-18T08:39:37Z", "host": "web-01", "message": "sshd[6827]: Accepted publickey for svc-cron from 192.0.2.35 port 52521 ssh2"}
+{"timestamp": "2026-01-18T08:44:10Z", "host": "db-01", "message": "sshd[24509]: Accepted publickey for dave from 192.0.2.50 port 46246 ssh2"}
+{"timestamp": "2026-01-18T08:44:28Z", "host": "db-01", "message": "sshd[26603]: Failed password for ops from 192.0.2.100 port 57458 ssh2"}
+{"timestamp": "2026-01-18T08:47:57Z", "host": "web-01", "message": "sshd[17578]: Connection closed by 192.0.2.105 port 50256 [preauth]"}
+{"timestamp": "2026-01-18T08:51:47Z", "host": "bastion-01", "message": "sshd[17813]: pam_unix(sshd:session): session opened for user dave by (uid=0)"}
+{"timestamp": "2026-01-18T08:54:55Z", "host": "db-01", "message": "sshd[9580]: Connection closed by 192.0.2.145 port 46035 [preauth]"}
+{"timestamp": "2026-01-18T09:02:14Z", "host": "bastion-01", "message": "sshd[20833]: Invalid user backup from 192.0.2.243 port 45456"}
+{"timestamp": "2026-01-18T09:05:46Z", "host": "bastion-01", "message": "sshd[3523]: Failed password for backup from 192.0.2.6 port 45186 ssh2"}
+{"timestamp": "2026-01-18T09:07:12Z", "host": "bastion-01", "message": "sshd[1809]: Invalid user ops from 192.0.2.212 port 53848"}
+{"timestamp": "2026-01-18T09:08:49Z", "host": "db-01", "message": "sshd[9281]: pam_unix(sshd:session): session opened for user carol by (uid=0)"}
+{"timestamp": "2026-01-18T09:11:18Z", "host": "db-01", "message": "sshd[14135]: Invalid user bob from 192.0.2.236 port 54884"}
+{"timestamp": "2026-01-18T09:19:06Z", "host": "db-01", "message": "sshd[23525]: Accepted publickey for svc-cron from 192.0.2.217 port 58138 ssh2"}
+{"timestamp": "2026-01-18T09:19:17Z", "host": "web-01", "message": "sshd[25634]: pam_unix(sshd:session): session opened for user carol by (uid=0)"}
+{"timestamp": "2026-01-18T09:19:23Z", "host": "web-01", "message": "sshd[15443]: pam_unix(sshd:session): session opened for user alice by (uid=0)"}
+{"timestamp": "2026-01-18T09:21:29Z", "host": "web-02", "message": "sshd[11738]: Accepted publickey for bob from 192.0.2.80 port 52976 ssh2"}
+{"timestamp": "2026-01-18T09:29:35Z", "host": "web-02", "message": "sshd[19192]: Failed password for ops from 192.0.2.221 port 57146 ssh2"}
+{"timestamp": "2026-01-18T09:31:03Z", "host": "bastion-01", "message": "sshd[4247]: pam_unix(sshd:session): session opened for user bob by (uid=0)"}
+{"timestamp": "2026-01-18T09:31:55Z", "host": "web-01", "message": "sshd[17432]: pam_unix(sshd:session): session opened for user carol by (uid=0)"}
+{"timestamp": "2026-01-18T09:34:53Z", "host": "web-02", "message": "sshd[15699]: Disconnected from authenticating user backup 192.0.2.166 port 54875"}
+{"timestamp": "2026-01-18T09:35:46Z", "host": "web-01", "message": "sshd[4720]: Connection closed by 192.0.2.212 port 59043 [preauth]"}
+{"timestamp": "2026-01-18T09:39:58Z", "host": "web-01", "message": "sshd[18340]: Accepted publickey for backup from 192.0.2.42 port 54154 ssh2"}
+{"timestamp": "2026-01-18T09:41:46Z", "host": "web-02", "message": "sshd[22599]: Failed password for bob from 192.0.2.210 port 55682 ssh2"}
+{"timestamp": "2026-01-18T09:43:45Z", "host": "web-02", "message": "sshd[4862]: Invalid user deploy from 192.0.2.8 port 48651"}
+{"timestamp": "2026-01-18T09:45:15Z", "host": "web-02", "message": "sshd[29411]: Failed password for bob from 192.0.2.12 port 47689 ssh2"}
+{"timestamp": "2026-01-18T09:52:42Z", "host": "web-02", "message": "sshd[5802]: Accepted publickey for ops from 192.0.2.106 port 40369 ssh2"}
+{"timestamp": "2026-01-18T09:53:58Z", "host": "web-02", "message": "sshd[5791]: Accepted publickey for bob from 192.0.2.181 port 51956 ssh2"}
+{"timestamp": "2026-01-18T09:57:36Z", "host": "web-02", "message": "sshd[7028]: pam_unix(sshd:session): session opened for user dave by (uid=0)"}
+{"timestamp": "2026-01-18T09:59:39Z", "host": "web-01", "message": "sshd[23385]: Invalid user ops from 192.0.2.132 port 40118"}
+{"timestamp": "2026-01-18T10:00:01Z", "host": "db-01", "message": "sshd[7299]: Failed password for bob from 203.0.113.77 port 50377 ssh2"}
+{"timestamp": "2026-01-18T10:00:38Z", "host": "db-01", "message": "sshd[10378]: Failed password for bob from 203.0.113.77 port 48739 ssh2"}
+{"timestamp": "2026-01-18T10:01:13Z", "host": "db-01", "message": "sshd[19040]: Failed password for bob from 203.0.113.77 port 55283 ssh2"}
+{"timestamp": "2026-01-18T10:01:45Z", "host": "db-01", "message": "sshd[8657]: Failed password for bob from 203.0.113.77 port 46469 ssh2"}
+{"timestamp": "2026-01-18T10:02:23Z", "host": "db-01", "message": "sshd[5598]: Failed password for bob from 203.0.113.77 port 43439 ssh2"}
+{"timestamp": "2026-01-18T10:02:59Z", "host": "db-01", "message": "sshd[5274]: Failed password for bob from 203.0.113.77 port 40324 ssh2"}
+{"timestamp": "2026-01-18T10:03:32Z", "host": "db-01", "message": "sshd[11792]: Failed password for bob from 203.0.113.77 port 54932 ssh2"}
+{"timestamp": "2026-01-18T10:04:07Z", "host": "db-01", "message": "sshd[16256]: Failed password for bob from 203.0.113.77 port 53030 ssh2"}
+{"timestamp": "2026-01-18T10:04:42Z", "host": "db-01", "message": "sshd[10107]: Failed password for bob from 203.0.113.77 port 58956 ssh2"}
+{"timestamp": "2026-01-18T10:11:46Z", "host": "web-02", "message": "sshd[5558]: Invalid user carol from 192.0.2.92 port 58065"}
+{"timestamp": "2026-01-18T10:15:28Z", "host": "web-02", "message": "sshd[9197]: Accepted publickey for dave from 192.0.2.80 port 58950 ssh2"}
+{"timestamp": "2026-01-18T10:27:03Z", "host": "web-01", "message": "sshd[9326]: Connection closed by 192.0.2.34 port 55073 [preauth]"}
+{"timestamp": "2026-01-18T10:27:48Z", "host": "web-02", "message": "sshd[15420]: Invalid user alice from 192.0.2.165 port 46336"}
+{"timestamp": "2026-01-18T10:28:35Z", "host": "web-01", "message": "sshd[3987]: Accepted publickey for dave from 192.0.2.170 port 47648 ssh2"}
+{"timestamp": "2026-01-18T10:31:26Z", "host": "web-01", "message": "sshd[26646]: pam_unix(sshd:session): session opened for user monitor by (uid=0)"}
+{"timestamp": "2026-01-18T10:31:39Z", "host": "db-01", "message": "sshd[1266]: pam_unix(sshd:session): session opened for user deploy by (uid=0)"}
+{"timestamp": "2026-01-18T10:33:36Z", "host": "web-01", "message": "sshd[1247]: Connection closed by 192.0.2.112 port 49948 [preauth]"}
+{"timestamp": "2026-01-18T10:35:00Z", "host": "db-01", "message": "sshd[16962]: Failed password for carol from 192.0.2.242 port 48199 ssh2"}
+{"timestamp": "2026-01-18T10:35:37Z", "host": "web-02", "message": "sshd[15076]: Failed password for ops from 192.0.2.72 port 42924 ssh2"}
+{"timestamp": "2026-01-18T10:41:11Z", "host": "web-02", "message": "sshd[26712]: pam_unix(sshd:session): session opened for user svc-cron by (uid=0)"}
+{"timestamp": "2026-01-18T10:43:15Z", "host": "bastion-01", "message": "sshd[23283]: Invalid user monitor from 192.0.2.214 port 50050"}
+{"timestamp": "2026-01-18T10:44:00Z", "host": "db-01", "message": "sshd[1556]: Failed password for deploy from 192.0.2.31 port 47940 ssh2"}
+{"timestamp": "2026-01-18T10:44:48Z", "host": "web-01", "message": "sshd[17912]: Failed password for backup from 192.0.2.200 port 49672 ssh2"}
+{"timestamp": "2026-01-18T10:49:53Z", "host": "db-01", "message": "sshd[7030]: pam_unix(sshd:session): session opened for user dave by (uid=0)"}
+{"timestamp": "2026-01-18T10:49:57Z", "host": "web-02", "message": "sshd[4976]: Disconnected from authenticating user deploy 192.0.2.3 port 41444"}
+{"timestamp": "2026-01-18T10:51:35Z", "host": "bastion-01", "message": "sshd[10406]: pam_unix(sshd:session): session opened for user dave by (uid=0)"}

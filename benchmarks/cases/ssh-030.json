@@ -1,0 +1,23 @@
+{
+  "case_id": "ssh-030",
+  "category": "success_outside_window",
+  "log_file": "ssh-030.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "no_correlated_success",
+    "must_find_event_ids": [
+      "E-c771cc76eef1eac5",
+      "E-6d25c770c2e6bae7",
+      "E-61a21fd3006c4bb0",
+      "E-4a783a75c03fe483",
+      "E-7f6e984ccb1c65b0"
+    ],
+    "must_link_event_ids": [],
+    "must_not_link_event_ids": [
+      "E-11f1db67261f8abf"
+    ],
+    "must_not_pair": []
+  },
+  "events": 57,
+  "design": "同实体成功登录发生在失败窗口结束 15 分钟之后，超出关联窗口。"
+}

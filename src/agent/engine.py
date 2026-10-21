@@ -11,7 +11,7 @@ from uuid import uuid4
 from .events import EventStore, parse_time
 from .judgment import JudgmentValidationError
 from .planner import RulePlanner
-from .tools import InvestigationTools, failure_clusters
+from .tools import InvestigationTools, ToolArgumentError, failure_clusters
 
 
 @dataclass
@@ -193,6 +193,9 @@ class InvestigationAgent:
             entry = {"step": step, "tool": name, "arguments": arguments}
             try:
                 entry["result"] = self.tools.call(name, arguments)
+            except ToolArgumentError as exc:
+                entry.update(error="ToolArgumentError", result={"error": str(exc), "type": "ToolArgumentError",
+                             "retry_guidance": "Correct arguments using the schema; do not repeat the invalid call."})
             except Exception as exc:
                 entry.update(error=type(exc).__name__, result={"error": "Tool failed or arguments invalid", "type": type(exc).__name__})
             trace.append(entry)

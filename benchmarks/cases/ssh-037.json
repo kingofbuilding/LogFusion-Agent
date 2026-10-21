@@ -1,0 +1,17 @@
+{
+  "case_id": "ssh-037",
+  "category": "benign_retries",
+  "log_file": "ssh-037.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "insufficient_evidence",
+    "must_find_event_ids": [],
+    "must_link_event_ids": [],
+    "must_not_link_event_ids": [
+      "E-8fa1be2103b9e60d"
+    ],
+    "must_not_pair": []
+  },
+  "events": 54,
+  "design": "同一实体 2 分钟内仅 3 次输错后成功，低于 5 次阈值，属于良性重试。"
+}

@@ -1,0 +1,25 @@
+{
+  "case_id": "ssh-029",
+  "category": "success_outside_window",
+  "log_file": "ssh-029.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "no_correlated_success",
+    "must_find_event_ids": [
+      "E-567f5eaf7e83fe75",
+      "E-b40948c919e9fc2b",
+      "E-cb66ce57461dd2b8",
+      "E-0ef3b92d20117b3e",
+      "E-fcbe11fe516c2c23",
+      "E-ad67462ca9cb71e4",
+      "E-c5127bd9e35368e9"
+    ],
+    "must_link_event_ids": [],
+    "must_not_link_event_ids": [
+      "E-d52e5e532f96d0de"
+    ],
+    "must_not_pair": []
+  },
+  "events": 65,
+  "design": "同实体成功登录发生在失败窗口结束 15 分钟之后，超出关联窗口。"
+}

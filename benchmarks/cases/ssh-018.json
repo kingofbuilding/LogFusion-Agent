@@ -1,0 +1,23 @@
+{
+  "case_id": "ssh-018",
+  "category": "success_other_account",
+  "log_file": "ssh-018.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "no_correlated_success",
+    "must_find_event_ids": [
+      "E-2e66c38cf5b5b4fa",
+      "E-36c23ccd046f091f",
+      "E-97eec455f395906c",
+      "E-6630c48849107a46",
+      "E-62ea9ec6206255c5"
+    ],
+    "must_link_event_ids": [],
+    "must_not_link_event_ids": [
+      "E-0bfb869f106e93c6"
+    ],
+    "must_not_pair": []
+  },
+  "events": 52,
+  "design": "窗口后同 IP、同主机但另一账号登录，属于不应关联的干扰项。"
+}

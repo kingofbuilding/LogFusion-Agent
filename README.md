@@ -104,6 +104,17 @@ streamlit run frontend/app.py
 
 原界面新增默认的 Agent 调查入口。公开仓库不含权重和私有日志。默认后端明确标记 `rule_signals` 和 `lexical_case_search`，不伪称训练模型或向量 RAG。显式启用模型/索引但文件缺失时会报错。
 
+本地已有训练产物时，可从上游工程 `log_analysis_system_complete` 复制以下文件启用真实模型与向量索引：
+
+```text
+models/xgboost/xgboost_fusion.joblib
+models/isolation_forest/iforest_model.joblib
+models/bilstm/best_model.pth
+data/vectors/rag_attack_cases.npz
+```
+
+启用后 `detect_anomalies` 返回 `upstream_three_view_xgboost` 的真实窗口分数。注意两点：其一，窗口分数按末行事件 ID 定位，整窗证据需由调用方展开，否则标注事件可能永远落在窗口内部而不可见；其二，迁移过来的向量索引以哈希回退嵌入构建（本机未装 sentence-transformers），与查询的最高余弦相似度约 0.14，低于阈值 0.65/0.7，因此 `retrieve_cases` 在该索引下实际返回空，D 组差异来自检测器而非语义检索。
+
 原检测器的窗口分数映射到末行事件 ID。各视图仍遵循上游代理分数与 hash 回退逻辑；融合模型存在不代表所有视图模型已训练加载。
 
 ## 预算与边界
@@ -127,7 +138,22 @@ python -m pytest -q
 python -m src.agent --demo
 ```
 
-覆盖实体误关联、时间窗口、完整流查询、引用、标签隔离、预算、模型工具调度与导出。LLM 自动测试使用模拟服务，覆盖规划→检索→综合研判整条链路、引用错误修正与拒绝；真实模型质量尚需事件级评估，见 [设计与评估规划](docs/AGENT_DESIGN.md)。
+覆盖实体误关联、时间窗口、完整流查询、引用、标签隔离、预算、模型工具调度与导出。LLM 自动测试使用模拟服务，覆盖规划→检索→综合研判整条链路、引用错误修正与拒绝。
+
+## 事件级评测
+
+```bash
+python -m benchmarks.generate_cases                       # 42 条标注 SSH 用例，固定种子
+python -m benchmarks.run_eval                              # B 组：规则剧本，离线、零 token
+python -m benchmarks.run_eval --groups rule,simulated       # 加模拟研判全链路
+python -m benchmarks.run_eval --groups upstream             # A 组：上游检测器一次性出证据
+python -m benchmarks.run_eval --groups agent+upstream --limit 20   # D 组：Agent + 检测器 + 向量 RAG
+python -m benchmarks.run_eval --groups llm --repeats 3 --limit 20  # C 组：纯 LLM 调查
+```
+
+评测集覆盖 7 类关联/干扰场景，标签只写入 `<case>.json`，工具只能读到 `<case>.jsonl`。指标为结论正确率、关键证据召回、证据精度、误关联、步数、token、完成率与工具报错率；证据精度用于暴露“窗口级证据”召回高但精度低的问题。首版结果与已知限制见 [评测报告](docs/EVAL_REPORT.md)；注意标注规则与证据层同源，结论正确率衡量的是管线一致性而非真实入侵检测能力。
+
+实施过程中遇到并处理的工程问题（工具参数越界、窗口证据映射、哈希索引不可用、并行改动冲突等）记录在 [工程问题记录](docs/ENGINEERING_ISSUES.md)。
 
 ## 许可证
 

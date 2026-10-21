@@ -1,0 +1,25 @@
+{
+  "case_id": "ssh-011",
+  "category": "bruteforce_no_success",
+  "log_file": "ssh-011.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "no_correlated_success",
+    "must_find_event_ids": [
+      "E-80eb1b814504beff",
+      "E-7862e629c0998a2e",
+      "E-1e4b369fe7a12d04",
+      "E-d1328c7ac2377aa4",
+      "E-02b3172f7394ebe1",
+      "E-b4eae4ea34425a05",
+      "E-bf66a0576da41ec5",
+      "E-799e9549864789b2",
+      "E-3f474e1065b86745"
+    ],
+    "must_link_event_ids": [],
+    "must_not_link_event_ids": [],
+    "must_not_pair": []
+  },
+  "events": 63,
+  "design": "达到失败阈值但窗口后没有成功登录，结论应为失败簇存在、未观察到关联成功。"
+}

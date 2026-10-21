@@ -1,0 +1,118 @@
+{
+  "suite": "benchmarks/cases",
+  "stamp": "20261021T164140Z",
+  "repeats": 1,
+  "budgets": {
+    "rule": {
+      "max_steps": 16,
+      "max_seconds": 60,
+      "max_tokens": 24000
+    },
+    "simulated": {
+      "max_steps": 16,
+      "max_seconds": 60,
+      "max_tokens": 24000
+    },
+    "llm": {
+      "max_steps": 12,
+      "max_seconds": 120,
+      "max_tokens": 100000
+    }
+  },
+  "groups": {
+    "llm": {
+      "group": "llm",
+      "repeats": 1,
+      "cases": [
+        {
+          "case_id": "ssh-001",
+          "category": "bruteforce_then_success",
+          "verdict_expected": "correlated_success",
+          "verdict_actual": "correlated_success",
+          "verdict_ok": true,
+          "evidence_recall": 1.0,
+          "link_recall": 1.0,
+          "false_links": [],
+          "judgment_false_links": [],
+          "pair_violations": [],
+          "evidence_count": 35,
+          "tool_steps": 11,
+          "tokens": 83230,
+          "elapsed": 20.766,
+          "status": "completed",
+          "stop_reason": "planner_finished",
+          "judgment_status": "completed",
+          "claims": 8,
+          "attempt": 1
+        },
+        {
+          "case_id": "ssh-002",
+          "category": "bruteforce_then_success",
+          "verdict_expected": "correlated_success",
+          "verdict_actual": "correlated_success",
+          "verdict_ok": true,
+          "evidence_recall": 1.0,
+          "link_recall": 1.0,
+          "false_links": [],
+          "judgment_false_links": [],
+          "pair_violations": [],
+          "evidence_count": 42,
+          "tool_steps": 9,
+          "tokens": 70660,
+          "elapsed": 16.687,
+          "status": "completed",
+          "stop_reason": "planner_finished",
+          "judgment_status": "completed",
+          "claims": 8,
+          "attempt": 1
+        },
+        {
+          "case_id": "ssh-003",
+          "category": "bruteforce_then_success",
+          "verdict_expected": "correlated_success",
+          "verdict_actual": "correlated_success",
+          "verdict_ok": true,
+          "evidence_recall": 1.0,
+          "link_recall": 1.0,
+          "false_links": [],
+          "judgment_false_links": [],
+          "pair_violations": [],
+          "evidence_count": 35,
+          "tool_steps": 10,
+          "tokens": 73415,
+          "elapsed": 17.797,
+          "status": "completed",
+          "stop_reason": "planner_finished",
+          "judgment_status": "completed",
+          "claims": 8,
+          "attempt": 1
+        }
+      ],
+      "summary": {
+        "cases": 3,
+        "verdict_accuracy": 1.0,
+        "evidence_recall": 1.0,
+        "link_recall": 1.0,
+        "mislink_cases": 0,
+        "judgment_mislink_cases": 0,
+        "pair_violations": 0,
+        "mean_tool_steps": 10.0,
+        "mean_tokens": 75768.3333,
+        "completed_rate": 1.0,
+        "judgment_completed_rate": 1.0,
+        "by_category": {
+          "bruteforce_then_success": {
+            "cases": 3,
+            "verdict_accuracy": 1.0,
+            "evidence_recall": 1.0,
+            "link_recall": 1.0,
+            "mislink_cases": 0,
+            "mean_tool_steps": 10.0,
+            "mean_tokens": 75768.3333,
+            "completed_rate": 1.0
+          }
+        }
+      }
+    }
+  }
+}

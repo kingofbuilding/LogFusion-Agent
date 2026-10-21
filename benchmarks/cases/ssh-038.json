@@ -1,0 +1,31 @@
+{
+  "case_id": "ssh-038",
+  "category": "multi_cluster",
+  "log_file": "ssh-038.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "correlated_success",
+    "must_find_event_ids": [
+      "E-fd70eeac253bf25a",
+      "E-16c4b8773d8a3903",
+      "E-3a7b51b7ef86237a",
+      "E-b140b14b95730188",
+      "E-a6695a08d72b67ea",
+      "E-1f527d0869bad0f7",
+      "E-dfedcf68466c3aa4",
+      "E-01d8908a515633ed"
+    ],
+    "must_link_event_ids": [
+      "E-01d8908a515633ed"
+    ],
+    "must_not_link_event_ids": [],
+    "must_not_pair": [
+      [
+        "E-01d8908a515633ed",
+        "E-a38a74df7825867d"
+      ]
+    ]
+  },
+  "events": 66,
+  "design": "两个独立失败簇并存，只有第一个簇有后续成功，用于检查跨簇误配。"
+}

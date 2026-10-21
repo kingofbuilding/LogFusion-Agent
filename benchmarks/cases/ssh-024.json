@@ -1,0 +1,23 @@
+{
+  "case_id": "ssh-024",
+  "category": "success_other_host",
+  "log_file": "ssh-024.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "no_correlated_success",
+    "must_find_event_ids": [
+      "E-46a2c33088c61073",
+      "E-d161099385a05a8d",
+      "E-8f53983840f7f90e",
+      "E-19c9a26b26219c9c",
+      "E-35e649faa4d8d930"
+    ],
+    "must_link_event_ids": [],
+    "must_not_link_event_ids": [
+      "E-f1e96ac55a2f9ebe"
+    ],
+    "must_not_pair": []
+  },
+  "events": 63,
+  "design": "窗口后同 IP、同账号但另一主机登录，属于不应关联的干扰项。"
+}

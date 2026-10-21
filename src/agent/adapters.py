@@ -28,13 +28,21 @@ def upstream_detector():
             raise ValueError(f"日志不足以构建 {length} 条窗口，不能返回模型分数")
         if not result["fusion_model"].eq("xgboost_fusion").all():
             raise RuntimeError("融合模型加载失败；不将回退分数标为模型结果")
-        scores = []
-        for _, row in result.sort_values("risk_score", ascending=False).head(limit).iterrows():
-            e = store.events[int(row["line_num"]) - 1]
+        ranked = result.sort_values("risk_score", ascending=False)
+        scores, windows = [], []
+        for _, row in ranked.head(limit).iterrows():
+            line_no = int(row["line_num"])
+            e = store.events[line_no - 1]
             scores.append({"event_id": e.event_id, "risk_score": float(row["risk_score"]),
                            "stat_score": float(row["stat_score"]), "temporal_score": float(row["temporal_score"]),
                            "semantic_score": float(row["semantic_score"])})
+            # A score belongs to a sequence window, not a single line. Expose the span so callers can
+            # judge window-level evidence instead of silently treating the last line as the whole hit.
+            start = max(1, line_no - length + 1)
+            windows.append({"start_event_id": store.events[start - 1].event_id,
+                            "end_event_id": e.event_id, "risk_score": float(row["risk_score"])})
         return {"backend": "upstream_three_view_xgboost", "model_loaded": True, "scores": scores,
+                "windows": windows, "window_length": length, "total_windows": int(len(ranked)),
                 "notice": "风险分属于序列窗口，以末行事件 ID 定位。各视图可能使用上游配置的代理/哈希回退，不代表全部神经模型已加载。"}
     return detect
 
