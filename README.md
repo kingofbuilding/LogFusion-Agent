@@ -11,9 +11,10 @@
 | 方式 | 如何决定下一步 | 条件 |
 | --- | --- | --- |
 | 规则调查演示 | 根据前序结果执行 SSH 剧本；无失败簇时跳过后续登录查询 | Python 3.10+，CLI 仅需标准库 |
-| LLM Agent | 模型观察工具结果，每轮选择一个工具或结束 | 支持工具调用的模型及本地密钥 |
+| LLM Agent | 模型观察工具结果，每轮选择工具；结束后由 Agent 调用综合研判 | 支持工具调用的模型及本地密钥 |
+| 完整链路模拟演示 | 真实日志查询与案例检索，综合研判阶段使用模拟模型 | 无需密钥，不代表真实 LLM 效果 |
 
-规则剧本不等于 LLM 自主规划。两者使用同一证据层，最终结论由已查询的日志按显式规则生成，模型负责选择工具。
+规则剧本不等于 LLM 自主规划。两者使用同一证据层：规则发现按显式关联规则生成；LLM 模式另外调用模型综合已查日志与参考案例，输出带引用的辅助研判。
 
 ## 快速体验
 
@@ -21,6 +22,8 @@
 git clone https://github.com/kingofbuilding/LogFusion-Agent.git
 cd LogFusion-Agent
 python -m src.agent --demo
+# 查看含综合研判、建议和引用的完整模拟链路：
+python -m src.agent --demo --mode simulated
 ```
 
 无需密钥或权重。结果位于 `outputs/investigations/INV-*/`，包含 `report.md` 与完整的 `investigation.json`。演示是合成日志，IP 使用文档保留地址，包含不同账号、主机和时间的干扰事件。
@@ -30,7 +33,7 @@ pip install -r requirements-agent.txt
 streamlit run frontend/agent_app.py
 ```
 
-工作台支持上传、调查目标、模式选择、执行进度、证据时间线、工具轨迹和 Markdown/JSON 下载。
+工作台默认进入明确标注的完整模拟演示。页面支持综合研判、规则发现、证据时间线、工具轨迹四个页签，以及 Markdown/JSON 下载。可展开每条判断查看原始日志与参考案例。
 
 ## 使用 LLM Agent
 
@@ -44,6 +47,8 @@ AGENT_MODEL=deepseek-chat
 
 ```bash
 python -m src.agent --demo --mode llm
+# 也可使用固定规则调查，只在综合研判阶段调用真实模型：
+python -m src.agent --demo --llm-judge
 python -m src.agent --input path/to/auth.jsonl --mode llm --goal "调查 SSH 暴力破解和后续登录"
 ```
 
@@ -122,10 +127,27 @@ python -m pytest -q
 python -m src.agent --demo
 ```
 
-覆盖实体误关联、时间窗口、完整流查询、引用、标签隔离、预算、模型工具调度与导出。LLM 测试使用模拟服务；真实模型质量尚需事件级评估，见 [设计与评估规划](docs/AGENT_DESIGN.md)。
+覆盖实体误关联、时间窗口、完整流查询、引用、标签隔离、预算、模型工具调度与导出。LLM 自动测试使用模拟服务，覆盖规划→检索→综合研判整条链路、引用错误修正与拒绝；真实模型质量尚需事件级评估，见 [设计与评估规划](docs/AGENT_DESIGN.md)。
 
 ## 许可证
 
 MIT，保留原项目许可。来源见 [UPSTREAM.md](UPSTREAM.md)。
 
 默认 Agent 案例库位于 `data/agent/reference_cases.jsonl`，只使用上游内置通用案例，不使用从带标签实验日志抽取的模板。可选原向量 RAG 仍应自行审核其案例来源，避免评测泄漏。
+
+## 综合研判与引用检查
+
+Agent 完成调查后，若尚未成功检索案例，会先补查案例。随后调用 `synthesize_judgment`，将已查日志、规则发现、案例和覆盖范围送给研判模型。
+
+输出包含：
+
+- `assessment`：可疑、需人工复核或证据不足，不提供自动“确认入侵”判决。
+- `claims`：分离观察与推断；每条必须引用实际发送给研判模型的日志 ID，案例 ID 独立记录。
+- `recommendations`：建议及依据，不自动执行。
+- `uncertainties`：缺失证据、替代解释与待确认问题。
+
+校验结构、日志 ID 和案例 ID。无效引用触发最多一次修正，仍失败则不发布 LLM 内容，保留规则发现和证据。**引用有效不代表文字必然符合证据，尚未实现自然语言语义真实性验证。**
+
+综合研判最多接收 60 条证据，每条原文最多 1000 字符，以及 10 个案例；原始证据完整保留。研判及修正纳入同一轮数、时间和累计 token 预算；在途请求仍可能越过软预算。
+
+`--mode simulated` 的查询、检索、结构化输出与引用校验真实执行，但模型回复在本地确定性模拟，token 为 0，不访问外部服务。页面与导出报告均标明模拟来源。

@@ -14,6 +14,8 @@ if str(ROOT) not in sys.path:
 from src.agent import EventStore, InvestigationAgent
 from src.agent.adapters import upstream_detector, upstream_retriever
 from src.agent.planner import LLMPlanner
+from src.agent.judgment import LLMJudgment
+from src.agent.demo import SimulatedJudgment
 from src.agent.tools import InvestigationTools
 
 
@@ -50,7 +52,7 @@ def render_agent_workbench():
         st.caption("预览最多 100 条；调查工具查询完整输入。")
     with st.form("agent_investigation_form"):
         goal = st.text_area("调查目标", "检查是否存在 SSH 暴力破解，以及是否出现后续成功登录和账户活动。", max_chars=2000)
-        mode = st.selectbox("运行方式", ["规则调查演示（无需密钥）", "LLM Agent（自主选择工具）"])
+        mode = st.selectbox("运行方式", ["完整链路演示（模拟 LLM，无需密钥）", "规则调查（不调用 LLM）", "LLM Agent（自主调查 + 综合研判）"])
         st.caption("LLM 模式会将调查目标及工具返回的部分日志发送到配置的模型服务；密钥只从本地环境读取。")
         col1, col2 = st.columns(2)
         with col1:
@@ -66,11 +68,13 @@ def render_agent_workbench():
         st.session_state.pop("agent_result", None)
         try:
             planner = LLMPlanner.from_env(timeout=min(20, max_seconds)) if mode.startswith("LLM") else None
+            reviewer = LLMJudgment(planner.client, planner.model, planner.request_options) if planner else (
+                SimulatedJudgment() if mode.startswith("完整链路") else None)
             tools = InvestigationTools(store, detector=upstream_detector() if detector else None,
                                        retriever=upstream_retriever() if vector_rag else None)
             with st.status("正在调查日志…", expanded=True) as status:
                 result = InvestigationAgent(store, planner=planner, tools=tools, max_steps=max_steps,
-                                            max_seconds=max_seconds, max_tokens=max_tokens).run(
+                                            max_seconds=max_seconds, max_tokens=max_tokens, reviewer=reviewer).run(
                     goal, on_step=lambda step: st.write(f"步骤 {step['step']} · {step['tool']} · {'失败' if step.get('error') else '完成'}"))
                 status.update(label=f"调查状态：{result.status} · {result.stop_reason}",
                               state="complete" if result.status == "completed" else "error", expanded=False)
@@ -85,7 +89,44 @@ def render_agent_workbench():
     st.write("调查目标：", result.goal)
     if result.status != "completed":
         st.warning(f"调查未正常完成，以下为部分结果。停止原因：{result.stop_reason}")
-    findings_tab, timeline_tab, trace_tab = st.tabs(["调查发现", "证据时间线", "工具轨迹"])
+    judgment_tab, findings_tab, timeline_tab, trace_tab = st.tabs(["综合研判", "规则发现", "证据时间线", "工具轨迹"])
+    with judgment_tab:
+        judgment = result.judgment
+        if judgment.get("backend") == "simulated_llm":
+            st.info("当前为模拟 LLM 的完整链路演示：未调用真实模型，不代表模型研判效果。")
+        if judgment["status"] == "completed":
+            content = judgment["content"]
+            labels = {"suspicious": "存在可疑活动，建议核查", "needs_review": "需要人工复核", "insufficient_evidence": "证据不足"}
+            st.subheader(labels[content["assessment"]])
+            st.caption("引用检查已通过：仅验证输出结构及引用 ID，文字是否受证据支持仍需人工复核。")
+            evidence = {e["event_id"]: e for e in result.evidence}
+            cases = {c["case_id"]: c for c in result.case_references}
+            for claim in content["claims"]:
+                st.write(("观察：" if claim["kind"] == "observation" else "推断：") + claim["statement"])
+                with st.expander("查看该判断的原始证据与参考案例"):
+                    for eid in claim["evidence_ids"]:
+                        event = evidence[eid]
+                        st.caption(f"{eid} · {event['source']}:{event['line']}")
+                        st.code(event["raw"], language="text")
+                    for cid in claim["case_ids"]:
+                        st.write("参考案例（不是事件事实）：", cid, cases[cid]["title"])
+            st.subheader("建议（未自动执行）")
+            for action in content["recommendations"]:
+                st.write(action["action"])
+                st.caption(action["rationale"])
+                with st.expander("建议依据"):
+                    for eid in action["evidence_ids"]:
+                        st.caption(eid)
+                        st.code(evidence[eid]["raw"], language="text")
+                    for cid in action["case_ids"]:
+                        st.write("参考案例：", cid, cases[cid]["title"])
+            st.subheader("待确认事项")
+            for uncertainty in content["uncertainties"]:
+                st.write("• " + uncertainty)
+        elif judgment["status"] == "not_requested":
+            st.info("当前运行方式只生成规则发现；选择完整链路演示或 LLM Agent 可查看综合研判。")
+        else:
+            st.warning(f"综合研判未发布：{judgment['status']} · {judgment.get('reason', '')}。下方规则发现和原始证据仍可查看。")
     with findings_tab:
         for finding in result.findings:
             st.write(finding.statement)

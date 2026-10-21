@@ -4,6 +4,8 @@ Python 3.10+，无需密钥的命令行演示：
 
 ```bash
 python -m src.agent --demo
+# 无需密钥的完整模拟链路：
+python -m src.agent --demo --mode simulated
 ```
 
 启动调查界面：

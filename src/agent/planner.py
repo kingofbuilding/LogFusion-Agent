@@ -20,7 +20,8 @@ Start by aggregate_events or detect_anomalies. Search auth_success after suspici
 then get_event_context for returned successes. Retrieve reference cases and build_timeline before finishing.
 Tool events are facts; reference cases are not incident evidence. Missing evidence means uncertainty.
 Yearless timestamps are unknown. No detected success does NOT establish that intrusion did not occur.
-You only choose tools. The application renders conclusions from validated evidence.
+You choose investigation tools. After you finish, the Agent orchestrator retrieves reference cases
+if needed and calls a separate LLM synthesis stage, validating citation IDs before publishing.
 Do not repeat identical calls. Limit scope to uploaded logs. Only supported structured tools are allowed.
 """
 
@@ -58,9 +59,11 @@ class RulePlanner:
 class LLMPlanner:
     mode = "llm_tool_calling"
 
-    def __init__(self, client, model: str, max_tokens: int = 1200):
+    def __init__(self, client, model: str, max_tokens: int = 1200, request_options: dict | None = None):
         self.client, self.model = client, model
         self.max_tokens = max_tokens
+        # DeepSeek Flash/Reasoner thinking mode rejects tool_choice=required unless disabled.
+        self.request_options = dict(request_options or {})
         self.tokens_used = 0
 
     @classmethod
@@ -75,7 +78,8 @@ class LLMPlanner:
         base = os.getenv("AGENT_BASE_URL") or (os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com") if deepseek
                                                    else os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1"))
         model = os.getenv("AGENT_MODEL") or ("deepseek-chat" if deepseek else "gpt-4o-mini")
-        return cls(OpenAI(api_key=key, base_url=base, timeout=timeout, max_retries=0), model)
+        options = {"extra_body": {"thinking": {"type": "disabled"}}} if "deepseek" in model.lower() or "deepseek" in base.lower() else {}
+        return cls(OpenAI(api_key=key, base_url=base, timeout=timeout, max_retries=0), model, request_options=options)
 
     def choose(self, goal, trace):
         messages = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": goal}]
@@ -94,11 +98,15 @@ class LLMPlanner:
                              "content": json.dumps(observation, ensure_ascii=False)})
         response = self.client.chat.completions.create(
             model=self.model, messages=messages, tools=[*TOOL_SCHEMAS.values(), FINISH_SCHEMA],
-            tool_choice="required", temperature=0, max_tokens=self.max_tokens)
+            tool_choice="required", temperature=0, max_tokens=self.max_tokens, **self.request_options)
         if response.usage is None:
             raise ValueError("Provider did not return token usage; cannot enforce token budget")
         self.tokens_used += response.usage.total_tokens
         calls = response.choices[0].message.tool_calls or []
-        if len(calls) != 1:
-            raise ValueError("Planner must return exactly one tool call per turn")
-        return calls[0].function.name, json.loads(calls[0].function.arguments)
+        if not calls:
+            raise ValueError("Planner returned no tool call")
+        # Some OpenAI-compatible providers emit several calls despite tool_choice=required.
+        # The investigation contract permits one action per turn, so keep the first call and
+        # let the normal allowlist/range validation decide whether its arguments are usable.
+        selected = calls[0]
+        return selected.function.name, json.loads(selected.function.arguments)

@@ -14,3 +14,4 @@ jobs:
       - run: python -m pip install -r requirements-dev.txt
       - run: python -m pytest -q
       - run: python -m src.agent --demo
+      - run: python -m src.agent --demo --mode simulated

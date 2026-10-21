@@ -9,6 +9,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from .events import EventStore, parse_time
+from .judgment import JudgmentValidationError
 from .planner import RulePlanner
 from .tools import InvestigationTools, failure_clusters
 
@@ -36,6 +37,7 @@ class InvestigationResult:
     limitations: list[str]
     elapsed_seconds: float
     tokens_used: int
+    judgment: dict = field(default_factory=lambda: {"status": "not_requested"})
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def to_dict(self):
@@ -54,6 +56,26 @@ class InvestigationResult:
         for f in self.findings:
             lines += [f"- {safe(f.statement)}", f"  - 判断性质：{safe(f.interpretation)}",
                       "  - 原始证据：" + ", ".join(f.evidence_ids)]
+        lines += ["", "## LLM 综合研判", "", f"状态：{self.judgment['status']}"]
+        if self.judgment.get("status") == "completed":
+            content = self.judgment["content"]
+            lines.append(f"后端：{safe(self.judgment.get('backend', ''))}；模型：{safe(self.judgment.get('model', ''))}")
+            if self.judgment.get("backend") == "simulated_llm":
+                lines.append("这是模拟模型的完整链路演示，未调用真实 LLM，不代表模型研判质量。")
+            lines += [f"评估：{content['assessment']}", "引用检查仅验证结构与 ID 有效性，不证明自然语言判断正确。", ""]
+            for claim in content["claims"]:
+                label = "观察" if claim["kind"] == "observation" else "推断"
+                lines += [f"- {label}：{safe(claim['statement'])}",
+                          "  - 原始证据：" + ", ".join(claim["evidence_ids"]),
+                          "  - 参考案例：" + ", ".join(safe(c) for c in claim["case_ids"])]
+            lines += ["", "### 建议（未自动执行）", ""]
+            for action in content["recommendations"]:
+                lines += [f"- {safe(action['action'])}：{safe(action['rationale'])}",
+                          "  - 原始证据：" + ", ".join(action["evidence_ids"]),
+                          "  - 参考案例：" + ", ".join(safe(c) for c in action["case_ids"])]
+            lines += ["", "### 待确认事项", "", *["- " + safe(s) for s in content["uncertainties"]]]
+        elif self.judgment.get("reason"):
+            lines.append("原因：" + safe(self.judgment["reason"]))
         lines += ["", "## 证据时间线", ""]
         for e in sorted(self.evidence, key=lambda e: (not bool(e["timestamp"]), e["timestamp"], e["line"])):
             lines.append(f"- [{e['event_id']}] {safe(e['timestamp'] or '时间未知')} · {safe(e['source'])}:{e['line']} · {safe(e['raw'])}")
@@ -113,12 +135,13 @@ def grounded_findings(tools: InvestigationTools) -> list[Finding]:
 
 class InvestigationAgent:
     def __init__(self, store: EventStore, planner=None, tools=None,
-                 max_steps: int = 16, max_seconds: float = 90, max_tokens: int = 24_000):
+                 max_steps: int = 16, max_seconds: float = 90, max_tokens: int = 24_000, reviewer=None):
         if not 1 <= max_steps <= 40 or not 1 <= max_seconds <= 600 or not 1 <= max_tokens <= 100_000:
             raise ValueError("Invalid investigation budget")
         self.store = store
         self.planner = planner or RulePlanner()
         self.tools = tools or InvestigationTools(store)
+        self.reviewer = reviewer
         self.max_steps, self.max_seconds, self.max_tokens = max_steps, max_seconds, max_tokens
 
     def run(self, goal: str, on_step=None, cancelled=None):
@@ -129,6 +152,8 @@ class InvestigationAgent:
         self.tools.case_references.clear()
         self.tools.observations.clear()
         self.planner.tokens_used = 0
+        if self.reviewer:
+            self.reviewer.tokens_used = 0
         trace, seen = [], set()
         started = time.monotonic()
         status, reason = "limited", "max_steps"
@@ -176,10 +201,88 @@ class InvestigationAgent:
             if sum(bool(t.get("error")) for t in trace) >= 3:
                 status, reason = "error", "tool_error_limit"
                 break
+        findings = grounded_findings(self.tools)
+        judgment = {"status": "not_requested"}
+        if self.reviewer:
+            judgment = {"status": "skipped", "reason": "investigation_incomplete"}
+
+            def budget_reason():
+                if cancelled and cancelled():
+                    return "user_cancelled"
+                if time.monotonic() - started >= self.max_seconds:
+                    return "time_budget"
+                if self.planner.tokens_used + self.reviewer.tokens_used >= self.max_tokens:
+                    return "token_budget"
+                if len(trace) >= self.max_steps:
+                    return "max_steps"
+                return ""
+
+            # The Agent owns the entire completion pipeline, including reference retrieval and synthesis.
+            # A planner finishing early cannot publish a report without running these stages.
+            if status == "completed":
+                stopped = budget_reason()
+                if not stopped and not any(t["tool"] == "retrieve_cases" and not t.get("error") for t in trace):
+                    entry = {"step": len(trace) + 1, "tool": "retrieve_cases",
+                             "arguments": {"query": "SSH brute force failed password accepted sudo", "top_k": 3},
+                             "stage": "agent_completion"}
+                    try:
+                        entry["result"] = self.tools.call(entry["tool"], entry["arguments"])
+                    except Exception as exc:
+                        entry.update(error=type(exc).__name__, result={"error": "Reference retrieval failed"})
+                    trace.append(entry)
+                    if on_step:
+                        on_step(entry)
+                    if entry.get("error"):
+                        status, reason = "error", "completion_retrieval_failed"
+                        judgment = {"status": "skipped", "reason": reason}
+                if status == "completed":
+                    feedback = ""
+                    for attempt in range(2):
+                        stopped = budget_reason()
+                        if stopped:
+                            status = "cancelled" if stopped == "user_cancelled" else "limited"
+                            reason = stopped
+                            judgment = {"status": "skipped", "reason": stopped}
+                            break
+                        entry = {"step": len(trace) + 1, "tool": "synthesize_judgment",
+                                 "arguments": {"attempt": attempt + 1}, "stage": "agent_completion"}
+                        try:
+                            judgment = self.reviewer.synthesize(
+                                goal, self.tools.evidence, self.tools.case_references, findings, self.store.coverage(),
+                                timeout=max(.1, min(20, self.max_seconds - (time.monotonic() - started))),
+                                output_tokens=min(2400, self.max_tokens - self.planner.tokens_used - self.reviewer.tokens_used),
+                                feedback=feedback)
+                            # In-flight calls may exceed a soft budget; never publish their result as completed.
+                            stopped = ""
+                            if self.planner.tokens_used + self.reviewer.tokens_used >= self.max_tokens:
+                                stopped = "token_budget"
+                            elif time.monotonic() - started >= self.max_seconds:
+                                stopped = "time_budget"
+                            elif cancelled and cancelled():
+                                stopped = "user_cancelled"
+                            if stopped:
+                                status = "cancelled" if stopped == "user_cancelled" else "limited"
+                                reason = stopped
+                                judgment = {"status": "discarded", "reason": stopped}
+                            entry["result"] = {"status": judgment["status"],
+                                               "validation": judgment.get("validation", "not_published")}
+                        except JudgmentValidationError as exc:
+                            feedback = str(exc)
+                            entry.update(error="JudgmentValidationError", result={"error": feedback})
+                            judgment = {"status": "rejected", "reason": feedback}
+                        except Exception as exc:
+                            entry.update(error=type(exc).__name__, result={"error": "Model synthesis failed"})
+                            judgment = {"status": "failed", "reason": "model_error:" + type(exc).__name__}
+                        trace.append(entry)
+                        if on_step:
+                            on_step(entry)
+                        if judgment["status"] != "rejected":
+                            break
+                    if judgment["status"] in ("rejected", "failed"):
+                        status, reason = "error", "judgment_" + judgment["status"]
         coverage = self.store.coverage()
         coverage["input_sha256"] = hashlib.sha256(json.dumps([e.to_dict() for e in self.store.events],
                                                               sort_keys=True, ensure_ascii=False).encode()).hexdigest()
-        findings = grounded_findings(self.tools)
         limitations = ["第一版仅对 SSH 集中认证失败、后续成功登录与账户上下文生成结构化结论；其他调查目标尚不保证覆盖。",
                        "调查范围仅为当前上传日志，缺少的日志或未查询的记录不能当作不存在。",
                        "成功登录、sudo 和账户变更均可能是合法行为；确认入侵仍需授权记录、会话或审计证据。",
@@ -195,7 +298,12 @@ class InvestigationAgent:
             limitations.append("当前已查看证据未建立失败后成功登录链，不能排除其他时间、账号或主机上的入侵。")
         if status != "completed":
             limitations.append("本次调查未正常完成，请结合停止原因检查预算或服务状态。")
+        if self.reviewer:
+            limitations.append("LLM 综合研判为辅助意见；引用检查验证结构与引用 ID，不保证文字与证据的语义一致性。")
+            if judgment.get("preview", {}).get("events_truncated") or judgment.get("preview", {}).get("raw_truncated"):
+                limitations.append("综合研判使用截断的证据预览；完整已查证据见时间线及 JSON。")
         return InvestigationResult("INV-" + uuid4().hex[:12], goal, self.planner.mode, status, reason,
                                     coverage, findings, list(self.tools.evidence.values()),
                                     list(self.tools.case_references.values()), trace, limitations,
-                                    round(time.monotonic() - started, 3), self.planner.tokens_used)
+                                    round(time.monotonic() - started, 3),
+                                    self.planner.tokens_used + (self.reviewer.tokens_used if self.reviewer else 0), judgment)
