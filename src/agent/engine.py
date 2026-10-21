@@ -1,0 +1,201 @@
+from __future__ import annotations
+
+import hashlib
+import json
+import time
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from uuid import uuid4
+
+from .events import EventStore, parse_time
+from .planner import RulePlanner
+from .tools import InvestigationTools, failure_clusters
+
+
+@dataclass
+class Finding:
+    kind: str
+    statement: str
+    evidence_ids: list[str]
+    interpretation: str
+
+
+@dataclass
+class InvestigationResult:
+    run_id: str
+    goal: str
+    mode: str
+    status: str
+    stop_reason: str
+    coverage: dict
+    findings: list[Finding]
+    evidence: list[dict]
+    case_references: list[dict]
+    trace: list[dict]
+    limitations: list[str]
+    elapsed_seconds: float
+    tokens_used: int
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+    def to_dict(self):
+        return asdict(self)
+
+    def to_markdown(self):
+        def safe(value):
+            # Escape untrusted log/user text instead of rendering it as Markdown/HTML.
+            text = str(value).replace("\n", " ").replace("\r", " ")
+            for c in "\\`*_{}[]()<>#|!":
+                text = text.replace(c, "\\" + c)
+            return text
+        lines = ["# LogFusion-Agent 调查报告", "", f"调查编号：{self.run_id}",
+                 f"目标：{safe(self.goal)}", f"模式：{self.mode}；状态：{self.status}；停止原因：{self.stop_reason}",
+                 f"输入日志：{self.coverage['events']} 条；已查看证据：{len(self.evidence)} 条", "", "## 调查发现", ""]
+        for f in self.findings:
+            lines += [f"- {safe(f.statement)}", f"  - 判断性质：{safe(f.interpretation)}",
+                      "  - 原始证据：" + ", ".join(f.evidence_ids)]
+        lines += ["", "## 证据时间线", ""]
+        for e in sorted(self.evidence, key=lambda e: (not bool(e["timestamp"]), e["timestamp"], e["line"])):
+            lines.append(f"- [{e['event_id']}] {safe(e['timestamp'] or '时间未知')} · {safe(e['source'])}:{e['line']} · {safe(e['raw'])}")
+        lines += ["", "## 参考案例（不构成本次事件的事实证据）", ""]
+        for case in self.case_references:
+            lines.append(f"- {safe(case['case_id'])}：{safe(case['title'])}")
+        lines += ["", "## 不确定性与边界", "", *[f"- {safe(s)}" for s in self.limitations],
+                  "", "## 工具执行记录", ""]
+        for t in self.trace:
+            lines.append(f"- {t['step']}. {t['tool']}：{'失败' if t.get('error') else '完成'}")
+        return "\n".join(lines) + "\n"
+
+    def save(self, directory: str | Path):
+        target = Path(directory) / self.run_id
+        target.mkdir(parents=True, exist_ok=False)
+        (target / "investigation.json").write_text(json.dumps(self.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8")
+        (target / "report.md").write_text(self.to_markdown(), encoding="utf-8")
+        return target
+
+
+def grounded_findings(tools: InvestigationTools) -> list[Finding]:
+    """Conclusions are derived from observed evidence; the planner cannot invent them."""
+    events = [tools.store.by_id[eid] for eid in tools.evidence]
+    # Discovery tool aggregation may use another threshold. Report uses the documented 5/5 default.
+    groups = failure_clusters(events)
+    findings = []
+    cited = set()
+    for group in groups[:10]:
+        ids = group["event_ids"]
+        prefix = f"来源 {group['src_ip']} 对 {group['host']} 上账号 {group['user']}"
+        findings.append(Finding("suspected_bruteforce", f"{prefix}在 5 分钟窗口内出现 {group['count']} 次认证失败，疑似暴力破解。",
+                                ids, "规则推断；合法重试或自动化配置错误也可能产生类似行为"))
+        end = parse_time(group["end"])
+        successes = [e for e in events if e.event_type == "auth_success" and e.timestamp
+                     and (e.src_ip, e.user, e.host) == (group["src_ip"], group["user"], group["host"])
+                     and end < parse_time(e.timestamp) <= end + timedelta(minutes=15)]
+        for success in successes[:3]:
+            if success.event_id in cited:
+                continue
+            cited.add(success.event_id)
+            findings.append(Finding("success_after_failures", f"{prefix}的失败窗口结束后 15 分钟内出现成功登录。",
+                                    [*ids, success.event_id], "时间与实体关联；尚不能确认凭据被盗或登录未经授权"))
+            later = [e for e in events if e.timestamp and e.user == success.user and e.host == success.host
+                     and e.event_type in ("privileged_command", "account_change")
+                     and parse_time(success.timestamp) <= parse_time(e.timestamp) <= parse_time(success.timestamp) + timedelta(minutes=15)]
+            if later:
+                findings.append(Finding("post_login_activity", f"该成功登录后 15 分钟内，同账号、同主机出现特权命令或账户变更记录。",
+                                        [success.event_id, *[e.event_id for e in later[:20]]],
+                                        "上下文关联；缺少会话 ID 时不能确认由同一登录会话执行，也不直接证明恶意提权"))
+    if not findings:
+        findings.append(Finding("insufficient_evidence", "已查看证据尚不足以建立 SSH 集中失败与后续登录的关联链。", [],
+                                "证据不足；不能据此认定日志正常或不存在入侵"))
+    if any(eid not in tools.evidence for f in findings for eid in f.evidence_ids):
+        raise ValueError("Finding contains unknown evidence citation")
+    return findings
+
+
+class InvestigationAgent:
+    def __init__(self, store: EventStore, planner=None, tools=None,
+                 max_steps: int = 16, max_seconds: float = 90, max_tokens: int = 24_000):
+        if not 1 <= max_steps <= 40 or not 1 <= max_seconds <= 600 or not 1 <= max_tokens <= 100_000:
+            raise ValueError("Invalid investigation budget")
+        self.store = store
+        self.planner = planner or RulePlanner()
+        self.tools = tools or InvestigationTools(store)
+        self.max_steps, self.max_seconds, self.max_tokens = max_steps, max_seconds, max_tokens
+
+    def run(self, goal: str, on_step=None, cancelled=None):
+        if not goal.strip() or len(goal) > 2000:
+            raise ValueError("调查目标须为 1..2000 字符")
+        # Per-run evidence and cost state; avoid evidence leaking between investigations.
+        self.tools.evidence.clear()
+        self.tools.case_references.clear()
+        self.tools.observations.clear()
+        self.planner.tokens_used = 0
+        trace, seen = [], set()
+        started = time.monotonic()
+        status, reason = "limited", "max_steps"
+        for step in range(1, self.max_steps + 1):
+            if cancelled and cancelled():
+                status, reason = "cancelled", "user_cancelled"
+                break
+            if time.monotonic() - started >= self.max_seconds:
+                reason = "time_budget"
+                break
+            if self.planner.tokens_used >= self.max_tokens:
+                reason = "token_budget"
+                break
+            try:
+                name, arguments = self.planner.choose(goal, trace)
+                # Check after an in-flight model call, before executing its requested tool.
+                if self.planner.tokens_used >= self.max_tokens:
+                    reason = "token_budget"
+                    break
+                if time.monotonic() - started >= self.max_seconds:
+                    reason = "time_budget"
+                    break
+                if name == "finish_investigation":
+                    if arguments:
+                        raise ValueError("finish_investigation accepts no arguments")
+                    status, reason = "completed", "planner_finished"
+                    break
+                signature = json.dumps([name, arguments], sort_keys=True, ensure_ascii=False)
+                if signature in seen:
+                    reason = "repeated_tool_call"
+                    break
+                seen.add(signature)
+            except Exception as exc:
+                # Do not persist SDK exceptions, which may contain headers or credentials.
+                status, reason = "error", "planner_error:" + type(exc).__name__
+                break
+            entry = {"step": step, "tool": name, "arguments": arguments}
+            try:
+                entry["result"] = self.tools.call(name, arguments)
+            except Exception as exc:
+                entry.update(error=type(exc).__name__, result={"error": "Tool failed or arguments invalid", "type": type(exc).__name__})
+            trace.append(entry)
+            if on_step:
+                on_step(entry)
+            if sum(bool(t.get("error")) for t in trace) >= 3:
+                status, reason = "error", "tool_error_limit"
+                break
+        coverage = self.store.coverage()
+        coverage["input_sha256"] = hashlib.sha256(json.dumps([e.to_dict() for e in self.store.events],
+                                                              sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+        findings = grounded_findings(self.tools)
+        limitations = ["第一版仅对 SSH 集中认证失败、后续成功登录与账户上下文生成结构化结论；其他调查目标尚不保证覆盖。",
+                       "调查范围仅为当前上传日志，缺少的日志或未查询的记录不能当作不存在。",
+                       "成功登录、sudo 和账户变更均可能是合法行为；确认入侵仍需授权记录、会话或审计证据。",
+                       "关联默认要求同 IP、同账号、同主机；失败窗口 5 分钟至少 5 次，后续登录窗口 15 分钟。",
+                       "同一实体仅检查最密集失败窗口，单次最多报告 10 组；不能视为穷尽调查。",
+                       "无时区时间按 UTC 处理；缺失年份或时间的日志不参与时间关联。",
+                       "LLM 模式会把调查目标和工具返回的部分日志发送至所配置的模型服务。"]
+        if coverage["missing_timestamps"]:
+            limitations.append(f"有 {coverage['missing_timestamps']} 条日志缺少可解析的完整时间。")
+        if any(t.get("result", {}).get("truncated") or any(g.get("evidence_truncated") for g in t.get("result", {}).get("groups", [])) for t in trace):
+            limitations.append("部分工具结果受数量限制发生截断；报告仅基于实际返回的证据。")
+        if not any(f.kind == "success_after_failures" for f in findings):
+            limitations.append("当前已查看证据未建立失败后成功登录链，不能排除其他时间、账号或主机上的入侵。")
+        if status != "completed":
+            limitations.append("本次调查未正常完成，请结合停止原因检查预算或服务状态。")
+        return InvestigationResult("INV-" + uuid4().hex[:12], goal, self.planner.mode, status, reason,
+                                    coverage, findings, list(self.tools.evidence.values()),
+                                    list(self.tools.case_references.values()), trace, limitations,
+                                    round(time.monotonic() - started, 3), self.planner.tokens_used)

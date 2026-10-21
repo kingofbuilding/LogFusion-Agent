@@ -2463,3 +2463,8 @@
 ### Git 状态
 - 未提交
 
+
+
+## 2026-10-21 LogFusion-Agent MVP
+
+基于 public-upload 新建独立项目，增加规则/LLM 双模式调查、六个只读工具、可追溯证据与报告、原模型/RAG 适配、Streamlit 调查工作台、合成 SSH 场景与自动测试。原始仓库来源记录于 UPSTREAM.md，原检测代码保留。

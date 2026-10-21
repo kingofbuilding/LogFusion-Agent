@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import os
 import sys
@@ -140,10 +140,10 @@ def main():
     config = Config()
     logger = Logger.get_logger("frontend", config)
 
-    st.set_page_config(page_title="IntelliLog 日志检测平台", page_icon="🛡️", layout="wide")
+    st.set_page_config(page_title="LogFusion-Agent", page_icon="🛡️", layout="wide")
     inject_ui_theme()
 
-    st.sidebar.caption("IntelliLog")
+    st.sidebar.caption("LogFusion-Agent")
     st.sidebar.markdown("### 工作台")
     default_threshold = float(config.get("frontend.controls.default_threshold", 0.68))
     default_seq_len = int(config.get("data.temporal_sequence_length", config.get("data.sequence_length", 50)))
@@ -154,6 +154,7 @@ def main():
     workbench_mode = st.sidebar.radio(
         "工作台模式",
         [
+            "Agent 事件调查",
             "安全态势大盘",
             "事件分析",
             "模型解释",
@@ -161,6 +162,11 @@ def main():
         ],
         index=0,
     )
+    if workbench_mode == "Agent 事件调查":
+        from frontend.agent_app import render_agent_workbench
+        render_agent_workbench()
+        return
+
     with st.sidebar.expander("高级参数", expanded=False):
         st.caption("默认情况下建议直接使用系统推荐配置。只有在调试、论文复现或对比实验时，才建议手动调整。")
         threshold = st.slider("风险告警阈值", 0.0, 1.0, float(default_threshold), 0.01)

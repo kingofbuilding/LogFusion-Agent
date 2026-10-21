@@ -1,0 +1,15 @@
+{"timestamp": "2026-01-15T09:59:00Z", "host": "server-a", "message": "sshd[101]: Accepted publickey for admin from 192.0.2.10 port 50100 ssh2"}
+{"timestamp": "2026-01-15T10:00:00Z", "host": "server-a", "message": "sshd[201]: Failed password for alice from 198.51.100.23 port 51000 ssh2"}
+{"timestamp": "2026-01-15T10:01:00Z", "host": "server-a", "message": "sshd[201]: Failed password for alice from 198.51.100.23 port 51001 ssh2"}
+{"timestamp": "2026-01-15T10:02:00Z", "host": "server-a", "message": "sshd[201]: Failed password for alice from 198.51.100.23 port 51002 ssh2"}
+{"timestamp": "2026-01-15T10:03:00Z", "host": "server-a", "message": "sshd[201]: Failed password for alice from 198.51.100.23 port 51003 ssh2"}
+{"timestamp": "2026-01-15T10:04:00Z", "host": "server-a", "message": "sshd[201]: Failed password for alice from 198.51.100.23 port 51004 ssh2"}
+{"timestamp": "2026-01-15T10:05:00Z", "host": "server-a", "message": "sshd[201]: Failed password for alice from 198.51.100.23 port 51005 ssh2"}
+{"timestamp": "2026-01-15T10:05:10Z", "host": "server-a", "message": "sshd[202]: Accepted password for bob from 198.51.100.23 port 52000 ssh2"}
+{"timestamp": "2026-01-15T10:05:20Z", "host": "server-b", "message": "sshd[203]: Accepted password for alice from 198.51.100.23 port 52001 ssh2"}
+{"timestamp": "2026-01-15T10:05:30Z", "host": "server-a", "message": "sshd[204]: Accepted password for alice from 203.0.113.77 port 52002 ssh2"}
+{"timestamp": "2026-01-15T10:06:00Z", "host": "server-a", "message": "sshd[205]: Accepted password for alice from 198.51.100.23 port 52003 ssh2"}
+{"timestamp": "2026-01-15T10:07:00Z", "host": "server-a", "message": "sudo: alice : TTY=pts/1 ; PWD=/home/alice ; USER=root ; COMMAND=/usr/bin/id"}
+{"timestamp": "2026-01-15T10:08:00Z", "host": "server-b", "message": "sudo: alice : TTY=pts/2 ; PWD=/home/alice ; USER=root ; COMMAND=/usr/bin/id"}
+{"timestamp": "2026-01-15T10:09:00Z", "host": "server-a", "message": "sudo: bob : TTY=pts/3 ; PWD=/home/bob ; USER=root ; COMMAND=/usr/bin/id"}
+{"timestamp": "2026-01-15T12:00:00Z", "host": "server-a", "message": "sudo: alice : TTY=pts/1 ; PWD=/home/alice ; USER=root ; COMMAND=/usr/bin/id"}

@@ -64,3 +64,7 @@ reports/
 # Office documents (personal/project reports)
 *.doc
 *.docx
+
+# Keep Python model source; ignore only root-level trained artifacts
+!src/models/
+!src/models/*.py

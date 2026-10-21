@@ -1,296 +1,131 @@
-﻿# 安全日志分析助手
+# LogFusion-Agent
 
-## 项目简介
+**证据驱动的安全日志调查智能体**
 
-本项目面向毕业设计场景，目标是将日志异常检测、多视图融合、RAG 相似案例检索和大模型辅助研判整合为一条完整、可运行、可展示的安全日志分析链路。
+基于 [LogFusion-LLM / public-upload](https://github.com/kingofbuilding/LogFusion-LLM/tree/public-upload) 演进，增加调查工具调用、事件关联、证据时间线和可追溯报告。原项目的多视图检测、融合和 RAG 源码保留；固定来源见 [UPSTREAM.md](UPSTREAM.md)。
 
-当前版本的主流程为：
+第一版聚焦：**SSH 集中认证失败 → 同来源、同账号、同主机的后续成功登录 → 账户活动核查**。
 
-```text
-日志读取
--> 预处理与 Drain 模板解析
--> 序列构建
--> 三视图风险评估
-   -> 统计视图：Isolation Forest + 模板统计特征 + 原始日志安全统计代理特征
-   -> 时序视图：Bi-LSTM + Attention
-   -> 语义视图：蒸馏日志文本 + hash 表示
--> XGBoost 融合判定
--> 高危日志定位
--> RAG 相似案例检索
--> LLM 中文研判报告生成
--> Streamlit 前端展示
+## 两种运行方式
+
+| 方式 | 如何决定下一步 | 条件 |
+| --- | --- | --- |
+| 规则调查演示 | 根据前序结果执行 SSH 剧本；无失败簇时跳过后续登录查询 | Python 3.10+，CLI 仅需标准库 |
+| LLM Agent | 模型观察工具结果，每轮选择一个工具或结束 | 支持工具调用的模型及本地密钥 |
+
+规则剧本不等于 LLM 自主规划。两者使用同一证据层，最终结论由已查询的日志按显式规则生成，模型负责选择工具。
+
+## 快速体验
+
+```bash
+git clone https://github.com/kingofbuilding/LogFusion-Agent.git
+cd LogFusion-Agent
+python -m src.agent --demo
 ```
 
-## 当前主线配置
+无需密钥或权重。结果位于 `outputs/investigations/INV-*/`，包含 `report.md` 与完整的 `investigation.json`。演示是合成日志，IP 使用文档保留地址，包含不同账号、主机和时间的干扰事件。
 
-当前仓库需要区分 **论文实验主线** 和 **前端默认运行口径** 两套含义：
-
-### 1. 论文实验主线（最新重跑结果）
-
-截至当前，论文实验链已经收口到以下主线：
-
-- 协议 ID：`truncated_ordered_pre_split_v1`
-- `split_mode`：`truncated_ordered_pre_split`
-- 阈值来源：`val`
-- `test_used_for_selection=false`
-- 主实验数据：AIT-LDS v2 未筛选整子集
-- 覆盖子集：`harrison / santos / fox`
-- 基础窗口：`50`
-- 时序视图窗口：`50`
-- 统计视图窗口：`30`
-- 当前 canonical 语义模式：`hash`
-- 当前 canonical 主检测路线：`统计子分拆分 + XGBoost 融合`
-- RAG 定位：检测后的相似案例检索与研判增强
-
-与该主线直接对应的最新实验产物包括：
-
-- `reports/final_thesis_package/semantic_context_window_truncated_report_20260420_092953.md`
-- `reports/final_thesis_package/semantic_mode_compare_truncated_report_20260420_094815.md`
-- `outputs/reports/protocol_compare_ordered_random_truncated_summary_20260420_144148.csv`
-- `reports/final_thesis_package/thesis_experiment_tables_manifest_20260420.json`
-
-### 2. 前端默认运行口径
-
-前端当前默认仍以 `configs/config.yaml` 为准，主要用于演示和本地推理；目前已默认对齐到论文主线协议，但它仍表示“默认演示入口”，不等同于整套论文实验脚本重跑：
-
-- 默认数据集：`harrison`
-- 默认 `split_mode`：`truncated_ordered_pre_split`
-- 默认基础窗口：`50`
-- 默认时序窗口：`50`
-- 默认统计窗口：`30`
-- 默认语义模式：`hash`
-- 默认语义上下文窗口：`1`
-- 默认前端阈值：`0.68`
-- 前端主检测模型：`ThreeViewScoringService + XGBoost 融合`
-
-也就是说：**README 里的“实验主线”应以最新 truncated protocol 重跑结果为准；前端默认配置只是演示入口，不应再与论文实验主线混写。**
-
-## 主要功能
-
-### 1. 检测主链路
-- 支持日志读取、模板解析、序列构建
-- 支持统计视图、时序视图、语义视图三路打分
-- 支持 XGBoost 融合输出最终风险分
-- 支持 DeepLog 作为时序基线模型
-- 支持 `Top-K / Recall@K` 排序能力评估
-
-### 2. RAG 与研判增强
-- 支持默认案例库加载与增量扩充
-- 支持活动案例库重建与索引更新
-- 支持 `Top-1 / Top-3 / Top-5 case hit` 评估
-- 支持高危日志相似案例检索
-- 支持基于检索结果的大模型中文研判报告
-
-### 3. 前端展示
-- 支持多格式日志上传
-- 支持高危日志快速筛选与定位
-- 支持三段式证据链展示：主判断、RAG 证据、原始证据
-- 支持案例展示、深度问答、报告导出
-
-### 4. 前端安全分类
-当前前端已对常见安全日志模式做了规则细分，覆盖以下主要类别：
-
-- 认证失败/暴力破解
-- 账号探测/用户枚举
-- 可疑成功登录
-- 可疑会话建立
-- Root 账户成功登录
-- SSH 公钥登录异常
-- 网站扫描/探测
-- 后台入口探测
-- 路径遍历/敏感文件探测
-- SQL 注入
-- XSS 注入
-- 命令注入/远程执行
-- 可疑文件上传/WebShell
-- 审计提权痕迹
-- sudo 特权执行
-- 账户变更/权限变更
-- 持久化任务变更
-- 敏感文件篡改
-- 反弹 Shell/远程控制
-- 可疑下载执行
-- FTP 可疑访问
-- OpenVPN 远程接入
-- OpenVPN 接入异常
-- 数据库认证异常
-- 系统资源耗尽/OOM
-- 内核/服务崩溃
-- 未授权访问
-- 蜜罐命中/外部探测
-- 其他可疑行为
-
-## 目录结构
-
-```text
-.
-|-- configs/
-|   `-- config.yaml
-|-- data/
-|   |-- processed/
-|   |-- rag/
-|   |-- raw/
-|   `-- vectors/
-|-- frontend/
-|   |-- app.py
-|   |-- helpers.py
-|   |-- panels.py
-|   `-- runtime.py
-|-- models/
-|   |-- bilstm/
-|   |-- deeplog/
-|   |-- isolation_forest/
-|   `-- xgboost/
-|-- outputs/
-|   `-- reports/
-|-- reports/
-|   `-- final_thesis_package/
-|-- scripts/
-|-- src/
-|   |-- data_processing/
-|   |-- feature_extraction/
-|   |-- fusion/
-|   |-- models/
-|   |-- rag/
-|   `-- utils/
-|-- FUNCTION_UPDATE_LOG.md
-|-- QUICKSTART.md
-|-- README.md
-`-- main.py
+```bash
+pip install -r requirements-agent.txt
+streamlit run frontend/agent_app.py
 ```
 
-## 环境安装
+工作台支持上传、调查目标、模式选择、执行进度、证据时间线、工具轨迹和 Markdown/JSON 下载。
 
-建议使用 Python 3.10+。
+## 使用 LLM Agent
+
+复制 `.env.example` 为 `.env`，配置支持工具调用的服务：
+
+```dotenv
+AGENT_API_KEY=your_actual_key
+AGENT_BASE_URL=https://api.deepseek.com
+AGENT_MODEL=deepseek-chat
+```
+
+```bash
+python -m src.agent --demo --mode llm
+python -m src.agent --input path/to/auth.jsonl --mode llm --goal "调查 SSH 暴力破解和后续登录"
+```
+
+也可使用 `DEEPSEEK_API_KEY` 或 `OPENAI_API_KEY` 及对应 Base URL。不要在实际 `.env` 中保留模板占位符。LLM 模式向配置的服务发送目标及部分日志；规则模式不外发日志。
+
+## 六个只读工具
+
+| 工具 | 能力 |
+| --- | --- |
+| `detect_anomalies` | 返回规则候选信号，或调用原项目检测模型 |
+| `aggregate_events` | 按时间窗口、IP、账号、主机聚合认证失败 |
+| `search_logs` | 查询完整日志，包括低风险的成功登录 |
+| `get_event_context` | 查询已观察事件前后同账号、同主机活动 |
+| `retrieve_cases` | 检索解释性案例，与事件事实分离 |
+| `build_timeline` | 汇总已查询证据，保留来源、行号和事件 ID |
+
+```mermaid
+flowchart TD
+    A[目标与日志] --> B[规则剧本 / LLM Agent]
+    B --> C[只读工具调用]
+    C --> D[全量日志 / 检测 / 案例]
+    D --> E[证据与轨迹]
+    E --> B
+    B --> F[结束 / 达到预算 / 异常]
+    F --> G[证据规则校验与关联]
+    G --> H[发现、引用、时间线与不确定性]
+```
+
+## 输入与关联规则
+
+支持 UTF-8 的 `.log`、`.txt`、`.jsonl`、`.json` 对象数组和 `.csv`。结构化输入需有 `message` / `log_text` / `raw` / `content`，可提供 `timestamp`、`host`、`src_ip`、`user`。
+
+```json
+{"timestamp":"2026-01-15T10:00:00Z","host":"server-a","message":"sshd[1]: Failed password for alice from 198.51.100.23 port 51000 ssh2"}
+```
+
+- 支持常见 SSH/sudo syslog；完整年份 ISO 时间参与关联。无时区按 UTC；年不完整时不猜测年份。
+- 同 IP、账号、主机 5 分钟内至少 5 次失败，标为疑似暴力破解；关联失败簇结束后 15 分钟内成功登录，再查后续 15 分钟账户上下文。
+- 每个实体仅检查最密集失败窗口；规则剧本最多调查 3 组、深入查询 3 条成功登录。截断会披露。
+- 最大 20 MiB / 100000 条；单条最多 32768 字符。
+- 未允许字段（包括攻击标签与人工结论）不进入工具；原始 message 若包含答案或敏感信息，导入前仍需处理。
+
+## 复用原检测与 RAG
+
+训练和建索引方式见 [原项目说明](docs/UPSTREAM_README.md)。
 
 ```bash
 pip install -r requirements.txt
-cp .env.example .env
+# 按原说明准备数据、训练模型并构建案例索引后：
+python -m src.agent --input path/to/auth.jsonl --with-detector --vector-rag
+streamlit run frontend/app.py
 ```
 
-`.env.example` 只保留占位符。需要启用大模型中文研判时，请在本地 `.env` 中填写 DeepSeek、Qwen 或 OpenAI 等服务的 API Key；不使用 LLM 报告生成功能时可留空。请不要把 `.env` 或真实密钥提交到 GitHub。
+原界面新增默认的 Agent 调查入口。公开仓库不含权重和私有日志。默认后端明确标记 `rule_signals` 和 `lexical_case_search`，不伪称训练模型或向量 RAG。显式启用模型/索引但文件缺失时会报错。
+
+原检测器的窗口分数映射到末行事件 ID。各视图仍遵循上游代理分数与 hash 回退逻辑；融合模型存在不代表所有视图模型已训练加载。
+
+## 预算与边界
 
 ```bash
-DEEPSEEK_API_KEY=your_deepseek_api_key_here
-OPENAI_API_KEY=your_openai_api_key_here
-AI_JUDGE_API_KEY=your_api_key_here
+python -m src.agent --demo --max-steps 16 --max-seconds 90 --max-tokens 24000
 ```
 
-## GitHub 发布说明
+- 设轮数、累计 token、重复调用、工具错误限制，记录停止原因。
+- 时间/token 在调用之间及模型返回后检查；在途调用可能超限，因此不是严格费用上限。单次输出上限 1200 tokens，网络默认超时 20 秒，无自动重试。
+- 模型每次最多查看 20 条事件预览，每条原文 600 字符；完整已查证据保留在 JSON。
+- 支持结果保存，尚无进程重启后的恢复；同步 UI 暂无取消按钮。
+- 没有自动封禁、Shell 或主机操作能力。上传文本作为不可信数据；工具白名单与证据规则不代表所有提示注入都已彻底解决。
+- 成功登录不等于入侵成功，sudo 不等于恶意提权，未发现后续活动不等于证明安全。
 
-本仓库公开版本只建议上传源码、配置模板、文档和少量安全示例数据。以下目录属于本地数据、模型或运行产物，默认不随 GitHub 仓库发布：
-
-```text
-data/raw/
-data/processed/
-data/vectors/
-models/
-outputs/
-output/
-reports/
-.claude/
-```
-
-这些文件不会被删除，只是不进入 Git 跟踪范围。需要复现实验时，可按下方命令重新下载/解析数据、训练模型、构建 RAG 索引并生成输出结果。若需要公开展示实验结果，建议只保留脱敏后的摘要文档，不上传真实日志、模型权重、向量索引、论文个人材料或 API Key。
-
-## 常用命令
-
-### 解析日志
-```bash
-python main.py --parse
-```
-
-### 提取特征
-```bash
-python main.py --extract
-```
-
-### 训练模型
-```bash
-python main.py --train --train-mode all
-```
-
-### 评估视图与融合结果
-```bash
-python main.py --evaluate-views --eval-datasets harrison,santos,fox
-```
-
-### 构建活动 RAG 案例库
-默认会按配置中的安全日志子集构建，不再走 `hdfs`。
+## 验证
 
 ```bash
-python main.py --build-rag --rag-force
+pip install -r requirements-dev.txt
+python -m pytest -q
+python -m src.agent --demo
 ```
 
-### 一键完成训练与 RAG 重建
-```bash
-python main.py --all --train-mode all --with-rag --rag-force
-```
+覆盖实体误关联、时间窗口、完整流查询、引用、标签隔离、预算、模型工具调度与导出。LLM 测试使用模拟服务；真实模型质量尚需事件级评估，见 [设计与评估规划](docs/AGENT_DESIGN.md)。
 
-### 启动前端
-```bash
-python main.py --frontend
-```
+## 许可证
 
-## 前端使用说明
+MIT，保留原项目许可。来源见 [UPSTREAM.md](UPSTREAM.md)。
 
-推荐阅读顺序：
-
-1. 上传日志文件
-2. 设置风险阈值与筛选条件
-3. 先看高危日志快速定位
-4. 再看三段式证据链：主判断、RAG 证据、原始日志
-5. 如有需要，再查看技术分析与自然语言报告
-
-## 支持的上传格式
-
-- `.log`
-- `.txt`
-- `.text`
-- `.jsonl`
-- `.json`
-- `.csv`
-- `.tsv`
-- `.xlsx`
-- `.xls`
-- `.parquet`
-- `.gz`
-- `.zip`
-
-## 关键配置说明
-
-主要配置文件：`configs/config.yaml`
-
-当前重要默认项包括：
-
-- 默认数据集：`harrison`
-- 默认 `split_mode`：`truncated_ordered_pre_split`
-- 默认基础窗口：`50`
-- 默认时序窗口：`50`
-- 默认统计窗口：`30`
-- 默认语义模式：`hash`
-- 默认语义上下文窗口：`1`
-- 默认 RAG 案例库增量数据集：`fox / harrison / santos`
-- 默认前端阈值：`0.68`
-- 默认 RAG 检索数：`top_k = 3`
-
-如需复现实验主线，请不要直接依赖这里的前端默认项，而应以 `truncated_ordered_pre_split_v1` 对应的实验脚本与产物为准。
-
-## 当前已知边界
-
-- 统计视图已保留，但单独判别能力较弱，更适合作为辅助分支
-- 语义视图默认采用蒸馏文本的 hash 表示，整体更像局部风险先验而非通用语义理解模块
-- RAG 当前是中小规模案例增强库，不是通用大规模文档型 RAG
-- RAG 相似度更适合作为排序参考，不应直接当作概率解释
-- 前端安全分类规则已明显细化，但仍不是工业级全量规则库
-
-## 相关文档
-
-- 快速开始：[QUICKSTART.md](./QUICKSTART.md)
-- 当前版本说明：`reports/final_thesis_package/release_note_current_version.md`
-- 实验总收口方案：`reports/final_thesis_package/thesis_one_stop_plan.md`
-- 第 3 章方法设计：`reports/final_thesis_package/chapter3_method_design.md`
-- 第 4 章 RAG 与大模型研判增强：`reports/final_thesis_package/chapter4_rag_llm_analysis.md`
-- 第 5 章实验分析：`reports/final_thesis_package/chapter5_experiment_analysis.md`
-- 答辩问答：`reports/final_thesis_package/defense_qa.md`
-- 功能修改记录：[FUNCTION_UPDATE_LOG.md](./FUNCTION_UPDATE_LOG.md)
+默认 Agent 案例库位于 `data/agent/reference_cases.jsonl`，只使用上游内置通用案例，不使用从带标签实验日志抽取的模板。可选原向量 RAG 仍应自行审核其案例来源，避免评测泄漏。
