@@ -51,8 +51,9 @@ GROUPS = ("rule", "simulated", "llm", "upstream", "agent+upstream")
 
 PER_GROUP_BUDGET = {"rule": {"max_steps": 16, "max_seconds": 60, "max_tokens": 24_000},
                     "simulated": {"max_steps": 16, "max_seconds": 60, "max_tokens": 24_000},
-                    # Matches the stage-0 baseline so cost figures stay comparable.
-                    "llm": {"max_steps": 12, "max_seconds": 120, "max_tokens": 100_000},
+                    # 16 steps is the schema-fixed budget; C0 (12 steps, old schema) is kept only
+                    # as historical evidence in docs/EVAL_REPORT.md.
+                    "llm": {"max_steps": 16, "max_seconds": 120, "max_tokens": 100_000},
                     # Group A performs a single detector call; the loop budget is unused.
                     "upstream": {"max_steps": 1, "max_seconds": 1, "max_tokens": 1},
                     # Same 16-step budget as the schema-fixed C run so only the tool set differs.
