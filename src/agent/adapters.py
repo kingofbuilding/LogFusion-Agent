@@ -47,6 +47,20 @@ def upstream_detector():
     return detect
 
 
+def minilm_case_retriever():
+    """Dense MiniLM index built from a local ONNX export; preferred when present."""
+    import json as _json
+
+    from .rag_index import MiniLMRetriever
+
+    index_path = ROOT / "data/vectors/rag_attack_cases_minilm.npz"
+    meta_path = ROOT / "data/vectors/rag_attack_cases_minilm.json"
+    if not (index_path.exists() and meta_path.exists()):
+        raise FileNotFoundError("缺少 MiniLM 索引。运行 python scripts/rebuild_rag_index.py --backend minilm 重建。")
+    model_dir = _json.loads(meta_path.read_text(encoding="utf-8"))["model_dir"]
+    return MiniLMRetriever(index_path, Path(model_dir))
+
+
 def tfidf_case_retriever():
     """Offline TF-IDF case index; preferred over the hash-embedding index when present."""
     from .rag_index import TfidfCaseRetriever
@@ -64,6 +78,8 @@ def upstream_retriever():
 
     if (ROOT / "data/vectors/rag_attack_cases_tfidf.npz").exists():
         return tfidf_case_retriever()
+    if (ROOT / "data/vectors/rag_attack_cases_minilm.npz").exists():
+        return minilm_case_retriever()
     rag = AttackCaseRAG(Config())
     if not rag.load_index_if_exists():
         raise FileNotFoundError("未找到原项目的 RAG 索引。先运行 python main.py --build-rag --rag-force")

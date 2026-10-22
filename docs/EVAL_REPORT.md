@@ -72,20 +72,21 @@
 
 C0 的工具 schema 只声明 `integer`，`max_groups ≤ 10` 只写在代码里，模型只能试错；修复后 schema 带 `minimum/maximum`，越界错误以可读文本回灌（`retry_guidance`）。C1 的 21 次运行工具报错率 0.10，C0 为 1.00。C1 同时把步数预算从 12 提到 16，因此提升是“schema + 预算”的合并效果。
 
-### 3.3 向量索引的实际情况（已重建）
+### 3.3 检索索引：哈希、TF-IDF 与 MiniLM 三种路线
 
-上游 RAG 的可用口径是**候选模式**，原索引以哈希回退嵌入构建（256 维），短查询相似度常只有 0.05–0.15，即使能排序也无法给出有意义的分数。
+上游 RAG 的可用口径是**候选模式**，原索引以哈希回退嵌入构建（256 维），短查询余弦常只有 0.05–0.15，检索会退化为空。环境无法访问 HuggingFace，但本机在 VS Code Continue 扩展中找到一份 **MiniLM ONNX（384 维）**，并装了兼容的 onnxruntime 1.19.2，因此三种索引都实测过：
 
-由于环境无法下载 sentence-transformers（HF 与镜像均不可达），本次用 **TF-IDF 重建**了同一批 67 条案例的索引（`scripts/rebuild_rag_index.py`，2114 维，离线、确定性）。重建后 Top-1 排序在样例查询上全部命中正确案例：
+| 查询 | TF-IDF Top-1 | MiniLM Top-1 |
+|---|---|---|
+| `Failed password for invalid user admin ...` | CASE-SEC-001 SSH brute force（0.323） | CASE-SEC-006 SSH 成功登录（0.549）✗ |
+| `Accepted password for root ...` | CASE-SEC-013 root 登录（0.400） | CASE-SEC-013（0.615）✓ |
+| `sudo: alice ... COMMAND=/usr/bin/id` | CASE-SEC-005 提权（0.188） | CASE-SEC-008 特权审计（0.409）≈ |
+| `AH01630: client denied ...` | AUTO-0011 限制资源探测（0.349） | CASE-SEC-009 受限 Web 探测（0.525）✓ |
+| `SSH brute force failed password then accepted login` | CASE-SEC-001（0.399） | CASE-SEC-013 root 登录（0.633）✗ |
 
-| 查询 | Top-1 案例 | 分数 |
-|---|---|---:|
-| `Failed password for invalid user admin ...` | CASE-SEC-001 SSH brute force | 0.323 |
-| `Accepted password for root ...` | CASE-SEC-013 SSH root login success | 0.400 |
-| `sudo: alice ... COMMAND=/usr/bin/id` | CASE-SEC-005 Privilege escalation activity | 0.164 |
-| `AH01630: client denied ...` | AUTO-0011 Restricted resource probing | 0.349 |
+结论：**TF-IDF 在这批 67 条短案例上更准（5/5 vs 2–3/5），因此作为默认后端**；MiniLM 索引保留为可切换选项（`local_minilm_cases`），适合更自然语言的查询。这与原论文的发现一致：embedding 语义视图单独更好，但融合模型在 hash 特征上更强，所以 canonical 仍用 hash。
 
-TF-IDF 的分数量纲与句向量不同，因此不再沿用 0.65/0.7 的证据阈值，而是标注 `match_level`：strong ≥ 0.35、medium ≥ 0.2、weak。Agent 的 `retrieve_cases` 优先使用该索引（`local_tfidf_cases`），返回候选与分数；**D 组的差异仍来自检测器，不来自检索。**
+TF-IDF 分数与句向量不同量纲，因此不沿用 0.65/0.7，而是用 `match_level`：TF-IDF strong ≥0.35 / medium ≥0.2；MiniLM strong ≥0.55 / medium ≥0.4。**D 组的差异仍来自检测器，不来自检索。**
 
 ### 3.4 检测器观察的收敛
 

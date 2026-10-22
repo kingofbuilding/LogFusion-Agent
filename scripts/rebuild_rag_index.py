@@ -1,43 +1,46 @@
-"""Rebuild the RAG case index offline (TF-IDF by default; MiniLM only if it is installed).
+"""Rebuild the RAG case index offline.
+
+Backends:
+    tfidf   sparse TF-IDF vectors (default; no model needed)
+    minilm  dense MiniLM embeddings from a local ONNX export (needs onnxruntime + tokenizers)
+
+The published index used hash embeddings, which score related text around 0.05-0.15 and made
+retrieval look broken. Both backends below are offline and deterministic.
 
 Usage:
-    python scripts/rebuild_rag_index.py                  # TF-IDF, 67 cases
-    python scripts/rebuild_rag_index.py --backend minilm # requires sentence-transformers + model
-
-Outputs (data/vectors/):
-    rag_attack_cases_tfidf.npz        vectors (float32) + payloads
-    rag_attack_cases_tfidf.joblib     fitted TfidfVectorizer for query encoding
+    python scripts/rebuild_rag_index.py
+    python scripts/rebuild_rag_index.py --backend minilm --model-dir <path-to-all-MiniLM-L6-v2>
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
+import sys
 from pathlib import Path
 
-import numpy as np
-
-from src.agent.rag_index import build_tfidf_index, case_text, load_cases
-
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from src.agent.rag_index import build_minilm_index, build_tfidf_index, load_cases
+
 CASES = ROOT / "data/rag/attack_cases.jsonl"
 OUT_DIR = ROOT / "data/vectors"
+FALLBACK_MINILM = Path(r"C:\Users\zhouyuxuan\.vscode\extensions\continue.continue-2.0.0-win32-x64\models\all-MiniLM-L6-v2")
 
 
-def build_minilm(cases: list[dict], out_dir: Path, model_name: str) -> dict:
-    from sentence_transformers import SentenceTransformer
-
-    model = SentenceTransformer(model_name)
-    vectors = np.asarray(model.encode([case_text(case) for case in cases], normalize_embeddings=True),
-                         dtype=np.float32)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    np.savez(out_dir / "rag_attack_cases_minilm.npz", vectors=vectors, payloads=np.array(cases, dtype=object))
-    return {"backend": "minilm", "cases": len(cases), "dim": int(vectors.shape[1]), "model": model_name}
+def default_model_dir() -> Path | None:
+    configured = os.getenv("MINILM_MODEL_DIR")
+    if configured:
+        return Path(configured)
+    return FALLBACK_MINILM if FALLBACK_MINILM.exists() else None
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="重建 RAG 案例索引（默认 TF-IDF，离线可用）")
+    parser = argparse.ArgumentParser(description="重建 RAG 案例索引（离线）")
     parser.add_argument("--backend", choices=["tfidf", "minilm"], default="tfidf")
-    parser.add_argument("--model", default="sentence-transformers/all-MiniLM-L6-v2")
+    parser.add_argument("--model-dir", type=Path, default=None,
+                        help="本地 MiniLM（ONNX）目录，默认取 MINILM_MODEL_DIR 或常见安装位置")
     parser.add_argument("--cases", type=Path, default=CASES)
     parser.add_argument("--out", type=Path, default=OUT_DIR)
     args = parser.parse_args()
@@ -46,8 +49,14 @@ def main() -> int:
     if not cases:
         print(f"未找到案例：{args.cases}")
         return 2
-    summary = (build_tfidf_index(cases, args.out) if args.backend == "tfidf"
-               else build_minilm(cases, args.out, args.model))
+    if args.backend == "tfidf":
+        summary = build_tfidf_index(cases, args.out)
+    else:
+        model_dir = args.model_dir or default_model_dir()
+        if model_dir is None:
+            print("未找到 MiniLM 模型目录；用 --model-dir 指定，或设置 MINILM_MODEL_DIR。")
+            return 2
+        summary = build_minilm_index(cases, args.out, Path(model_dir))
     print(json.dumps(summary, ensure_ascii=False))
     return 0
 

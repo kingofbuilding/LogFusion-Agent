@@ -2733,3 +2733,26 @@
 
 ### Git 状态
 - 未提交
+
+## 2026-10-22 本地 MiniLM ONNX 检索路线
+
+### 修改内容
+- 在 VS Code Continue 扩展目录找到本地 `all-MiniLM-L6-v2` ONNX（384 维），安装兼容的 onnxruntime 1.19.2（1.31 在本机 DLL 崩溃），实现 `MiniLMOnnxEncoder`（tokenizers + mean pooling + L2 归一化）。
+- `scripts/rebuild_rag_index.py` 支持 `--backend minilm --model-dir`，生成 384 维索引与模型目录 sidecar；`--backend tfidf` 仍为默认。
+- Agent 检索后端优先级：TF-IDF → MiniLM → 上游哈希索引；日志/文档标明每条路线的分数口径。
+- 新增 MiniLM 检索测试（索引存在时执行）。
+
+### 结果说明
+- 同一批查询 Top-1：TF-IDF 5/5 正确，量化 MiniLM 2–3/5（`failed password` 会排到“成功登录”案例，`SSH brute force` 会排到 root 登录）；因此默认仍用 TF-IDF，MiniLM 作为可切换语义后端。
+- 该结果与论文一致：embedding 语义视图单独更强，但融合模型在 hash 特征上更强，canonical 选 hash。
+- onnxruntime 1.31 在 Python 3.12 下导入即 access violation，降到 1.19.2 后正常。
+
+### 输出文件
+- `src/agent/rag_index.py`（MiniLM 编码器/索引/检索）
+- `scripts/rebuild_rag_index.py`（`--backend minilm`）
+- `src/agent/adapters.py`（后端优先级）
+- `tests/test_rag_index.py`
+- `README.md`、`docs/EVAL_REPORT.md`、`reports/resume_project_logfusion_agent.md`
+
+### Git 状态
+- 未提交

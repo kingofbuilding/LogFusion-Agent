@@ -38,3 +38,21 @@ def test_retriever_marks_unrelated_text_as_candidate(tmp_path):
     retriever = _retriever(tmp_path)
     hits = retriever("weather forecast for tomorrow", 3)
     assert hits and all(hit["evidence_usable"] is False for hit in hits)
+
+
+def test_minilm_index_if_present():
+    import json
+
+    import pytest
+
+    index_path = ROOT / "data/vectors/rag_attack_cases_minilm.npz"
+    meta_path = ROOT / "data/vectors/rag_attack_cases_minilm.json"
+    if not (index_path.exists() and meta_path.exists()):
+        pytest.skip("MiniLM 索引未生成（scripts/rebuild_rag_index.py --backend minilm）")
+    from src.agent.rag_index import MiniLMRetriever
+
+    retriever = MiniLMRetriever(index_path, json.loads(meta_path.read_text(encoding="utf-8"))["model_dir"])
+    hits = retriever("Accepted password for root from 198.51.100.7 port 2200 ssh2", 3)
+    assert len(hits) == 3
+    assert hits[0]["raw_score"] > 0.3
+    assert hits[0]["case_id"] == "CASE-SEC-013"
