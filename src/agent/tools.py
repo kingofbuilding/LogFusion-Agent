@@ -119,8 +119,10 @@ class InvestigationTools:
                                 "dominant_view": max(views, key=views.get),
                                 "view_scores": {name: round(value, 4) for name, value in views.items()}})
             total = int(raw.get("total_windows", len(windows)))
-            # Only the window anchors become evidence; the burst events still have to be queried.
-            self._records([self.store.by_id[w["end_event_id"]] for w in windows], top_windows)
+            # Both anchors become evidence: the planner may ask for context around either end of the
+            # window, and get_event_context refuses events that were never observed.
+            anchors = {eid for w in windows for eid in (w["start_event_id"], w["end_event_id"])}
+            self._records([self.store.by_id[eid] for eid in anchors], len(anchors))
             return {"backend": raw.get("backend"), "model_loaded": bool(raw.get("model_loaded")),
                     "windows": windows, "total_windows": total, "returned_windows": len(windows),
                     "truncated": total > len(windows),

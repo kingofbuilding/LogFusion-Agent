@@ -41,8 +41,10 @@ def test_detector_returns_bounded_windows_not_raw_scores():
     assert result["truncated"] is True
     assert result["returned_windows"] == 3
     assert result["windows"][0]["dominant_view"] in ("statistical", "temporal", "semantic")
-    # Only the window anchors become evidence; the burst events still have to be queried.
-    assert len(tools.evidence) == 3
+    # Both window anchors become evidence so get_event_context works on either end.
+    anchors = {eid for w in result["windows"] for eid in (w["start_event_id"], w["end_event_id"])}
+    assert anchors <= set(tools.evidence)
+    assert len(tools.evidence) <= 2 * 3
 
 
 def test_detector_window_span_points_back_into_the_log():
