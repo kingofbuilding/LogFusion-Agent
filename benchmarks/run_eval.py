@@ -53,11 +53,11 @@ PER_GROUP_BUDGET = {"rule": {"max_steps": 16, "max_seconds": 60, "max_tokens": 2
                     "simulated": {"max_steps": 16, "max_seconds": 60, "max_tokens": 24_000},
                     # 16 steps is the schema-fixed budget; C0 (12 steps, old schema) is kept only
                     # as historical evidence in docs/EVAL_REPORT.md.
-                    "llm": {"max_steps": 16, "max_seconds": 120, "max_tokens": 100_000},
+                    "llm": {"max_steps": 16, "max_seconds": 120, "max_tokens": 130_000},
                     # Group A performs a single detector call; the loop budget is unused.
                     "upstream": {"max_steps": 1, "max_seconds": 1, "max_tokens": 1},
                     # Same 16-step budget as the schema-fixed C run so only the tool set differs.
-                    "agent+upstream": {"max_steps": 16, "max_seconds": 120, "max_tokens": 100_000}}
+                    "agent+upstream": {"max_steps": 16, "max_seconds": 120, "max_tokens": 130_000}}
 
 
 def derived_verdict(findings) -> str:

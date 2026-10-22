@@ -535,7 +535,7 @@ class InvestigationAgent:
             # Pull completeness checks forward: once a failure cluster is observed, the planner is
             # told to search that entity's follow-up logins now, not at finish time when the budget
             # is gone. Each entity is nudged once.
-            if name == "aggregate_events" and not entry.get("error"):
+            if name == "aggregate_events" and not entry.get("error") and self.planner.tokens_used < tool_token_limit * 0.6:
                 cluster_keys = self._unsearched_clusters(trace, hinted_clusters)
                 if cluster_keys:
                     hinted_clusters.update(cluster_keys)
