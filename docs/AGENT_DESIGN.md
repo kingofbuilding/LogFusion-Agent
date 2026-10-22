@@ -70,19 +70,40 @@ LLM 决定查询路径，规则发现受 SSH 证据规则约束；综合研判�
 评测新增 `gate_terminal_refusals`（终局被闸门拒绝的次数），与 `gate_triggers` 分开统计，避免把“审计发现缺口”和“模型被退回后补齐”混为一谈。
 
 
-## 2026-10-22 上下文成本：折叠、台账与空结果熔断
+## 2026-10-22 上下文管理：三层记忆与控制回路的耦合
 
-原先每轮都按完整 trace 重建 messages，第 n 步的输入包含前 n-1 步的全部观察，成本随步数平方增长。实测拆解（19 条 trace / 16 次调用 / 88,615 token）：固定开销（system 1,417 + 8 个 schema 4,574 字符 ≈ 1,536/次）占 29%，历史重发占 70%，模型输出仅 1.4%。这也是“预算翻倍、步数只多两步”的原因。
+上下文管理此前不是一层架构，而是 `choose()` 里的一段循环——每轮按完整 trace 重建 messages，第 n 步的输入包含前 n-1 步的全部观察。后果是成本随步数平方增长，而引擎对此一无所知：它按 `tokens_used` 判预算，却不知道这笔钱一半花在重复运送同一批观察上。实测拆解（19 条 trace / 16 次调用 / 88,615 token）：固定开销（system 1,417 + 8 个 schema 4,574 字符 ≈ 1,536/次）占 29%，历史重发占 70%，模型输出仅 1.4%。
 
-现在的做法：
+现在把它做成独立的一层（`src/agent/context.py`），并明确了它与控制回路的三个耦合点。
 
-1. `build_messages()` 独立成可测函数，`fold=False` 保留旧行为，供 `benchmarks/measure_context.py` 离线回放对照（不需要 API key）。
-2. **折叠（默认）**：除最近 `HISTORY_VERBATIM_ITEMS=4` 条外，旧观察替换为**保形**定位投影——`events` 仍是列表，只保留 `event_id/timestamp/event_type/host/user/src_ip`，最多 6 行，丢弃 `raw/source/line`；小于 420 字符的观察不折叠（摘要本身更大）。
-3. **台账（`AGENT_HISTORY_MODE=compact`，默认关）**：旧轮次压成一条 user 消息的台账，历史成本从平方降为常数。
-4. **空结果熔断**：连续 2 次返回空集注入“换维度”提示（`control=EmptyResultHint`），第 3 次直接进入收尾，`stop_reason` 仍是 `evidence_budget` 类，不伪装成功。
-5. `prompt_cache_hit_tokens` 单独累计为 `tokens_cached`：预算仍按名义值守口（保守），但成本口径可解释。
+### 三层记忆
 
-折叠只改发给模型的消息，不改 trace：完整性闸门的 `_coverage_gaps()` 与研判的 `validate_judgment()` 读的是 trace 与工具层状态，因此“引用必须真查过”这条纪律不受影响。回放 44 条轨迹（378 次调用）：折叠平均降 13.6%（≥10 步轨迹 16.0%，最长轨迹 22.1%），台账 ≥10 步降 33.7%、16 步轨迹降 49.5%；空结果占 20/378 次。台账的行为等价性尚未用真实模型验证，故默认关闭。
+```
+指令层    system prompt + 8 个工具 schema          恒定 ~1,536 token/次
+─────────────────────────────────────────────────────────────────
+工作记忆  最近 4 条 trace，原文回放                 受 project_observation 约束
+          （events ≤20 行、raw ≤600 字符）
+─────────────────────────────────────────────────────────────────
+情景台账  更早的轮次                                 fold：保形定位投影
+                                                    compact：一段文字台账
+```
+
+- **fold（默认）**：保留 assistant/tool 消息形状，`events` 仍是列表，只留 `event_id/timestamp/event_type/host/user/src_ip`，最多 6 行，丢弃 `raw/source/line`。小于 420 字符的观察不折叠——摘要有自己的 note，折小的会变大。
+- **compact（`AGENT_HISTORY_MODE=compact`，默认关）**：把旧轮次压成一条 user 消息的台账，历史成本从平方降为常数，代价是丢掉旧的 tool 消息结构。
+- **full（`AGENT_HISTORY_MODE=full`）**：优化前行为，保留用于离线 A/B 回放。
+
+`ContextPolicy` 是一个 frozen dataclass，planner 只调用 `policy.build(goal, trace, system)`，不再知道压缩策略的存在；`layout()` 用来报告三层各有多少条目。策略选择走环境变量，非法值退回 `fold` 而不是让一次调查失败。
+
+### 与控制回路的三个耦合点
+
+1. **收尾触发**：原先是"预算用了多少"这一个信号；现在上下文体积本身也是信号——空结果熔断（连续 2 次空集注入 `EmptyResultHint`，第 3 次直接进收尾）让"这一轮有没有产出"参与终止判断。
+2. **预算口径**：`tokens_used` 仍是名义值（含缓存命中），预算因此保守；`tokens_cached` 单独累计 `prompt_cache_hit_tokens`，让成本口径可解释而不改变守口逻辑。
+3. **不变量**：**上下文可压缩，trace 不可压缩**。完整性闸门的 `_coverage_gaps()` 与研判的 `validate_judgment()` 读 trace 与工具层状态，因此压缩永远不会把"没查过"变成"查过"，也不会让引用校验放宽。
+
+### 度量
+
+`benchmarks/measure_context.py` 离线回放 `outputs/investigations/*/investigation.json`，不需要 API key，用同一批决策对比三种策略的 payload。44 条轨迹 / 378 次调用：fold 平均降 13.6%（≥10 步轨迹 16.0%，最长轨迹 22.1%），compact ≥10 步降 33.7%、16 步轨迹降 49.5%；空结果占 20/378 次（5.3%），10 条轨迹受影响，单条最多 7 次。compact 的行为等价性尚未用真实模型验证，故默认关闭。
+
 
 
 ## 迭代顺序

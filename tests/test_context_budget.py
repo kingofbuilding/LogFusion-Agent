@@ -132,3 +132,37 @@ def test_cache_hit_tokens_are_recorded_separately_from_budget():
     planner.choose("调查", [])
     assert planner.tokens_used == 1_000      # budget stays conservative
     assert planner.cached_tokens == 640      # cost accounting keeps the split
+
+
+def test_context_policy_rejects_unknown_mode_and_reads_env(monkeypatch):
+    from src.agent.context import ContextPolicy
+
+    assert ContextPolicy.from_env().mode == "fold"
+    monkeypatch.setenv("AGENT_HISTORY_MODE", "compact")
+    assert ContextPolicy.from_env().mode == "compact"
+    monkeypatch.setenv("AGENT_HISTORY_MODE", "bogus")   # unknown values fall back instead of failing a run
+    assert ContextPolicy.from_env().mode == "fold"
+    import pytest
+    with pytest.raises(ValueError):
+        ContextPolicy(mode="bogus")
+
+
+def test_context_policy_layout_reports_the_three_layers():
+    from src.agent.context import ContextPolicy
+
+    trace = busy_trace(9)
+    assert ContextPolicy(mode="fold").layout(trace) == {
+        "mode": "fold", "total_items": 9, "ledger_items": 0, "folded_items": 5, "verbatim_items": 4}
+    assert ContextPolicy(mode="compact").layout(trace)["ledger_items"] == 5
+    assert ContextPolicy(mode="full").layout(trace)["folded_items"] == 0
+
+
+def test_full_mode_matches_pre_optimisation_behaviour():
+    from src.agent.context import ContextPolicy
+
+    trace = busy_trace(8)
+    legacy = json.dumps(build_messages("调查", trace, fold=False), ensure_ascii=False)
+    explicit = json.dumps(ContextPolicy(mode="full").build("调查", trace, "调查起点"), ensure_ascii=False)
+    # Same number of tool messages, and the oldest ones still carry raw text.
+    assert legacy.count('"role": "tool"') == explicit.count('"role": "tool"')
+    assert "port 51764" in explicit

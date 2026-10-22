@@ -2891,3 +2891,17 @@
 - 规则模式冒烟（12 条失效集）：完成率 1.00、证据召回 1.00、平均 8.7 步、空结果 0.3 次/次，管线正常。
 - **未做真实模型复测**：DeepSeek 账户余额为 0，`/user/balance` 返回 `is_available=false`，任何 LLM 调用 402。台账模式的行为等价性待余额恢复后用 `--limit 3 --repeats 3` 对照，通过后再考虑改默认。
 - 折叠不改变 trace，因此闸门与引用校验的行为不变（`_coverage_gaps` / `validate_judgment` 读 trace 与工具层状态）。
+
+## 2026-10-22 追加：上下文管理提升为独立架构层
+
+### 修改内容
+- 新增 `src/agent/context.py`：模块 docstring 定义三层记忆（指令层 / 工作记忆 / 情景台账）与三条策略；`ContextPolicy` 为 frozen dataclass（`mode` / `recent_items` / `fold_min_chars` / `event_rows`），提供 `from_env()`、`build()`、`layout()`；`project_observation` / `fold_observation` / `build_ledger` / `_brief` 迁入该模块。
+- `planner.py`：改为 `self.policy = ContextPolicy.from_env()`、`messages = self.policy.build(...)`，并保留 `build_messages()` 作为向后兼容包装（测试与离线回放仍从 planner 导入）。
+- `docs/AGENT_DESIGN.md`：该节重写为架构视角——三层记忆图、与控制回路的三个耦合点（收尾触发 / 预算口径 / 不变量）。
+- `reports/resume_project_logfusion_agent.md`：能力清单加"上下文管理"行；主版加"上下文层（Context Engineering）"要点；压缩版把分层写进工程治理；三条主线扩为四条。
+- `reports/resume_token_efficiency.md`：重写为架构文档（架构图、能力映射表、问答改为架构向）。
+
+### 结果说明
+- `pytest`：118 passed（原 115 + 3 个策略层测试：非法 mode 回退、`layout()` 三层计数、full 模式等价旧行为）。
+- 离线回放结果与重构前完全一致（fold −13.6% / ≥10 步 −16.0%，compact ≥10 步 −33.7%），说明抽取未改变行为。
+- 仍未做真实模型 A/B（余额 0）。

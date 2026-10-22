@@ -5,6 +5,8 @@ import os
 from datetime import timedelta
 
 from .events import parse_time
+from .context import (FOLD_MIN_CHARS, HISTORY_VERBATIM_ITEMS, ContextPolicy,  # noqa: F401
+                      build_ledger, fold_observation, project_observation)
 from .tools import TOOL_SCHEMAS
 
 FINISH_SCHEMA = {"type": "function", "function": {
@@ -46,134 +48,15 @@ PLAN_SCHEMA = {"type": "function", "function": {
 
 
 
-# ---------------------------------------------------------------------------
-# History projection.
-#
-# Every turn used to resend the full trace, so cost grew with the square of the
-# step count: fixed overhead (system prompt + 8 tool schemas) was ~29% and the
-# replayed observations ~70% of all tokens on a 16-call run. Older observations
-# are now replaced by locator digests (event IDs, counts, cluster keys). Evidence
-# IDs stay visible, so citation checking and the completeness gate are unaffected:
-# both read the trace and the tool layer, never the reconstructed messages.
-# ---------------------------------------------------------------------------
-HISTORY_VERBATIM_ITEMS = 4   # most recent trace items keep their full projection
-FOLD_MIN_CHARS = 420         # smaller observations cost less than the digest that would replace them
-FOLD_PLAN_STATEMENT = 120    # hypotheses survive folding, truncated
-
-
-def project_observation(result: dict, events: int = 20, raw_chars: int = 600) -> dict:
-    """Bound one observation without losing IDs or aggregate counts."""
-    observation = dict(result or {})
-    if "events" in observation:
-        rows = observation["events"]
-        observation["events"] = [{**e, "raw": e.get("raw", "")[:raw_chars]} for e in rows[:events]]
-        observation["planner_preview_truncated"] = (
-            len(rows) > events or any(len(e.get("raw", "")) > raw_chars for e in rows))
-    return observation
-
-
-def fold_observation(result: dict, keep_rows: int = 6) -> dict:
-    """Replace one old observation with a locator projection.
-
-    The shape is preserved (``events`` / ``groups`` / ``cases`` stay lists) so downstream reading of
-    the conversation still finds every evidence ID; only the verbose fields (``raw``, ``source``,
-    ``line``) and all but the first few rows are dropped. Small observations are returned untouched:
-    a digest with its own explanatory note can be larger than the three rows it replaces.
-    """
-    if len(json.dumps(result, ensure_ascii=False)) < FOLD_MIN_CHARS:
-        return result
-    folded: dict = {"folded": True}
-    for key in ("total", "returned", "total_groups", "truncated", "backend", "model_loaded",
-                "error", "type", "missing"):
-        if key in result:
-            folded[key] = result[key]
-    rows = result.get("events")
-    if isinstance(rows, list):
-        fields = ("event_id", "timestamp", "event_type", "host", "user", "src_ip")
-        folded["events"] = [{k: e.get(k) for k in fields if e.get(k) is not None} for e in rows[:keep_rows]]
-        folded["events_total"] = result.get("total", len(rows))
-        folded["events_truncated"] = len(rows) > keep_rows
-    groups = result.get("groups")
-    if isinstance(groups, list):
-        folded["groups"] = [{k: g.get(k) for k in ("src_ip", "user", "host", "count", "start", "end")
-                             if g.get(k) is not None} | {"event_ids": list(g.get("event_ids") or [])[:4]}
-                            for g in groups[:3]]
-        folded["groups_total"] = result.get("total_groups", len(groups))
-    cases = result.get("cases")
-    if isinstance(cases, list):
-        folded["cases"] = [{k: c.get(k) for k in ("case_id", "score", "match_level")} for c in cases[:3]]
-    hypotheses = result.get("hypotheses")
-    if isinstance(hypotheses, list):
-        folded["hypotheses"] = [{"id": h.get("id"), "status": h.get("status"),
-                                 "statement": str(h.get("statement", ""))[:FOLD_PLAN_STATEMENT]}
-                                for h in hypotheses[:4]]
-    folded["note"] = "已折叠为定位摘要；原文用 build_timeline 取回。"
-    return folded
-
-
-def _brief(tool: str, arguments: dict, result: dict, max_ids: int = 8) -> str:
-    """One line describing one folded call: what was asked and what locators came back."""
-    asked = ",".join(f"{k}={v}" for k, v in list(arguments.items())[:3]
-                     if k != "rationale" and v not in ("", None))
-    parts = [f"{tool}({asked})" if asked else tool]
-    if isinstance(result.get("groups"), list):
-        for g in result["groups"][:2]:
-            parts.append(f"簇 {g.get('src_ip')}/{g.get('user')}@{g.get('host')}×{g.get('count')}")
-    ids = []
-    if isinstance(result.get("events"), list):
-        ids = [str(e.get("event_id")) for e in result["events"] if e.get("event_id")]
-    elif isinstance(result.get("groups"), list):
-        ids = [str(i) for g in result["groups"] for i in (g.get("event_ids") or [])]
-    if isinstance(result.get("cases"), list):
-        parts.append("案例 " + ",".join(str(c.get("case_id")) for c in result["cases"][:3]))
-    if ids:
-        parts.append(f"事件 {','.join(list(dict.fromkeys(ids))[:max_ids])}")
-    total = result.get("events_total", result.get("total", result.get("total_groups")))
-    if total is not None:
-        parts.append(f"共{total}条")
-    return " — ".join(parts)
-
-
-def build_ledger(trace: list) -> str:
-    """Collapse older calls into one prose ledger instead of replaying every tool message."""
-    lines = ["以下是此前已执行、现已折叠为台账的查询（只保留定位信息；原文可按需用 build_timeline "
-             "或 get_event_context 取回）："]
-    for step in trace:
-        lines.append("- " + _brief(step["tool"], step.get("arguments") or {},
-                                   project_observation(step.get("result") or {})))
-    return "\n".join(lines)
-
-
 def build_messages(goal: str, trace: list, system: str = SYSTEM_PROMPT, fold: bool = True,
                    compact: bool = False) -> list:
-    """Rebuild the tool-calling conversation sent to the model.
+    """Backward-compatible wrapper over :class:`~src.agent.context.ContextPolicy`.
 
-    ``fold=False`` reproduces the pre-optimisation behaviour and exists so the
-    context cost of both policies can be compared offline on recorded traces.
-    ``compact=True`` additionally replaces all but the most recent calls with one ledger message:
-    history cost becomes constant instead of quadratic, at the price of dropping the original
-    tool-result framing for those calls.
+    Kept because tests and the offline replay (`benchmarks/measure_context.py`) import it here;
+    production code goes through ``LLMPlanner.policy``.
     """
-    messages = [{"role": "system", "content": system}, {"role": "user", "content": goal}]
-    start = 0
-    if compact and len(trace) > HISTORY_VERBATIM_ITEMS:
-        start = len(trace) - HISTORY_VERBATIM_ITEMS
-        messages.append({"role": "user", "content": build_ledger(trace[:start])})
-    fold_before = max(0, len(trace) - HISTORY_VERBATIM_ITEMS) if fold else 0
-    for index, step in enumerate(trace):
-        if index < start:
-            continue
-        call_id = f"call_{index}"
-        messages.append({"role": "assistant", "content": None, "tool_calls": [{
-            "id": call_id, "type": "function", "function": {
-                "name": step["tool"], "arguments": json.dumps(step.get("arguments", {}), ensure_ascii=False)}}]})
-        observation = project_observation(step.get("result") or {})
-        if index < fold_before:
-            observation = fold_observation(observation)
-        messages.append({"role": "tool", "tool_call_id": call_id,
-                         "content": json.dumps(observation, ensure_ascii=False)})
-    return messages
-
+    mode = "compact" if compact else ("fold" if fold else "full")
+    return ContextPolicy(mode=mode).build(goal, trace, system)
 
 class RulePlanner:
     """Transparent SSH playbook for offline demos; never presented as LLM planning."""
@@ -264,11 +147,10 @@ class LLMPlanner:
         self.max_tokens = max_tokens
         # DeepSeek Flash/Reasoner thinking mode rejects tool_choice=required unless disabled.
         self.request_options = dict(request_options or {})
-        # AGENT_HISTORY_MODE=full reproduces the old full-replay behaviour; compact collapses older
-        # calls into a ledger. Default 'fold' keeps the tool message shape, so citation checking and
-        # any downstream reader of the conversation keep working unchanged.
-        requested = (os.getenv("AGENT_HISTORY_MODE") or "fold").strip().lower()
-        self.history_mode = requested if requested in ("full", "fold", "compact") else "fold"
+        # The context policy sits between the observation log and what the model sees. Swapping it
+        # (full / fold / compact) never touches the trace, the gate or the citation checks.
+        self.policy = ContextPolicy.from_env()
+        self.history_mode = self.policy.mode
         self.tokens_used = 0
         # Cache-hit tokens are reported by DeepSeek/OpenAI-compatible providers and billed at a
         # fraction of the miss price. The budget still counts every token (conservative), but the
@@ -328,9 +210,7 @@ class LLMPlanner:
         if final:
             system += ("\nFINAL TURN: no tool call remains except finish_investigation. Summarise the "
                        "coverage you achieved inside the report's own fields and finish now.")
-        messages = build_messages(goal, trace, system=system,
-                                  fold=self.history_mode != "full",
-                                  compact=self.history_mode == "compact")
+        messages = self.policy.build(goal, trace, system)
         response = self.client.chat.completions.create(
             model=self.model, messages=messages,
             tools=([FINISH_SCHEMA] if final else
