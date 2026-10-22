@@ -2847,3 +2847,25 @@
 
 ### Git 状态
 - 未提交
+
+## 2026-10-22 前置完整性提示与验收数据
+
+### 修改内容
+- 发现失败簇后（`aggregate_events` 返回 groups）注入一次性 `required_action` 提示，要求先查同实体后继登录；仅在已用 token < 工具预算 60% 时注入，避免提示本身把预算烧穿。
+- 收尾被闸门拦下时，限制文案改为“收尾阶段被完整性闸门拦下：未覆盖项见上，报告作为部分完成发布”，不再笼统写“未正常完成”。
+- 评测 `tool_steps` 排除 hint 控制条目。
+- LLM 评测预算调整为 16 步 / 130k tokens（原 100k）。
+
+### 结果说明
+- 失效集 12 条：完成率 0.92（完全 0.75 / 部分 0.17），撞 token 预算从 4 次降到 1 次，闸门 0.1 次/次；平均 13.8 步、109810 tokens。
+- 标准集 21 条（16 步 / 100k）：完成率 1.00（0.05 / 0.95），token_budget 1 次。
+- 理由覆盖 0.32、假设结论率 0.23：模型对必填字段遵守度有限，按实际值记录。
+- 简历新增“工程能力与数据”一节：负责范围、痛点→处理→数据表、三条面试主线。
+
+### 输出文件
+- `src/agent/engine.py`、`benchmarks/run_eval.py`
+- `docs/EVAL_REPORT.md`、`reports/resume_project_logfusion_agent.md`
+- `benchmarks/results/eval_cases_hard_llm_20261022T035824Z.json`
+
+### Git 状态
+- 未提交
