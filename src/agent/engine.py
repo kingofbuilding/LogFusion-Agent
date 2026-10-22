@@ -16,6 +16,10 @@ from .tools import InvestigationTools, ToolArgumentError, failure_clusters
 
 # Tools still allowed once the agent enters wrap-up mode: consolidate and finish, no new exploration.
 WRAP_UP_TOOLS = {"build_timeline", "retrieve_cases", "update_hypothesis", "finish_investigation"}
+# Wrap-up is terminal: one integration turn plus one finishing turn, then the run is closed. Without
+# this cap a planner that never calls finish_investigation can consume the whole remaining budget and
+# the completeness gate is never consulted, because the gate only runs on a finish request.
+WRAP_UP_TURNS = 2
 
 
 @dataclass
@@ -330,13 +334,16 @@ class InvestigationAgent:
         tool_token_limit = self.max_tokens - reserve_tokens
         reserve_steps = 2 if self.max_steps >= 6 else 0
         tool_step_limit = self.max_steps - reserve_steps
-        # Wrap-up must start below the tool-token hard limit, otherwise it can never fire.
-        wrap_up_tokens = int(tool_token_limit * 0.9)
+        # Wrap-up must start at least one model call before the tool-token hard limit. A fixed
+        # percentage of the budget cannot guarantee that: a single turn can cost more than the gap,
+        # so wrap-up would be entered and skipped in the same iteration. Reserve ~1.5 observed turns.
         wrap_up_steps = max(1, tool_step_limit - 2)
         repeated_calls = 0
         wrap_up = False
+        wrap_up_turns = 0
         wrap_up_restricted = 0
         gate_triggers = 0
+        unresolved_gaps: list[str] = []
 
         def actions_done():
             return sum(1 for item in trace if item.get("stage") not in ("wrap_up", "plan", "gate"))
@@ -348,14 +355,31 @@ class InvestigationAgent:
             if time.monotonic() - started >= self.max_seconds:
                 reason = "time_budget"
                 break
-            if not wrap_up and (self.planner.tokens_used >= wrap_up_tokens or actions_done() >= wrap_up_steps):
+            # Reserve the cost of the next call (plus half a turn of slack) so wrap-up always gets
+            # at least one turn before the tool-token hard limit. Never reserve more than half the
+            # tool budget, otherwise a deliberately tiny budget would start in wrap-up.
+            turns_done = max(1, sum(1 for item in trace
+                                    if item.get("stage") not in ("plan", "gate", "wrap_up")))
+            wrap_up_headroom = min(max(1_200, int(self.planner.tokens_used / turns_done * 1.5)),
+                                   tool_token_limit // 2)
+            if not wrap_up and (self.planner.tokens_used >= tool_token_limit - wrap_up_headroom
+                                or actions_done() >= wrap_up_steps):
                 wrap_up = True
                 notice = {"step": step, "tool": "wrap_up", "arguments": {}, "stage": "wrap_up",
                           "result": {"mode": "wrap_up",
-                                     "notice": "预算接近上限：停止探索，只保留 build_timeline / retrieve_cases / finish_investigation。"}}
+                                     "notice": "预算接近上限：停止探索。本轮先用 update_hypothesis 收束假设，"
+                                               "可再用 build_timeline 整理证据，随后必须调用 "
+                                               f"finish_investigation；{WRAP_UP_TURNS} 轮后强制收口。"}}
                 trace.append(notice)
                 if on_step:
                     on_step(notice)
+            if wrap_up:
+                wrap_up_turns += 1
+                if wrap_up_turns > WRAP_UP_TURNS:
+                    # Terminal wrap-up: no further model call is made. The gate audits what is
+                    # still uncovered below, so the run ends with disclosure instead of silence.
+                    status, reason = "completed_partial", "wrap_up_terminal"
+                    break
             if self.planner.tokens_used >= tool_token_limit or actions_done() >= tool_step_limit:
                 # Stop gathering, keep the reserved budget, and let the agent wrap up on what it has.
                 status, reason = ("completed_partial" if wrap_up else "completed"), "evidence_budget"
@@ -466,6 +490,25 @@ class InvestigationAgent:
                 # Repeated tool failures should degrade to a partial report, not kill the run.
                 status, reason = "completed", "evidence_budget"
                 break
+        # Terminal audit. The gate normally runs when the planner asks to finish; a run that burns
+        # its budget or its wrap-up turns never asks, so it would be published with no coverage check
+        # at all. Audit the same gaps at the end and disclose them, so an unfinished investigation
+        # cannot look complete just because it never called finish_investigation.
+        if (self.completeness_gate and status in ("completed", "completed_partial")
+                and reason not in ("planner_finished", "user_cancelled") and gate_triggers < 2):
+            unresolved_gaps = self._coverage_gaps(trace, plan)
+            if unresolved_gaps:
+                gate_triggers += 1
+                if status == "completed":
+                    status = "completed_partial"
+                notice = {"step": len(trace) + 1, "tool": "completeness_gate", "arguments": {},
+                          "stage": "gate", "control": "CompletenessGate", "terminal": True,
+                          "result": {"missing": unresolved_gaps, "terminal": True,
+                                     "notice": "终局审计：调查在预算内结束，仍有未覆盖项；已写入报告限制。",
+                                     "type": "CompletenessGate"}}
+                trace.append(notice)
+                if on_step:
+                    on_step(notice)
         findings = grounded_findings(self.tools)
         judgment = {"status": "not_requested"}
         if self.reviewer:
@@ -565,10 +608,14 @@ class InvestigationAgent:
             limitations.append("当前已查看证据未建立失败后成功登录链，不能排除其他时间、账号或主机上的入侵。")
         if reason == "evidence_budget":
             limitations.append("工具阶段在预留预算内提前收束，研判仅基于已查证据；未覆盖的日志不能视为不存在。")
+        if reason == "wrap_up_terminal":
+            limitations.append("收尾阶段未在限额内请求结束，已强制收口；此后未再执行任何检查，研判仅基于已查证据。")
         if status == "completed_partial":
             limitations.append("状态为部分完成：报告已产出，但调查没有覆盖全部可能路径。")
         if gate_triggers:
-            limitations.append(f"完整性闸门触发 {gate_triggers} 次：结束前曾被要求补齐未检查的覆盖项。")
+            limitations.append(f"完整性闸门触发 {gate_triggers} 次：结束前被要求补齐未检查的覆盖项。")
+        if unresolved_gaps:
+            limitations.append("结束前仍未覆盖：" + "；".join(unresolved_gaps[:4]) + "。")
         if status != "completed":
             limitations.append("本次调查未正常完成，请结合停止原因检查预算或服务状态。")
         if self.reviewer:

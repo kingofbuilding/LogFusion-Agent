@@ -171,11 +171,12 @@ class LLMPlanner:
     def choose(self, goal, trace, wrap_up: bool = False):
         system = SYSTEM_PROMPT
         if wrap_up:
-            system += ("\nWRAP-UP MODE: the investigation budget is nearly exhausted. Do not open new "
-                       "lines of enquiry. First call update_hypothesis for any hypothesis the evidence "
-                       "settles, then call finish_investigation. Only build_timeline, retrieve_cases, "
-                       "update_hypothesis and finish_investigation are available. State what the observed "
-                       "evidence supports and what remains unverified.")
+            system += ("\nWRAP-UP MODE (terminal): the investigation budget is nearly exhausted. Do not "
+                       "open new lines of enquiry. First call update_hypothesis for any hypothesis the "
+                       "evidence settles, then call finish_investigation. Only build_timeline, "
+                       "retrieve_cases, update_hypothesis and finish_investigation are available. The run "
+                       "is force-closed after this phase, so finish_investigation is mandatory. State what "
+                       "the observed evidence supports and what remains unverified.")
         messages = [{"role": "system", "content": system}, {"role": "user", "content": goal}]
         # Compact tool observations preserve evidence IDs and aggregate counts while bounding context.
         for index, step in enumerate(trace):

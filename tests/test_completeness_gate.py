@@ -70,3 +70,73 @@ def test_demo_suite_runs_three_trajectories(tmp_path):
     for report in reports:
         text = report.read_text(encoding="utf-8")
         assert "## 调查计划与假设" in text
+
+
+class NeverFinishes:
+    """Keeps exploring and never calls finish_investigation: the case wrap-up must handle."""
+
+    mode = "test"
+
+    def __init__(self, tokens_per_call: int = 0):
+        self.tokens_per_call = tokens_per_call
+        self.tokens_used = 0
+        self.calls = 0
+
+    def choose(self, goal, trace):
+        self.calls += 1
+        self.tokens_used += self.tokens_per_call
+        return "search_logs", {"limit": min(100, 10 + self.calls)}
+
+
+def test_wrap_up_starts_before_the_token_limit_when_a_run_never_finishes():
+    # 3000 tokens per call against a 16k tool budget: a fixed 90% threshold would be crossed by the
+    # same call that hits the hard limit, so wrap-up would never get a turn.
+    planner = NeverFinishes(tokens_per_call=3000)
+    result = InvestigationAgent(make_store(), planner=planner, max_steps=8, max_tokens=24_000).run("调查")
+
+    assert any(t["tool"] == "wrap_up" for t in result.trace)
+    assert result.status == "completed_partial"
+    assert result.stop_reason in ("wrap_up_terminal", "evidence_budget")
+
+
+def test_terminal_audit_fires_when_the_run_ends_without_finishing():
+    result = InvestigationAgent(make_store(), planner=NeverFinishes(), max_steps=6).run("调查")
+
+    terminal = [t for t in result.trace if t["tool"] == "completeness_gate" and t.get("terminal")]
+    assert result.status == "completed_partial"
+    assert result.gate_triggers == 1 and len(terminal) == 1
+    assert terminal[0]["result"]["missing"]
+    assert any("结束前仍未覆盖" in note for note in result.limitations)
+
+
+class WrapUpLooper:
+    """Accepts wrap-up but keeps consolidating instead of finishing."""
+
+    mode = "test"
+    tokens_used = 0
+    supports_wrap_up = True
+
+    def __init__(self):
+        self.calls = 0
+
+    def choose(self, goal, trace, wrap_up=False):
+        self.calls += 1
+        if not wrap_up:
+            return "search_logs", {"limit": min(100, self.calls)}
+        return "build_timeline", {"limit": self.calls}
+
+
+def test_wrap_up_is_terminal_and_force_closes_after_the_turn_cap():
+    result = InvestigationAgent(make_store(), planner=WrapUpLooper(), max_steps=8).run("调查")
+
+    assert result.stop_reason == "wrap_up_terminal"
+    assert result.status == "completed_partial"
+    assert any("强制收口" in note for note in result.limitations)
+
+
+def test_terminal_audit_respects_the_disabled_gate():
+    result = InvestigationAgent(make_store(), planner=NeverFinishes(), max_steps=6,
+                                completeness_gate=False).run("调查")
+
+    assert result.gate_triggers == 0
+    assert not any(t["tool"] == "completeness_gate" for t in result.trace)
