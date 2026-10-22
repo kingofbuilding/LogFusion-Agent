@@ -31,8 +31,14 @@ class RulePlanner:
 
     mode = "rule_playbook"
     tokens_used = 0
+    supports_wrap_up = True
 
-    def choose(self, goal, trace):
+    def choose(self, goal, trace, wrap_up: bool = False):
+        if wrap_up:
+            # Stop exploring: consolidate what was already observed.
+            if not any(t["tool"] == "build_timeline" for t in trace):
+                return "build_timeline", {}
+            return "finish_investigation", {}
         if not trace:
             return "detect_anomalies", {"top_windows": 5}
         successful = [t for t in trace if not t.get("error")]
@@ -81,8 +87,13 @@ class LLMPlanner:
         options = {"extra_body": {"thinking": {"type": "disabled"}}} if "deepseek" in model.lower() or "deepseek" in base.lower() else {}
         return cls(OpenAI(api_key=key, base_url=base, timeout=timeout, max_retries=0), model, request_options=options)
 
-    def choose(self, goal, trace):
-        messages = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": goal}]
+    def choose(self, goal, trace, wrap_up: bool = False):
+        system = SYSTEM_PROMPT
+        if wrap_up:
+            system += ("\nWRAP-UP MODE: the investigation budget is nearly exhausted. Do not open new "
+                       "lines of enquiry. Only build_timeline is available; then call finish_investigation. "
+                       "State what the observed evidence supports and what remains unverified.")
+        messages = [{"role": "system", "content": system}, {"role": "user", "content": goal}]
         # Compact tool observations preserve evidence IDs and aggregate counts while bounding context.
         for index, step in enumerate(trace):
             call_id = f"call_{index}"
@@ -97,7 +108,9 @@ class LLMPlanner:
             messages.append({"role": "tool", "tool_call_id": call_id,
                              "content": json.dumps(observation, ensure_ascii=False)})
         response = self.client.chat.completions.create(
-            model=self.model, messages=messages, tools=[*TOOL_SCHEMAS.values(), FINISH_SCHEMA],
+            model=self.model, messages=messages,
+            tools=([TOOL_SCHEMAS["build_timeline"], FINISH_SCHEMA] if wrap_up
+                   else [*TOOL_SCHEMAS.values(), FINISH_SCHEMA]),
             tool_choice="required", temperature=0, max_tokens=self.max_tokens, **self.request_options)
         if response.usage is None:
             raise ValueError("Provider did not return token usage; cannot enforce token budget")

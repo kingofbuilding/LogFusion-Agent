@@ -150,6 +150,8 @@ def summarize(rows: list[dict]) -> dict:
                "stop_reasons": {reason: sum(r.get("stop_reason") == reason for r in rows)
                                 for reason in sorted({r.get("stop_reason", "unknown") for r in rows})},
                "completed_rate": _mean([r["status"] == "completed" for r in rows]),
+               "partial_rate": _mean([r["status"] == "completed_partial" for r in rows]),
+               "completion_rate": _mean([r["status"] in ("completed", "completed_partial") for r in rows]),
                "judgment_completed_rate": _mean([r["judgment_status"] == "completed" for r in rows])}
     summary["by_category"] = {}
     by_category: dict[str, list[dict]] = {}
@@ -166,7 +168,8 @@ def summarize(rows: list[dict]) -> dict:
             "evidence_count": _mean([r["evidence_count"] for r in items]),
             "mean_tool_steps": _mean([r["tool_steps"] for r in items]),
             "mean_tokens": _mean([r["tokens"] for r in items]),
-            "completed_rate": _mean([r["status"] == "completed" for r in items])}
+            "completed_rate": _mean([r["status"] == "completed" for r in items]),
+            "completion_rate": _mean([r["status"] in ("completed", "completed_partial") for r in items])}
     return summary
 
 
@@ -261,7 +264,8 @@ def markdown_table(group: str, summary: dict) -> str:
     lines += ["", f"总体：结论正确率 {fmt(summary['verdict_accuracy'])}，证据召回 {fmt(summary['evidence_recall'])}，"
                   f"证据精度 {fmt(summary['evidence_precision'])}，关联召回 {fmt(summary['link_recall'])}，"
                   f"误关联 {summary['mislink_cases']} 例，平均 {fmt(summary['mean_tool_steps'], 1)} 步，"
-                  f"平均 {fmt(summary['mean_tokens'], 0)} tokens，完成率 {fmt(summary['completed_rate'])}，"
+                  f"平均 {fmt(summary['mean_tokens'], 0)} tokens，"
+                  f"完成率 {fmt(summary['completion_rate'])}（完全完成 {fmt(summary['completed_rate'])}，部分完成 {fmt(summary['partial_rate'])}），"
                   f"工具报错率 {fmt(summary['tool_error_rate'])}，停止原因 {summary['stop_reasons']}，"
                   f"错误类型 {summary['tool_error_types']}。", ""]
     return "\n".join(lines)

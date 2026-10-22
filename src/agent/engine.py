@@ -14,6 +14,9 @@ from .judgment import JudgmentValidationError
 from .planner import RulePlanner
 from .tools import InvestigationTools, ToolArgumentError, failure_clusters
 
+# Tools still allowed once the agent enters wrap-up mode: consolidate and finish, no new exploration.
+WRAP_UP_TOOLS = {"build_timeline", "retrieve_cases", "finish_investigation"}
+
 
 @dataclass
 class Finding:
@@ -269,7 +272,17 @@ class InvestigationAgent:
         tool_token_limit = self.max_tokens - reserve_tokens
         reserve_steps = 2 if self.max_steps >= 6 else 0
         tool_step_limit = self.max_steps - reserve_steps
+        # Wrap-up starts before the hard limit, so the planner gets a turn to consolidate instead of
+        # being cut off mid-exploration.
+        wrap_up_tokens = int(self.max_tokens * 0.75)
+        wrap_up_steps = max(1, tool_step_limit - 2)
         repeated_calls = 0
+        wrap_up = False
+        wrap_up_restricted = 0
+
+        def actions_done():
+            return sum(1 for item in trace if item.get("stage") != "wrap_up")
+
         for step in range(1, self.max_steps + 1):
             if cancelled and cancelled():
                 status, reason = "cancelled", "user_cancelled"
@@ -277,15 +290,26 @@ class InvestigationAgent:
             if time.monotonic() - started >= self.max_seconds:
                 reason = "time_budget"
                 break
-            if self.planner.tokens_used >= tool_token_limit or len(trace) >= tool_step_limit:
+            if not wrap_up and (self.planner.tokens_used >= wrap_up_tokens or actions_done() >= wrap_up_steps):
+                wrap_up = True
+                notice = {"step": step, "tool": "wrap_up", "arguments": {}, "stage": "wrap_up",
+                          "result": {"mode": "wrap_up",
+                                     "notice": "预算接近上限：停止探索，只保留 build_timeline / retrieve_cases / finish_investigation。"}}
+                trace.append(notice)
+                if on_step:
+                    on_step(notice)
+            if self.planner.tokens_used >= tool_token_limit or actions_done() >= tool_step_limit:
                 # Stop gathering, keep the reserved budget, and let the agent wrap up on what it has.
-                status, reason = "completed", "evidence_budget"
+                status, reason = ("completed_partial" if wrap_up else "completed"), "evidence_budget"
                 break
             if self.planner.tokens_used >= self.max_tokens:
                 reason = "token_budget"
                 break
             try:
-                name, arguments = self.planner.choose(goal, trace)
+                if getattr(self.planner, "supports_wrap_up", False):
+                    name, arguments = self.planner.choose(goal, trace, wrap_up=wrap_up)
+                else:
+                    name, arguments = self.planner.choose(goal, trace)
                 # Check after an in-flight model call, before executing its requested tool.
                 if self.planner.tokens_used >= self.max_tokens:
                     reason = "token_budget"
@@ -298,6 +322,19 @@ class InvestigationAgent:
                         raise ValueError("finish_investigation accepts no arguments")
                     status, reason = "completed", "planner_finished"
                     break
+                if wrap_up and name not in WRAP_UP_TOOLS:
+                    wrap_up_restricted += 1
+                    hint = {"step": step, "tool": name, "arguments": arguments, "error": "WrapUpRestricted",
+                            "stage": "wrap_up",
+                            "result": {"error": "收尾模式：探索类工具已关闭，请用 build_timeline 整理证据或 finish_investigation 结束。",
+                                       "type": "WrapUpRestricted"}}
+                    trace.append(hint)
+                    if on_step:
+                        on_step(hint)
+                    if wrap_up_restricted >= 2:
+                        status, reason = "completed_partial", "evidence_budget"
+                        break
+                    continue
                 signature = json.dumps([name, arguments], sort_keys=True, ensure_ascii=False)
                 if signature in seen:
                     # Do not abort the investigation for a repeated call: tell the planner what went
@@ -311,7 +348,7 @@ class InvestigationAgent:
                     if on_step:
                         on_step(hint)
                     if repeated_calls >= 2:
-                        status, reason = "completed", "evidence_budget"
+                        status, reason = "completed_partial", "evidence_budget"
                         break
                     continue
                 seen.add(signature)
@@ -346,13 +383,13 @@ class InvestigationAgent:
                     return "time_budget"
                 if self.planner.tokens_used + self.reviewer.tokens_used >= self.max_tokens:
                     return "token_budget"
-                if len(trace) >= self.max_steps:
+                if len(trace) >= self.max_steps and actions_done() >= self.max_steps:
                     return "max_steps"
                 return ""
 
             # The Agent owns the entire completion pipeline, including reference retrieval and synthesis.
             # A planner finishing early cannot publish a report without running these stages.
-            if status == "completed":
+            if status in ("completed", "completed_partial"):
                 stopped = budget_reason()
                 if not stopped and not any(t["tool"] == "retrieve_cases" and not t.get("error") for t in trace):
                     entry = {"step": len(trace) + 1, "tool": "retrieve_cases",
@@ -368,7 +405,7 @@ class InvestigationAgent:
                     if entry.get("error"):
                         status, reason = "error", "completion_retrieval_failed"
                         judgment = {"status": "skipped", "reason": reason}
-                if status == "completed":
+                if status in ("completed", "completed_partial"):
                     feedback = ""
                     for attempt in range(2):
                         stopped = budget_reason()
@@ -413,8 +450,8 @@ class InvestigationAgent:
                             break
                     if judgment["status"] in ("rejected", "failed"):
                         # The investigation itself completed; only the model's synthesis was withheld.
-                        # Keeping the run "completed" lets the report publish rules and evidence.
-                        status, reason = "completed", "judgment_" + judgment["status"]
+                        # Publish rules and evidence, and mark the run as partial rather than failed.
+                        status, reason = "completed_partial", "judgment_" + judgment["status"]
         coverage = self.store.coverage()
         coverage["input_sha256"] = hashlib.sha256(json.dumps([e.to_dict() for e in self.store.events],
                                                               sort_keys=True, ensure_ascii=False).encode()).hexdigest()
@@ -433,6 +470,8 @@ class InvestigationAgent:
             limitations.append("当前已查看证据未建立失败后成功登录链，不能排除其他时间、账号或主机上的入侵。")
         if reason == "evidence_budget":
             limitations.append("工具阶段在预留预算内提前收束，研判仅基于已查证据；未覆盖的日志不能视为不存在。")
+        if status == "completed_partial":
+            limitations.append("状态为部分完成：报告已产出，但调查没有覆盖全部可能路径。")
         if status != "completed":
             limitations.append("本次调查未正常完成，请结合停止原因检查预算或服务状态。")
         if self.reviewer:

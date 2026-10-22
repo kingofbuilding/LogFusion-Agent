@@ -139,7 +139,7 @@ def test_budget_limits_cancel_and_repeat_guard():
         mode, tokens_used = "test", 0
         def choose(self, goal, trace): return "search_logs", {}
     repeated = InvestigationAgent(store, planner=Repeater()).run("调查")
-    assert repeated.status == "completed" and repeated.stop_reason == "evidence_budget"
+    assert repeated.status == "completed_partial" and repeated.stop_reason == "evidence_budget"
     assert any(t.get("error") == "RepeatedCall" for t in repeated.trace)
 
 
