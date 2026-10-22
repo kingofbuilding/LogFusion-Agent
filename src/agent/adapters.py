@@ -55,5 +55,12 @@ def upstream_retriever():
         raise FileNotFoundError("未找到原项目的 RAG 索引。先运行 python main.py --build-rag --rag-force")
 
     def retrieve(query, top_k):
-        return rag.retrieve(query, top_k=top_k, auto_build=False)
+        # The upstream UI retrieves in candidate mode and labels each hit with raw score and
+        # evidence_usable; the strict 0.65/0.7 thresholds almost never pass with hash embeddings,
+        # so using the default threshold here would silently turn RAG into an empty tool.
+        hits = rag.retrieve(query, top_k=top_k, auto_build=False, apply_threshold=False)
+        for hit in hits:
+            hit.setdefault("evidence_usable", bool(hit.get("threshold_passed", False)))
+            hit.setdefault("confidence_level", "high" if hit["evidence_usable"] else "candidate")
+        return hits
     return retrieve

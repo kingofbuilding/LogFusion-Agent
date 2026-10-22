@@ -74,7 +74,9 @@ C0 的工具 schema 只声明 `integer`，`max_groups ≤ 10` 只写在代码里
 
 ### 3.3 向量索引的实际情况
 
-迁移索引以哈希回退嵌入构建（`force_hash_fallback: true`，256 维），查询与案例的最高余弦相似度约 **0.14**，低于 `raw_score_threshold: 0.65` 与 `similarity_threshold: 0.7`，`retrieve_cases` 返回空。**D 组的差异来自检测器，不来自语义检索。**
+上游 RAG 的可用口径是**候选模式**：`retrieve(..., apply_threshold=False)`，按 raw_score 排序返回 Top-K，并标注 `evidence_usable`（是否同时过 0.65/0.7 阈值）。论文中 harrison Top-1 命中 0.667、santos 0.900，Top-3/5 均为 1.0。
+
+本次评测环境沿用同一索引，但 Agent 适配层最初用了默认严格阈值，导致 `retrieve_cases` 返回空；现已改为候选模式并回传 `raw_score` / `evidence_usable`。需要注意：索引是在哈希回退嵌入下构建的（256 维），短查询相似度常低于 0.4 的候选下限，因此**部分查询仍可能返回空**——这是嵌入方式与环境限制，不是 RAG 模块不可用。**D 组的差异来自检测器，不来自语义检索。**
 
 ### 3.4 检测器观察的收敛
 

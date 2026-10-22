@@ -341,6 +341,7 @@ class InvestigationAgent:
         repeated_calls = 0
         wrap_up = False
         wrap_up_turns = 0
+        wrap_up_final = False
         wrap_up_restricted = 0
         gate_triggers = 0
         unresolved_gaps: list[str] = []
@@ -376,12 +377,19 @@ class InvestigationAgent:
             if wrap_up:
                 wrap_up_turns += 1
                 if wrap_up_turns > WRAP_UP_TURNS:
-                    # Terminal wrap-up: no further model call is made. The gate audits what is
-                    # still uncovered below, so the run ends with disclosure instead of silence.
+                    # Backstop for planners without forced-finish support: close, then audit below.
                     status, reason = "completed_partial", "wrap_up_terminal"
                     break
-            if self.planner.tokens_used >= tool_token_limit or actions_done() >= tool_step_limit:
-                # Stop gathering, keep the reserved budget, and let the agent wrap up on what it has.
+                # The last wrap-up turn is a forced finish request. That is what gives the gate
+                # something real to inspect instead of closing the run behind its back.
+                wrap_up_final = wrap_up_turns >= WRAP_UP_TURNS
+            # Wrap-up may spend part of the completion reserve, but never all of it: the closing
+            # judgment still needs room, and a runaway planner must not eat the whole budget.
+            token_limit = (min(self.max_tokens, tool_token_limit + reserve_tokens // 2)
+                           if wrap_up else tool_token_limit)
+            if self.planner.tokens_used >= token_limit or (not wrap_up and actions_done() >= tool_step_limit):
+                # Stop gathering and keep the reserved budget for completion. Wrap-up turns are funded
+                # by that reserve; only the absolute max_tokens cap can cut them short.
                 status, reason = ("completed_partial" if wrap_up else "completed"), "evidence_budget"
                 break
             if self.planner.tokens_used >= self.max_tokens:
@@ -389,13 +397,25 @@ class InvestigationAgent:
                 break
             try:
                 if getattr(self.planner, "supports_wrap_up", False):
-                    name, arguments = self.planner.choose(goal, trace, wrap_up=wrap_up)
+                    name, arguments = self.planner.choose(goal, trace, wrap_up=wrap_up,
+                                                          final=wrap_up and wrap_up_final)
                 else:
                     name, arguments = self.planner.choose(goal, trace)
                 # The rationale is a planner annotation, not a tool argument.
                 rationale = ""
                 if isinstance(arguments, dict) and "rationale" in arguments:
                     rationale = str(arguments.pop("rationale"))[:300]
+                if wrap_up_final and name != "finish_investigation":
+                    # Some OpenAI-compatible providers ignore a forced tool_choice. The terminal turn
+                    # accepts only a finish request, so record the ignored call and close through the
+                    # gate instead of executing a tool that cannot change the outcome.
+                    ignored = {"step": step, "tool": "wrap_up", "arguments": {}, "stage": "wrap_up",
+                               "result": {"mode": "terminal", "ignored_tool_call": name,
+                                          "notice": "终局只接受 finish_investigation；已忽略该调用并按结束处理。"}}
+                    trace.append(ignored)
+                    if on_step:
+                        on_step(ignored)
+                    name, arguments = "finish_investigation", {}
                 # Check after an in-flight model call, before executing its requested tool.
                 if self.planner.tokens_used >= self.max_tokens:
                     reason = "token_budget"
@@ -407,22 +427,27 @@ class InvestigationAgent:
                     if arguments:
                         raise ValueError("finish_investigation accepts no arguments")
                     # Completeness gate: a finish request must account for known clusters and
-                    # successes. The gate may refuse twice, then lets the run finish with disclosure.
+                    # successes. Outside wrap-up the run may be refused twice and keep investigating;
+                    # inside wrap-up there is no turn left to act on the feedback, so a refusal ends
+                    # the run as partial with the gaps on record.
                     gaps = [] if not self.completeness_gate else self._coverage_gaps(trace, plan)
-                    if wrap_up:
-                        # In wrap-up only the hypothesis check is actionable: exploring further is
-                        # exactly what wrap-up forbids.
-                        gaps = [gap for gap in gaps if "假设" in gap]
                     if gaps and gate_triggers < 2:
                         gate_triggers += 1
                         notice = {"step": step, "tool": "completeness_gate", "arguments": {},
                                   "stage": "gate", "control": "CompletenessGate",
+                                  "terminal": wrap_up,
                                   "result": {"missing": gaps,
-                                             "notice": "结束前请补齐以下检查；若确实无法检查，请说明原因后再结束。",
+                                             "notice": ("收尾阶段无法再补查：结束请求被拒绝，未覆盖项写入报告限制。"
+                                                        if wrap_up else
+                                                        "结束前请补齐以下检查；若确实无法检查，请说明原因后再结束。"),
                                              "type": "CompletenessGate"}}
                         trace.append(notice)
                         if on_step:
                             on_step(notice)
+                        if wrap_up:
+                            unresolved_gaps = gaps
+                            status, reason = "completed_partial", "gate_unresolved"
+                            break
                         continue
                     status, reason = "completed", "planner_finished"
                     break
@@ -495,7 +520,7 @@ class InvestigationAgent:
         # at all. Audit the same gaps at the end and disclose them, so an unfinished investigation
         # cannot look complete just because it never called finish_investigation.
         if (self.completeness_gate and status in ("completed", "completed_partial")
-                and reason not in ("planner_finished", "user_cancelled") and gate_triggers < 2):
+                and reason not in ("planner_finished", "user_cancelled") and gate_triggers == 0):
             unresolved_gaps = self._coverage_gaps(trace, plan)
             if unresolved_gaps:
                 gate_triggers += 1
@@ -610,6 +635,8 @@ class InvestigationAgent:
             limitations.append("工具阶段在预留预算内提前收束，研判仅基于已查证据；未覆盖的日志不能视为不存在。")
         if reason == "wrap_up_terminal":
             limitations.append("收尾阶段未在限额内请求结束，已强制收口；此后未再执行任何检查，研判仅基于已查证据。")
+        if reason == "gate_unresolved":
+            limitations.append("结束请求被完整性闸门拒绝，且已无预算补查，报告作为部分完成发布。")
         if status == "completed_partial":
             limitations.append("状态为部分完成：报告已产出，但调查没有覆盖全部可能路径。")
         if gate_triggers:

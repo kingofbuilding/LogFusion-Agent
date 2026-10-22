@@ -94,9 +94,9 @@ def test_wrap_up_starts_before_the_token_limit_when_a_run_never_finishes():
     planner = NeverFinishes(tokens_per_call=3000)
     result = InvestigationAgent(make_store(), planner=planner, max_steps=8, max_tokens=24_000).run("调查")
 
-    assert any(t["tool"] == "wrap_up" for t in result.trace)
+    assert any(t["tool"] == "wrap_up" and t.get("stage") == "wrap_up" for t in result.trace)
     assert result.status == "completed_partial"
-    assert result.stop_reason in ("wrap_up_terminal", "evidence_budget")
+    assert result.stop_reason in ("gate_unresolved", "wrap_up_terminal", "evidence_budget")
 
 
 def test_terminal_audit_fires_when_the_run_ends_without_finishing():
@@ -119,19 +119,23 @@ class WrapUpLooper:
     def __init__(self):
         self.calls = 0
 
-    def choose(self, goal, trace, wrap_up=False):
+    def choose(self, goal, trace, wrap_up=False, final=False):
         self.calls += 1
         if not wrap_up:
             return "search_logs", {"limit": min(100, self.calls)}
+        if final:
+            return "finish_investigation", {}
         return "build_timeline", {"limit": self.calls}
 
 
-def test_wrap_up_is_terminal_and_force_closes_after_the_turn_cap():
+def test_terminal_wrap_up_forces_a_finish_that_the_gate_can_refuse():
     result = InvestigationAgent(make_store(), planner=WrapUpLooper(), max_steps=8).run("调查")
 
-    assert result.stop_reason == "wrap_up_terminal"
+    assert result.stop_reason == "gate_unresolved"
     assert result.status == "completed_partial"
-    assert any("强制收口" in note for note in result.limitations)
+    gate = [t for t in result.trace if t["tool"] == "completeness_gate"]
+    assert len(gate) == 1 and gate[0]["terminal"] and gate[0]["result"]["missing"]
+    assert any("结束前仍未覆盖" in note for note in result.limitations)
 
 
 def test_terminal_audit_respects_the_disabled_gate():

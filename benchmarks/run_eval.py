@@ -129,6 +129,8 @@ def score_case(meta: dict, result) -> dict:
         "judgment_status": result.judgment.get("status", "not_requested"),
         "claims": len(result.judgment["content"]["claims"]) if result.judgment.get("status") == "completed" else 0,
         "gate_triggers": getattr(result, "gate_triggers", 0),
+        "gate_terminal_refusals": sum(1 for t in result.trace
+                                      if t["tool"] == "completeness_gate" and t.get("terminal")),
         "rationale_rate": _rationale_rate(result.trace),
         "hypothesis_rate": (round(sum(1 for item in result.plan if item["status"] != "open") / len(result.plan), 4)
                             if getattr(result, "plan", None) else None),
@@ -166,6 +168,7 @@ def summarize(rows: list[dict]) -> dict:
                "partial_rate": _mean([r["status"] == "completed_partial" for r in rows]),
                "completion_rate": _mean([r["status"] in ("completed", "completed_partial") for r in rows]),
                "mean_gate_triggers": _mean([r.get("gate_triggers", 0) for r in rows]),
+               "mean_gate_terminal_refusals": _mean([r.get("gate_terminal_refusals", 0) for r in rows]),
                "rationale_rate": _mean([r.get("rationale_rate") for r in rows]),
                "hypothesis_rate": _mean([r.get("hypothesis_rate") for r in rows]),
                "judgment_completed_rate": _mean([r["judgment_status"] == "completed" for r in rows])}
@@ -300,7 +303,8 @@ def markdown_table(group: str, summary: dict) -> str:
                   f"误关联 {summary['mislink_cases']} 例，平均 {fmt(summary['mean_tool_steps'], 1)} 步，"
                   f"平均 {fmt(summary['mean_tokens'], 0)} tokens，"
                   f"完成率 {fmt(summary['completion_rate'])}（完全完成 {fmt(summary['completed_rate'])}，部分完成 {fmt(summary['partial_rate'])}），"
-                  f"闸门 {fmt(summary['mean_gate_triggers'], 1)} 次/次，理由覆盖 {fmt(summary['rationale_rate'])}，"
+                  f"闸门 {fmt(summary['mean_gate_triggers'], 1)} 次/次（终局拒绝 {fmt(summary['mean_gate_terminal_refusals'], 1)}），"
+                  f"理由覆盖 {fmt(summary['rationale_rate'])}，"
                   f"假设结论率 {fmt(summary['hypothesis_rate'])}，"
                   f"工具报错率 {fmt(summary['tool_error_rate'])}，停止原因 {summary['stop_reasons']}，"
                   f"错误类型 {summary['tool_error_types']}。", ""]

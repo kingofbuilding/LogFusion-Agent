@@ -2685,3 +2685,29 @@
 - 发现收尾阈值高于工具上限（75% > 67%），收尾模式永不触发；改为工具上限的 90%。
 - 20 步 / 100k 的 6 条小样本：完成率 1.00（全部部分完成），理由覆盖 0.25–0.37、假设结论率 0.08–0.33、闸门 0 次；150k 预算会让模型探索更久（21 步、135k、完成率 0.67），已回退到 16 步。
 - 结论：闸门只在“申请结束”时检查，而模型倾向探索到预算耗尽，从不主动结束；下一步需把收尾改为终端阶段（一次整合后强制收口）。
+
+## 2026-10-22 收尾终端化与终局闸门
+
+### 修改内容
+- 收尾改为终端阶段：`WRAP_UP_TURNS = 2`，第一轮用于 `update_hypothesis` 收束假设，第二轮是强制结束轮（只暴露 `finish_investigation` 并锁定 `tool_choice`）；供应商忽略强制选择时记录 `ignored_tool_call` 并按结束处理。
+- 收尾起点改为按观测单轮成本动态预留（`1.5 × 已用/已做动作数`，且不超过工具预算一半），替换原“工具上限 90%”的固定比例——固定比例可能被单次调用一步跨过，导致收尾被置位又跳过。
+- 收尾阶段可动用一半完成预留 token（`tool_token_limit + reserve//2`，不超过 `max_tokens`），保证关门轮与研判都不会被提前砍断。
+- 闸门语义调整：非收尾阶段仍可退回 2 次；收尾阶段的结束请求若有缺口，拒绝一次即按 `gate_unresolved` 收口，缺口写入 `limitations`（原先收尾只检查假设项，等于放行探索缺口）。
+- 循环后新增终局审计：未经 `planner_finished` 结束且闸门从未触发时，再评估一次覆盖缺口，记为 `terminal: true` 的闸门条目，`stop_reason=wrap_up_terminal`，避免“没申请结束 = 覆盖完整”的假象。
+- 评测新增 `gate_terminal_refusals`（终局被拒绝次数），汇总行与 `gate_triggers` 并列输出。
+
+### 输出文件
+- `src/agent/engine.py`、`src/agent/planner.py`
+- `benchmarks/run_eval.py`
+- `tests/test_completeness_gate.py`（4 个新测试，共 99 个）
+- `docs/AGENT_DESIGN.md`
+
+### 结果说明
+- `pytest`：99 passed。
+- 规则 `--demo-suite`：三条轨迹仍为 `completed/planner_finished`，闸门 0 次（覆盖完整，无需拦截），轨迹与收尾阈值改动前一致。
+- 真实模型 3 条（ssh-001/002/003，16 步 / 100k）：完成率 1.00（完全完成 0.33），`gate_unresolved` 2 次、`planner_finished` 1 次，闸门 0.7 次/次（其中终局拒绝 2 次），理由覆盖 0.42，假设结论率 0.25，证据召回 1.00、精度 0.26，平均 17.3 步 / 92.9k tokens。该批次跑在 `gate_terminal_refusals` 字段加入之前，终局拒绝次数由 `stop_reason=gate_unresolved` 计得。
+- 单条 ssh-001 全轨迹复核：13 步进入收尾 → 一次 `update_hypothesis` → 14 步强制结束轮 → 闸门拒绝（缺口为“失败簇 … 尚未查询后续成功登录”）→ `gate_unresolved`，研判照常发布并在 `limitations` 披露缺口与拒绝原因。
+- 闸门不再是“永不触发的代码”：三条用例中 2 条被真实拒绝，1 条自主结束且无缺口（按设计返回 0）。
+
+### Git 状态
+- 已提交

@@ -275,8 +275,17 @@ class InvestigationTools:
         projected = [{k: h.get(k, "") for k in ("case_id", "title", "content", "technique", "advice_cn", "score")}
                      for h in hits[:top_k]]
         self.case_references.update({c["case_id"]: c for c in projected if c["case_id"]})
-        return {"backend": backend, "cases": projected,
-                "notice": "案例仅供解释与调查参考，不能证明本次攻击发生；相似度不是概率。"}
+        if backend == "upstream_vector_rag":
+            projected = [{**case, "raw_score": round(float(h.get("raw_score", 0) or 0), 4),
+                          "evidence_usable": bool(h.get("evidence_usable", False))}
+                         for case, h in zip(projected, hits[:top_k])]
+            usable = sum(1 for case in projected if case["evidence_usable"])
+            self.case_references.update({c["case_id"]: c for c in projected if c["case_id"]})
+            notice = (f"案例仅供解释与参考：返回 {len(projected)} 条候选，其中 {usable} 条达到证据阈值，"
+                      "其余为候选（candidate）；相似度不是概率，也不能证明本次攻击发生。")
+        else:
+            notice = "案例仅供解释与调查参考，不能证明本次攻击发生；相似度不是概率。"
+        return {"backend": backend, "cases": projected, "notice": notice}
 
     def build_timeline(self, limit: int = 100) -> dict:
         events = sorted(self.evidence.values(), key=lambda e: (not bool(e["timestamp"]), e["timestamp"], e["line"]))

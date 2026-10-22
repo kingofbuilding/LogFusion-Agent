@@ -60,7 +60,7 @@ class RulePlanner:
                 "失败活动之后是否出现同账号、同主机的成功登录",
                 "该成功登录之后是否有特权命令或账户变更"]
 
-    def choose(self, goal, trace, wrap_up: bool = False):
+    def choose(self, goal, trace, wrap_up: bool = False, final: bool = False):
         # Plan and wrap-up notices are annotations, not investigation actions.
         actions = [t for t in trace if t.get("stage") not in ("plan", "wrap_up")]
         if wrap_up:
@@ -168,7 +168,7 @@ class LLMPlanner:
         payload = json.loads(calls[0].function.arguments)
         return [str(item.get("statement", "")) for item in payload.get("hypotheses", [])][:4]
 
-    def choose(self, goal, trace, wrap_up: bool = False):
+    def choose(self, goal, trace, wrap_up: bool = False, final: bool = False):
         system = SYSTEM_PROMPT
         if wrap_up:
             system += ("\nWRAP-UP MODE (terminal): the investigation budget is nearly exhausted. Do not "
@@ -177,6 +177,9 @@ class LLMPlanner:
                        "retrieve_cases, update_hypothesis and finish_investigation are available. The run "
                        "is force-closed after this phase, so finish_investigation is mandatory. State what "
                        "the observed evidence supports and what remains unverified.")
+        if final:
+            system += ("\nFINAL TURN: no tool call remains except finish_investigation. Summarise the "
+                       "coverage you achieved inside the report's own fields and finish now.")
         messages = [{"role": "system", "content": system}, {"role": "user", "content": goal}]
         # Compact tool observations preserve evidence IDs and aggregate counts while bounding context.
         for index, step in enumerate(trace):
@@ -193,10 +196,13 @@ class LLMPlanner:
                              "content": json.dumps(observation, ensure_ascii=False)})
         response = self.client.chat.completions.create(
             model=self.model, messages=messages,
-            tools=([TOOL_SCHEMAS["build_timeline"], TOOL_SCHEMAS["retrieve_cases"],
+            tools=([FINISH_SCHEMA] if final else
+                   [TOOL_SCHEMAS["build_timeline"], TOOL_SCHEMAS["retrieve_cases"],
                     TOOL_SCHEMAS["update_hypothesis"], FINISH_SCHEMA] if wrap_up
                    else [*TOOL_SCHEMAS.values(), FINISH_SCHEMA]),
-            tool_choice="required", temperature=0, max_tokens=self.max_tokens, **self.request_options)
+            tool_choice=({"type": "function", "function": {"name": "finish_investigation"}}
+                         if final else "required"),
+            temperature=0, max_tokens=self.max_tokens, **self.request_options)
         if response.usage is None:
             raise ValueError("Provider did not return token usage; cannot enforce token budget")
         self.tokens_used += response.usage.total_tokens
