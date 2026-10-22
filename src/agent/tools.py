@@ -246,6 +246,15 @@ class InvestigationTools:
                                 end=(time + timedelta(minutes=after_minutes)).isoformat(),
                                 limit=limit, include_raw=True, dedupe=False)
 
+    def update_hypothesis(self, hypothesis_id: str, status: str, note: str = "") -> dict:
+        """Record the planner's own judgement about a planned hypothesis."""
+        if status not in ("open", "confirmed", "refuted"):
+            raise ToolArgumentError("status must be one of open, confirmed, refuted.")
+        if len(note) > 300:
+            raise ToolArgumentError("note must be at most 300 characters.")
+        return {"hypothesis_id": hypothesis_id, "status": status, "note": note,
+                "notice": "假设状态是模型的判断声明，不是事实；仍需引用原始证据核对。"}
+
     def retrieve_cases(self, query: str = "SSH failed password accepted sudo", top_k: int = 3) -> dict:
         if len(query) > 1000:
             raise ValueError("Query too long")
@@ -303,6 +312,9 @@ def _schema(name, description, properties, required=()):
             low, high = PARAMETER_BOUNDS[key]
             field.update(minimum=low, maximum=high, description=f"Inclusive range {low}..{high}.")
         fields[key] = field
+    # Every action carries a one-sentence reason, so the trace shows intent and not just calls.
+    fields["rationale"] = {"type": "string",
+                           "description": "One short sentence: why this action, given what is known."}
     return {"type": "function", "function": {"name": name, "description": description,
             "parameters": {"type": "object", "properties": fields, "required": list(required),
                 "additionalProperties": False}}}
@@ -321,6 +333,9 @@ TOOL_SCHEMAS = {s["function"]["name"]: s for s in [
              "start": "string", "end": "string", "limit": "integer", "include_raw": "boolean"}),
     _schema("get_event_context", "Read same-host, same-user context around an observed event. Does not prove session attribution.",
             {"event_id": "string", "before_minutes": "integer", "after_minutes": "integer", "limit": "integer"}, ["event_id"]),
+    _schema("update_hypothesis", "Mark a planned hypothesis as open, confirmed or refuted once evidence has been read.",
+            {"hypothesis_id": "string", "status": "string", "note": "string"},
+            ["hypothesis_id", "status"]),
     _schema("retrieve_cases", "Retrieve reference cases, never factual evidence of this incident.", {"query": "string", "top_k": "integer"}),
     _schema("build_timeline", "Build timeline from already observed original evidence.", {"limit": "integer"}),
 ]}

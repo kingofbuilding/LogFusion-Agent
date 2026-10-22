@@ -198,6 +198,11 @@ def test_full_llm_planner_retrieval_synthesis_pipeline():
         def create(self, **kwargs):
             if kwargs.get("tool_choice") == {"type": "function", "function": {"name": "publish_judgment"}}:
                 return super().create(**kwargs)
+            if any(tool["function"]["name"] == "submit_plan" for tool in kwargs.get("tools", [])):
+                return SimpleNamespace(usage=SimpleNamespace(total_tokens=50), choices=[SimpleNamespace(
+                    message=SimpleNamespace(tool_calls=[SimpleNamespace(function=SimpleNamespace(
+                        name="submit_plan",
+                        arguments=json.dumps({"hypotheses": [{"statement": "存在集中失败"}]})))]))])
             trace = []
             messages = kwargs["messages"]
             for index, message in enumerate(messages):
@@ -217,5 +222,6 @@ def test_full_llm_planner_retrieval_synthesis_pipeline():
     assert result.mode == "llm_tool_calling" and result.status == "completed"
     assert result.judgment["status"] == "completed" and result.judgment["backend"] == "llm"
     assert result.case_references and result.judgment["content"]["claims"]
-    assert result.tokens_used == 450
+    assert result.plan and result.plan[0]["statement"] == "存在集中失败"
+    assert result.tokens_used >= 450
     assert result.trace[-1]["tool"] == "synthesize_judgment"

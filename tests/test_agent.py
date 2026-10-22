@@ -155,15 +155,21 @@ def test_llm_selects_tools_from_observations_and_usage_is_recorded():
     class Completion:
         def create(self, **kwargs):
             calls.append(kwargs)
-            name = "aggregate_events" if len(calls) == 1 else "finish_investigation"
+            if any(tool["function"]["name"] == "submit_plan" for tool in kwargs.get("tools", [])):
+                return SimpleNamespace(usage=SimpleNamespace(total_tokens=100), choices=[SimpleNamespace(message=SimpleNamespace(
+                    tool_calls=[SimpleNamespace(function=SimpleNamespace(
+                        name="submit_plan", arguments=json.dumps({"hypotheses": [{"statement": "存在集中失败"}]})))]))])
+            tool_calls = [c for c in calls if not any(tool["function"]["name"] == "submit_plan" for tool in c.get("tools", []))]
+            name = "aggregate_events" if len(tool_calls) == 1 else "finish_investigation"
             return SimpleNamespace(usage=SimpleNamespace(total_tokens=100), choices=[SimpleNamespace(message=SimpleNamespace(
                 tool_calls=[SimpleNamespace(function=SimpleNamespace(name=name, arguments="{}"))]))])
     client = SimpleNamespace(chat=SimpleNamespace(completions=Completion()))
     result = InvestigationAgent(store_from([failed(i) for i in range(5)]), planner=LLMPlanner(client, "test-model")).run("查 SSH")
     assert result.status == "completed" and result.mode == "llm_tool_calling"
-    assert result.tokens_used == 200
-    assert calls[1]["messages"][-1]["role"] == "tool"
-    assert "event_ids" in calls[1]["messages"][-1]["content"]
+    assert result.tokens_used == 300, "plan + aggregate + finish"
+    assert result.plan[0]["id"] == "H1"
+    assert calls[2]["messages"][-1]["role"] == "tool"
+    assert "event_ids" in calls[2]["messages"][-1]["content"]
     assert "UNTRUSTED DATA" in SYSTEM_PROMPT
 
 

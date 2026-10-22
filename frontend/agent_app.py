@@ -77,7 +77,7 @@ def render_agent_workbench():
                                             max_seconds=max_seconds, max_tokens=max_tokens, reviewer=reviewer).run(
                     goal, on_step=lambda step: st.write(f"步骤 {step['step']} · {step['tool']} · {'失败' if step.get('error') else '完成'}"))
                 status.update(label=f"调查状态：{result.status} · {result.stop_reason}",
-                              state="complete" if result.status == "completed" else "error", expanded=False)
+                              state="complete" if result.status in ("completed", "completed_partial") else "error", expanded=False)
             st.session_state["agent_result"] = result
         except Exception as exc:
             st.error(f"调查未能启动：{type(exc).__name__}。请检查密钥、可选依赖及模型/索引是否已准备。")
@@ -87,8 +87,14 @@ def render_agent_workbench():
     st.divider()
     st.write(f"调查编号：{result.run_id} · 模式：{result.mode} · 耗时：{result.elapsed_seconds}s · Tokens：{result.tokens_used}")
     st.write("调查目标：", result.goal)
-    if result.status != "completed":
+    if result.status == "completed_partial":
+        st.info(f"部分完成：报告已生成，但调查未覆盖全部路径。停止原因：{result.stop_reason}")
+    elif result.status != "completed":
         st.warning(f"调查未正常完成，以下为部分结果。停止原因：{result.stop_reason}")
+    if getattr(result, "plan", None):
+        with st.expander("调查计划与假设", expanded=True):
+            for item in result.plan:
+                st.write(f"[{item['id']}] {item['statement']} — 状态：{item['status']}")
     judgment_tab, findings_tab, timeline_tab, trace_tab = st.tabs(["综合研判", "规则发现", "证据时间线", "工具轨迹"])
     with judgment_tab:
         judgment = result.judgment
@@ -144,8 +150,11 @@ def render_agent_workbench():
                 st.write("来源：", e["source"], "行/记录：", e["line"])
                 st.code(e["raw"], language="text")
     with trace_tab:
+        if getattr(result, "plan", None):
+            st.caption("先有假设，再有动作：下面是每一步的理由与工具返回。")
         for t in result.trace:
-            with st.expander(f"{t['step']}. {t['tool']}"):
+            label = f"{t['step']}. {t['tool']}" + (f" · {t['rationale']}" if t.get("rationale") else "")
+            with st.expander(label):
                 st.json(t)
     col1, col2 = st.columns(2)
     col1.download_button("下载调查报告 Markdown", result.to_markdown(), f"{result.run_id}.md", mime="text/markdown")

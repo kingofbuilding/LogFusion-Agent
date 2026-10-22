@@ -2634,3 +2634,26 @@
 
 ### Git 状态
 - 未提交
+
+## 2026-10-22 计划、每步理由与假设状态
+
+### 修改内容
+- 新增计划阶段：`planner.plan()` 在调查前产出 2–4 条假设，写入 `InvestigationResult.plan`，编号 H1..H4，初始 open；规划失败不阻塞调查。
+- 所有工具 schema 增加可选 `rationale`；引擎从参数中取出并写入轨迹，不传给工具，避免污染调用参数。
+- 新增只读工具 `update_hypothesis(hypothesis_id, status, note)`：confirmed/refuted 由模型声明，引擎更新计划并记录 `updated_at_step`；未知 ID 只报错不改状态。
+- 报告新增“调查计划与假设”一节，工具执行记录带理由；Streamlit 工作台展示计划、状态与每步理由，并区分 completed 与 completed_partial。
+- 规则剧本同步：固定三条假设，并在聚合、成功登录、上下文三个阶段更新假设，使离线演示也具备“假设→动作→更新”结构。
+
+### 输出文件
+- `src/agent/engine.py`、`src/agent/planner.py`、`src/agent/tools.py`
+- `frontend/agent_app.py`
+- `tests/test_plan_trace.py`（7 个新测试，共 91 个）
+- `README.md`、`docs/AGENT_DESIGN.md`
+
+### 结果说明
+- 单条真实模型冒烟（ssh-001）：模型自发提出 4 条假设（含账户枚举/横向移动），把 H1 标为 confirmed，并对 aggregate/get_event_context/detect/update_hypothesis 各写了理由；运行以 completed_partial 收尾，78k–82k tokens。
+- 规则模式 demo 报告可看到 H1/H2/H3 全部 confirmed 及三条更新理由。
+- 未做批量统计；轨迹质量目前靠人工查看，后续可加“理由覆盖率/假设更新率”指标。
+
+### Git 状态
+- 未提交

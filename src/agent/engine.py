@@ -42,6 +42,7 @@ class InvestigationResult:
     elapsed_seconds: float
     tokens_used: int
     judgment: dict = field(default_factory=lambda: {"status": "not_requested"})
+    plan: list[dict] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def to_dict(self):
@@ -56,7 +57,13 @@ class InvestigationResult:
             return text
         lines = ["# LogFusion-Agent 调查报告", "", f"调查编号：{self.run_id}",
                  f"目标：{safe(self.goal)}", f"模式：{self.mode}；状态：{self.status}；停止原因：{self.stop_reason}",
-                 f"输入日志：{self.coverage['events']} 条；已查看证据：{len(self.evidence)} 条", "", "## 调查发现", ""]
+                 f"输入日志：{self.coverage['events']} 条；已查看证据：{len(self.evidence)} 条", ""]
+        if self.plan:
+            lines += ["## 调查计划与假设", ""]
+            for item in self.plan:
+                lines.append(f"- [{item['id']}] {safe(item['statement'])} — 状态：{item['status']}")
+            lines.append("")
+        lines += ["## 调查发现", ""]
         for f in self.findings:
             lines += [f"- {safe(f.statement)}", f"  - 判断性质：{safe(f.interpretation)}",
                       "  - 原始证据：" + ", ".join(f.evidence_ids)]
@@ -89,7 +96,8 @@ class InvestigationResult:
         lines += ["", "## 不确定性与边界", "", *[f"- {safe(s)}" for s in self.limitations],
                   "", "## 工具执行记录", ""]
         for t in self.trace:
-            lines.append(f"- {t['step']}. {t['tool']}：{'失败' if t.get('error') else '完成'}")
+            reason = f"（理由：{safe(t['rationale'])}）" if t.get("rationale") else ""
+            lines.append(f"- {t['step']}. {t['tool']}{reason}：{'失败' if t.get('error') else '完成'}")
         return "\n".join(lines) + "\n"
 
     def save(self, directory: str | Path):
@@ -264,6 +272,18 @@ class InvestigationAgent:
         if self.reviewer:
             self.reviewer.tokens_used = 0
         trace, seen = [], set()
+        # Plan first: two to four hypotheses the investigation will try to confirm or refute.
+        plan: list[dict] = []
+        if getattr(self.planner, "supports_plan", False) and not (cancelled and cancelled()):
+            try:
+                statements = self.planner.plan(goal) or []
+            except Exception:
+                statements = []  # a planning failure must not prevent the investigation
+            plan = [{"id": f"H{i + 1}", "statement": str(text)[:200].strip(), "status": "open"}
+                    for i, text in enumerate(list(statements)[:4]) if str(text).strip()]
+        if plan:
+            trace.append({"step": 0, "tool": "plan", "arguments": {}, "stage": "plan",
+                          "result": {"hypotheses": plan}})
         started = time.monotonic()
         status, reason = "limited", "max_steps"
         # Reserve budget for the completion stages (case retrieval + synthesis) so an investigation
@@ -281,7 +301,7 @@ class InvestigationAgent:
         wrap_up_restricted = 0
 
         def actions_done():
-            return sum(1 for item in trace if item.get("stage") != "wrap_up")
+            return sum(1 for item in trace if item.get("stage") not in ("wrap_up", "plan"))
 
         for step in range(1, self.max_steps + 1):
             if cancelled and cancelled():
@@ -310,6 +330,10 @@ class InvestigationAgent:
                     name, arguments = self.planner.choose(goal, trace, wrap_up=wrap_up)
                 else:
                     name, arguments = self.planner.choose(goal, trace)
+                # The rationale is a planner annotation, not a tool argument.
+                rationale = ""
+                if isinstance(arguments, dict) and "rationale" in arguments:
+                    rationale = str(arguments.pop("rationale"))[:300]
                 # Check after an in-flight model call, before executing its requested tool.
                 if self.planner.tokens_used >= self.max_tokens:
                     reason = "token_budget"
@@ -360,6 +384,8 @@ class InvestigationAgent:
                 reason = "planner_error:" + type(exc).__name__
                 break
             entry = {"step": step, "tool": name, "arguments": arguments}
+            if rationale:
+                entry["rationale"] = rationale
             try:
                 entry["result"] = self.tools.call(name, arguments)
             except ToolArgumentError as exc:
@@ -367,6 +393,16 @@ class InvestigationAgent:
                              "retry_guidance": "Correct arguments using the schema; do not repeat the invalid call."})
             except Exception as exc:
                 entry.update(error=type(exc).__name__, result={"error": "Tool failed or arguments invalid", "type": type(exc).__name__})
+            if name == "update_hypothesis" and not entry.get("error"):
+                updated = entry["result"]
+                target = next((item for item in plan if item["id"] == updated.get("hypothesis_id")), None)
+                if target is None:
+                    entry.update(error="UnknownHypothesis",
+                                 result={"error": "未知的假设 ID；请只更新计划中列出的假设。", "type": "UnknownHypothesis"})
+                else:
+                    target["status"] = updated["status"]
+                    target["note"] = updated.get("note", "")
+                    target["updated_at_step"] = step
             trace.append(entry)
             if on_step:
                 on_step(entry)
@@ -487,4 +523,5 @@ class InvestigationAgent:
                                     coverage, findings, list(self.tools.evidence.values()),
                                     list(self.tools.case_references.values()), trace, limitations,
                                     round(time.monotonic() - started, 3),
-                                    self.planner.tokens_used + (self.reviewer.tokens_used if self.reviewer else 0), judgment)
+                                    self.planner.tokens_used + (self.reviewer.tokens_used if self.reviewer else 0),
+                                    judgment, plan)
