@@ -276,9 +276,12 @@ class InvestigationTools:
         if len(query) > 1000:
             raise ValueError("Query too long")
         if self.retriever is not None:
-            query, rebuilt = self._rag_query(query)
+            if getattr(self.retriever, "backend", "") == "upstream_vector_rag":
+                query, rebuilt = self._rag_query(query)
+            else:
+                rebuilt = False
             hits = self.retriever(query, top_k)
-            backend = "upstream_vector_rag"
+            backend = getattr(self.retriever, "backend", "upstream_vector_rag")
         else:
             rebuilt = False
             cases = [json.loads(line) for line in self.case_file.read_text(encoding="utf-8-sig").splitlines() if line.strip()]
@@ -294,9 +297,10 @@ class InvestigationTools:
         projected = [{k: h.get(k, "") for k in ("case_id", "title", "content", "technique", "advice_cn", "score")}
                      for h in hits[:top_k]]
         self.case_references.update({c["case_id"]: c for c in projected if c["case_id"]})
-        if backend == "upstream_vector_rag":
+        if backend in ("upstream_vector_rag", "local_tfidf_cases"):
             projected = [{**case, "raw_score": round(float(h.get("raw_score", 0) or 0), 4),
-                          "evidence_usable": bool(h.get("evidence_usable", False))}
+                          "evidence_usable": bool(h.get("evidence_usable", False)),
+                          "match_level": h.get("match_level", "high" if h.get("evidence_usable") else "candidate")}
                          for case, h in zip(projected, hits[:top_k])]
             usable = sum(1 for case in projected if case["evidence_usable"])
             self.case_references.update({c["case_id"]: c for c in projected if c["case_id"]})

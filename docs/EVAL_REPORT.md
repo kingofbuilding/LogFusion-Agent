@@ -72,11 +72,20 @@
 
 C0 的工具 schema 只声明 `integer`，`max_groups ≤ 10` 只写在代码里，模型只能试错；修复后 schema 带 `minimum/maximum`，越界错误以可读文本回灌（`retry_guidance`）。C1 的 21 次运行工具报错率 0.10，C0 为 1.00。C1 同时把步数预算从 12 提到 16，因此提升是“schema + 预算”的合并效果。
 
-### 3.3 向量索引的实际情况
+### 3.3 向量索引的实际情况（已重建）
 
-上游 RAG 的可用口径是**候选模式**：`retrieve(..., apply_threshold=False)`，按 raw_score 排序返回 Top-K，并标注 `evidence_usable`（是否同时过 0.65/0.7 阈值）。论文中 harrison Top-1 命中 0.667、santos 0.900，Top-3/5 均为 1.0。
+上游 RAG 的可用口径是**候选模式**，原索引以哈希回退嵌入构建（256 维），短查询相似度常只有 0.05–0.15，即使能排序也无法给出有意义的分数。
 
-本次评测环境沿用同一索引，但 Agent 适配层最初用了默认严格阈值，导致 `retrieve_cases` 返回空；现已改为候选模式并回传 `raw_score` / `evidence_usable`。由于索引在哈希回退嵌入下构建（256 维），余弦分通常只有 0.05–0.13，即使 Top-K 排序里能排出相关案例，`evidence_usable` 也基本为 false；Agent 因此按“候选”展示并披露分数，而不是宣称命中。**D 组的差异来自检测器，不来自语义检索。**
+由于环境无法下载 sentence-transformers（HF 与镜像均不可达），本次用 **TF-IDF 重建**了同一批 67 条案例的索引（`scripts/rebuild_rag_index.py`，2114 维，离线、确定性）。重建后 Top-1 排序在样例查询上全部命中正确案例：
+
+| 查询 | Top-1 案例 | 分数 |
+|---|---|---:|
+| `Failed password for invalid user admin ...` | CASE-SEC-001 SSH brute force | 0.323 |
+| `Accepted password for root ...` | CASE-SEC-013 SSH root login success | 0.400 |
+| `sudo: alice ... COMMAND=/usr/bin/id` | CASE-SEC-005 Privilege escalation activity | 0.164 |
+| `AH01630: client denied ...` | AUTO-0011 Restricted resource probing | 0.349 |
+
+TF-IDF 的分数量纲与句向量不同，因此不再沿用 0.65/0.7 的证据阈值，而是标注 `match_level`：strong ≥ 0.35、medium ≥ 0.2、weak。Agent 的 `retrieve_cases` 优先使用该索引（`local_tfidf_cases`），返回候选与分数；**D 组的差异仍来自检测器，不来自检索。**
 
 ### 3.4 检测器观察的收敛
 

@@ -2711,3 +2711,25 @@
 
 ### Git 状态
 - 已提交
+
+## 2026-10-22 重建 RAG 案例索引（TF-IDF）
+
+### 修改内容
+- 新增 `scripts/rebuild_rag_index.py` 与 `src/agent/rag_index.py`：离线重建 67 条案例索引（TF-IDF，2114 维），同时保留 `--backend minilm` 入口，供联网环境替换为句向量。
+- Agent 检索优先使用 `local_tfidf_cases`，返回 Top-K、raw_score 与 match_level（strong ≥0.35 / medium ≥0.2 / weak）；不再依赖哈希索引与 0.65/0.7 阈值。
+- `retrieve_cases` 对向量后端统一回传候选与匹配强度；哈希后端仍保留“原始日志构造查询”的兼容分支。
+- 新增 3 个索引测试（排序正确、确定性、弱匹配标注），共 102 个测试。
+
+### 输出文件
+- `scripts/rebuild_rag_index.py`
+- `src/agent/rag_index.py`
+- `src/agent/adapters.py`、`src/agent/tools.py`
+- `tests/test_rag_index.py`
+- `docs/EVAL_REPORT.md`（3.3 重写）、`docs/ENGINEERING_ISSUES.md`（3.1 结案）、`README.md`、`reports/resume_project_logfusion_agent.md`
+
+### 结果说明
+- 样例查询 Top-1 全部命中：failed password → SSH brute force（0.323）、accepted root → root login success（0.400）、sudo → privilege escalation（0.164）、AH01630 → restricted resource probing（0.349）。
+- 索引离线、确定性，不依赖网络；句向量版本因 HF 不可达暂未生成，接口已预留。
+
+### Git 状态
+- 未提交

@@ -47,9 +47,23 @@ def upstream_detector():
     return detect
 
 
+def tfidf_case_retriever():
+    """Offline TF-IDF case index; preferred over the hash-embedding index when present."""
+    from .rag_index import TfidfCaseRetriever
+
+    index_path = ROOT / "data/vectors/rag_attack_cases_tfidf.npz"
+    vector_path = ROOT / "data/vectors/rag_attack_cases_tfidf.joblib"
+    if not (index_path.exists() and vector_path.exists()):
+        raise FileNotFoundError("缺少 TF-IDF 案例索引。运行 python scripts/rebuild_rag_index.py 重建。")
+    return TfidfCaseRetriever(index_path, vector_path)
+
+
 def upstream_retriever():
     from src.rag import AttackCaseRAG
     from src.utils import Config
+
+    if (ROOT / "data/vectors/rag_attack_cases_tfidf.npz").exists():
+        return tfidf_case_retriever()
     rag = AttackCaseRAG(Config())
     if not rag.load_index_if_exists():
         raise FileNotFoundError("未找到原项目的 RAG 索引。先运行 python main.py --build-rag --rag-force")
@@ -66,4 +80,5 @@ def upstream_retriever():
             hit.setdefault("evidence_usable", bool(hit.get("threshold_passed", False)))
             hit.setdefault("confidence_level", "high" if hit["evidence_usable"] else "candidate")
         return hits
+    retrieve.backend = "upstream_vector_rag"
     return retrieve

@@ -114,7 +114,17 @@ models/bilstm/best_model.pth
 data/vectors/rag_attack_cases.npz
 ```
 
-启用后 `detect_anomalies` 返回 `upstream_three_view_xgboost` 的真实窗口分数。注意两点：其一，窗口分数按末行事件 ID 定位，整窗证据需由调用方展开，否则标注事件可能永远落在窗口内部而不可见；其二，迁移过来的向量索引以哈希回退嵌入构建（本机未装 sentence-transformers），与查询的最高余弦相似度约 0.14，低于阈值 0.65/0.7，因此 `retrieve_cases` 在该索引下实际返回空，D 组差异来自检测器而非语义检索。
+启用后 `detect_anomalies` 返回 `upstream_three_view_xgboost` 的真实窗口分数。注意两点：其一，窗口分数按末行事件 ID 定位，整窗证据需由调用方展开，否则标注事件可能永远落在窗口内部而不可见；其二，迁移过来的向量索引以哈希回退嵌入构建（本机未装 sentence-transformers），与查询的余弦相似度很低，直接按 0.65/0.7 阈值检索会为空。
+
+因此提供离线索引重建，Agent 优先使用重建后的索引：
+
+```bash
+python scripts/rebuild_rag_index.py            # TF-IDF，67 条案例，2114 维，离线确定性
+# 联网环境可改用句向量：
+python scripts/rebuild_rag_index.py --backend minilm
+```
+
+重建后 `retrieve_cases` 返回 `local_tfidf_cases` 的 Top-K 与分数，并按 strong ≥0.35 / medium ≥0.2 / weak 标注匹配强度；案例始终只作解释参考，不参与结论。
 
 原检测器的窗口分数映射到末行事件 ID。各视图仍遵循上游代理分数与 hash 回退逻辑；融合模型存在不代表所有视图模型已训练加载。
 
