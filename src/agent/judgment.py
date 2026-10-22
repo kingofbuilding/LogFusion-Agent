@@ -32,8 +32,12 @@ def validate_judgment(payload, evidence, cases):
             raise JudgmentValidationError("invalid_claim_kind")
         statement = _text(claim["statement"])
         ids, case_ids = claim["evidence_ids"], claim["case_ids"]
-        if not isinstance(ids, list) or not 1 <= len(ids) <= 100 or any(not isinstance(x, str) or x not in evidence for x in ids):
+        if not isinstance(ids, list) or not 1 <= len(ids) <= 100:
             raise JudgmentValidationError("unknown_or_missing_evidence")
+        unknown = [str(x)[:32] for x in ids if not isinstance(x, str) or x not in evidence][:3]
+        if unknown:
+            # Name the offending IDs so the model can repair its own reference instead of guessing.
+            raise JudgmentValidationError("unknown_or_missing_evidence:" + ",".join(unknown))
         if not isinstance(case_ids, list) or len(case_ids) > 10 or any(not isinstance(x, str) or x not in cases for x in case_ids):
             raise JudgmentValidationError("unknown_case")
         normalized.append({"kind": claim["kind"], "statement": statement,

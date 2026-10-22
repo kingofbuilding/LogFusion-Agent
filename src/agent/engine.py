@@ -353,8 +353,11 @@ class InvestigationAgent:
                     continue
                 seen.add(signature)
             except Exception as exc:
+                # A provider failure should end with a report when evidence already exists; only a
+                # failure before any tool ran leaves nothing to report.
                 # Do not persist SDK exceptions, which may contain headers or credentials.
-                status, reason = "error", "planner_error:" + type(exc).__name__
+                status = "completed_partial" if trace else "error"
+                reason = "planner_error:" + type(exc).__name__
                 break
             entry = {"step": step, "tool": name, "arguments": arguments}
             try:

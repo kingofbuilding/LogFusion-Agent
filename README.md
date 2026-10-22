@@ -124,7 +124,17 @@ data/vectors/rag_attack_cases.npz
 | 阶段 | 预算 | 行为 |
 |---|---|---|
 | 工具阶段 | `max_steps - 2` 步、token 的 2/3 | 自主选择工具；重复调用只回灌提示，不中止调查 |
+| 收尾模式 | token 用到 75% 或只差 2 步时进入 | 追加“停止探索”指令，工具只剩 `build_timeline` / `retrieve_cases` / `finish_investigation` |
 | 收尾阶段 | 保留 ≥2 步、≥1/3 token | 补查案例、调用综合研判、生成报告 |
+
+状态取值：
+
+| 状态 | 含义 |
+|---|---|
+| `completed` | 正常结束，证据与研判都产出 |
+| `completed_partial` | 收尾模式或降级收尾结束；报告完整，但调查未覆盖全部路径 |
+| `limited` | 连收尾预算都不够（如总量过小），不发布研判 |
+| `cancelled` / `error` | 用户取消 / 规划器或服务异常 |
 
 三种常见的“快失败”都会降级为“带披露地完成”，而不是直接终止：
 

@@ -96,10 +96,13 @@ def test_invalid_output_is_repaired_once_with_safe_feedback():
     completion = FakeCompletions(invalid_count=1)
     result = InvestigationAgent(demo_store(), reviewer=reviewer_for(completion)).run("调查 SSH")
     assert result.status == "completed" and len(completion.calls) == 2
-    assert json.loads(completion.calls[1]["messages"][-1]["content"])["validation_feedback"] == "unknown_or_missing_evidence"
+    feedback = json.loads(completion.calls[1]["messages"][-1]["content"])["validation_feedback"]
+    assert feedback.startswith("unknown_or_missing_evidence")
+    assert "E-fabricated" in feedback, "the retry hint must name the unknown ID"
     assert result.tokens_used == 200
     assert result.trace[-2]["error"] == "JudgmentValidationError"
-    assert "E-fabricated" not in json.dumps(result.to_dict())
+    assert "E-fabricated" not in json.dumps(result.judgment, ensure_ascii=False)
+    assert "E-fabricated" not in json.dumps([f.evidence_ids for f in result.findings])
 
 
 def test_repeated_invalid_output_is_not_published_and_rules_remain():
