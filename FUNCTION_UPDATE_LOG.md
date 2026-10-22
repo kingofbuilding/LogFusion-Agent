@@ -2922,3 +2922,20 @@
 - `ssh_auth` 行为与改造前一致（原 118 个测试全绿，未改断言）。
 - 非 SSH 方言实测：7 条 RADIUS 风格合成日志 → `completed / planner_finished`，2 条结论（`suspected_bruteforce`、`success_after_failures`），7 条证据全部可引用，报告限制文案为“第一版仅对通用认证日志…”。
 - 边界：profile 换方言不换安全语义，结论规则与案例库仍属认证域；Web / 进程行为需新结论规则，未实现。
+
+## 2026-10-22 计划阶段去 SSH 硬编码：profile 渲染 + 数据概况注入
+
+### 问题
+`PLAN_PROMPT` 首句写死 `You plan a read-only SSH log investigation`，且 `plan()` 不接收日志概况。结果是：无论上传什么日志，模型都按「SSH 爆破 → 成功登录 → 提权」这条链提假设。多源场景下假设与数据无关，属于真实缺陷而非措辞问题。
+
+### 修改
+- `planner.py`：`PLAN_PROMPT` → `PLAN_PROMPT_TEMPLATE` + `plan_prompt(profile, digest)`；首句改为 `over {label}`，第二行注入 `The uploaded logs contain: {digest}`；提示词明确要求"按实际存在的事件类型提假设，多方言并存时覆盖跨源关联，不要假定单一认证叙事"。
+- `planner.py`：`LLMPlanner.plan(goal, digest="")` 与 `RulePlanner.plan(goal, digest="")`；规则剧本改用 `profile.failure_type` / `profile.success_type`，不再写死中文"认证失败"。
+- `engine.py`：新增 `_data_digest()`，统计事件类型分布、主机数、来源 IP 数、可解析时间戳数，在 `run()` 调 `plan()` 时传入。
+- 测试：两处 fake planner 的 `plan` 签名同步为 `(self, goal, digest="")`。
+
+### 结果说明
+- `pytest`：125 passed。
+- 2 MB 多源切片（11,022 事件 / 4 类源）实测 digest：`other×10815、auth_success×207；主机 165 个、来源 IP 8 个；5307 条带时间戳`，提示词首行渲染为 `over 通用认证日志`。
+- **未验证项**：多源假设的实际生成质量需要 LLM 模式，当前账户余额为 0，无法复测。
+- **暴露的边界**：11,022 条中 10,815 条仍归为 `other` —— 说明多源支持在**输入端**成立，在**语义端**只有认证类方言，VPN / DNS / audit 的分类规则尚未实现。

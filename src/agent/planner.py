@@ -40,12 +40,22 @@ def system_prompt(profile: LogProfile = DEFAULT_PROFILE) -> str:
 
 SYSTEM_PROMPT = system_prompt()
 
-PLAN_PROMPT = """You plan a read-only SSH log investigation. Write in Chinese.
-Given the goal, propose 2 to 4 hypotheses that the investigation should confirm or refute.
-Each hypothesis must be checkable with log evidence, for example a failure pattern, a link between
-failure and success, or post-login activity. Do not claim any fact before evidence is seen.
-Call submit_plan only; no prose outside the tool call.
+PLAN_PROMPT_TEMPLATE = """You plan a read-only log investigation over {label}. Write in Chinese.
+The uploaded logs contain: {digest}
+Propose 2 to 4 hypotheses that the investigation should confirm or refute. Ground every hypothesis
+in the event types actually present above; when several dialects are present, cover the cross-source
+links (for example a burst in one source and a follow-up event in another) instead of assuming a
+single authentication story. Each hypothesis must be checkable with log evidence and must not assert
+any fact before evidence is seen. Call submit_plan only; no prose outside the tool call.
 """
+
+
+def plan_prompt(profile: LogProfile = DEFAULT_PROFILE, digest: str = "") -> str:
+    return PLAN_PROMPT_TEMPLATE.format(label=profile.label,
+                                       digest=digest or "（未提供数据概况，请按目标提出可验证假设）")
+
+
+PLAN_PROMPT = plan_prompt()
 
 PLAN_SCHEMA = {"type": "function", "function": {
     "name": "submit_plan", "description": "Submit 2-4 investigation hypotheses.",
@@ -79,11 +89,12 @@ class RulePlanner:
     def __init__(self, profile: LogProfile = DEFAULT_PROFILE):
         self.profile = profile
 
-    def plan(self, goal):
+    def plan(self, goal, digest: str = ""):
         """Fixed playbook hypotheses, so the rule demo shows the same plan/act/update structure."""
-        return ["存在集中认证失败的来源，或跨来源的喷洒/撞库形态",
-                "失败活动之后是否出现同账号、同主机的成功登录",
-                "该成功登录之后是否有特权命令或账户变更"]
+        f, s_ = self.profile.failure_type, self.profile.success_type
+        return [f"存在集中失败（{f}）的来源，或跨来源的喷洒/撞库形态",
+                f"集中失败之后是否出现同实体、同主机的成功事件（{s_}）",
+                "该成功事件之后是否有提权、账户变更或横向访问"]
 
     def choose(self, goal, trace, wrap_up: bool = False, final: bool = False):
         # Plan and wrap-up notices are annotations, not investigation actions.
@@ -198,11 +209,12 @@ class LLMPlanner:
         return cls(OpenAI(api_key=key, base_url=base, timeout=timeout, max_retries=0), model,
                    request_options=options, profile=profile)
 
-    def plan(self, goal):
+    def plan(self, goal, digest: str = ""):
         """Ask the model for 2-4 hypotheses before any tool call; planning is optional."""
         response = self.client.chat.completions.create(
             model=self.model,
-            messages=[{"role": "system", "content": PLAN_PROMPT}, {"role": "user", "content": goal}],
+            messages=[{"role": "system", "content": plan_prompt(self.profile, digest)},
+                      {"role": "user", "content": goal}],
             tools=[PLAN_SCHEMA], tool_choice={"type": "function", "function": {"name": "submit_plan"}},
             temperature=0, max_tokens=400, **self.request_options)
         if response.usage is None:

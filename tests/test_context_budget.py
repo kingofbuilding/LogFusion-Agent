@@ -91,7 +91,7 @@ class EmptySearchPlanner:
     def __init__(self):
         self.calls = 0
 
-    def plan(self, goal):
+    def plan(self, goal, digest=""):
         return ["存在失败簇"]
 
     def choose(self, goal, trace, wrap_up=False, final=False):

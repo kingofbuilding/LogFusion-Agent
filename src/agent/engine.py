@@ -290,6 +290,18 @@ class InvestigationAgent:
         self.max_steps, self.max_seconds, self.max_tokens = max_steps, max_seconds, max_tokens
         self.completeness_gate = completeness_gate
 
+    def _data_digest(self) -> str:
+        """Summarise what the uploaded logs actually contain, so planning is not dialect-blind."""
+        import collections
+        kinds = collections.Counter(event.event_type for event in self.store.events)
+        hosts = {event.host for event in self.store.events if event.host}
+        sources = {event.src_ip for event in self.store.events if event.src_ip}
+        top = "、".join(f"{name}×{count}" for name, count in kinds.most_common(6))
+        stamped = sum(1 for event in self.store.events if event.timestamp)
+        return (f"共 {len(self.store.events)} 条事件，类型分布：{top or '无'}；"
+                f"涉及主机 {len(hosts)} 个、来源 IP {len(sources)} 个；"
+                f"{stamped} 条带可解析时间戳")
+
     def _coverage_gaps(self, trace, plan) -> list[str]:
         """What the investigation already knows it has not checked before declaring it is done."""
         gaps = []
@@ -360,7 +372,7 @@ class InvestigationAgent:
         plan: list[dict] = []
         if getattr(self.planner, "supports_plan", False) and not (cancelled and cancelled()):
             try:
-                statements = self.planner.plan(goal) or []
+                statements = self.planner.plan(goal, digest=self._data_digest()) or []
             except Exception:
                 statements = []  # a planning failure must not prevent the investigation
             plan = [{"id": f"H{i + 1}", "statement": str(text)[:200].strip(), "status": "open"}

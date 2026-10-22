@@ -27,7 +27,7 @@ class PlannerWithPlan:
     def __init__(self, script, hypotheses=("集中失败来源",)):
         self.script, self.hypotheses, self.step = list(script), list(hypotheses), 0
 
-    def plan(self, goal):
+    def plan(self, goal, digest=""):
         return self.hypotheses
 
     def choose(self, goal, trace):
