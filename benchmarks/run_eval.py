@@ -221,11 +221,11 @@ def _exception_row(meta: dict, exc: Exception) -> dict:
             "stop_reason": type(exc).__name__, "judgment_status": "not_requested", "claims": 0}
 
 
-def run_group(group: str, cases: list[dict], repeats: int, progress=print) -> dict:
+def run_group(group: str, cases: list[dict], repeats: int, progress=print, cases_dir: Path = CASES_DIR) -> dict:
     shared: dict = {}
     rows = []
     for meta in cases:
-        store = EventStore.from_path(CASES_DIR / meta["log_file"])
+        store = EventStore.from_path(cases_dir / meta["log_file"])
         for attempt in range(1, repeats + 1):
             # Fresh tools/agent per attempt: the engine resets per-run state, and rebuilding also
             # guarantees no evidence dictionary is shared between cases.
@@ -280,6 +280,8 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=0, help="只跑前 N 条用例（0 为全部）")
     parser.add_argument("--case-ids", default="", help="逗号分隔的用例 ID")
     parser.add_argument("--out", type=Path, default=RESULTS_DIR)
+    parser.add_argument("--cases-dir", type=Path, default=CASES_DIR,
+                        help="用例目录；规则失效用例在 benchmarks/cases_hard")
     args = parser.parse_args()
 
     groups = [g.strip() for g in args.groups.split(",") if g.strip()]
@@ -289,10 +291,11 @@ def main() -> int:
     if args.repeats < 1:
         parser.error("--repeats 至少为 1")
 
-    metas = [json.loads(p.read_text(encoding="utf-8"))
-             for p in sorted(CASES_DIR.glob("ssh-*.json"))]
+    cases_dir = args.cases_dir
+    case_glob = "hard-*.json" if cases_dir.name == "cases_hard" else "ssh-*.json"
+    metas = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(cases_dir.glob(case_glob))]
     if not metas:
-        print("未找到用例，请先运行 python -m benchmarks.generate_cases")
+        print(f"未找到用例：{cases_dir}；请先运行 python -m benchmarks.generate_cases 或 generate_hard_cases")
         return 2
     if args.case_ids:
         wanted = {c.strip() for c in args.case_ids.split(",") if c.strip()}
@@ -306,11 +309,12 @@ def main() -> int:
     print(f"用例 {len(metas)} 条；分组 {groups}；重复 {args.repeats} 次；代码 {git_sha()[:12]}；预算 {PER_GROUP_BUDGET}")
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     args.out.mkdir(parents=True, exist_ok=True)
-    payload = {"suite": "benchmarks/cases", "stamp": stamp, "repeats": args.repeats,
+    payload = {"suite": str(cases_dir.relative_to(ROOT)) if cases_dir.is_relative_to(ROOT) else str(cases_dir),
+               "stamp": stamp, "repeats": args.repeats,
                "git_sha": git_sha(), "budgets": PER_GROUP_BUDGET, "groups": {}}
     for group in groups:
         print(f"\n== 组 {group} ==")
-        data = run_group(group, metas, args.repeats)
+        data = run_group(group, metas, args.repeats, cases_dir=cases_dir)
         payload["groups"][group] = data
         print(markdown_table(group, data["summary"]))
     target = args.out / f"eval_{'_'.join(groups)}_{stamp}.json"

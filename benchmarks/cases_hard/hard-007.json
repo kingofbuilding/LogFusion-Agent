@@ -1,0 +1,33 @@
+{
+  "case_id": "hard-007",
+  "category": "many_accounts_one_ip",
+  "log_file": "hard-007.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "insufficient_evidence",
+    "must_find_event_ids": [
+      "E-d4b71fb4e6c6a32c",
+      "E-49de7add1f3d6c14",
+      "E-82fff4a29fda24db",
+      "E-d5e8c79617fb5758",
+      "E-d6bdb8891162e4d5",
+      "E-26acbb507e60853f",
+      "E-9d369ca8dbd9b0f7",
+      "E-7b868fd55f13cdb6",
+      "E-44b637adf8deb7d2",
+      "E-c5a8acd437690b97",
+      "E-bb7d0590475f1044",
+      "E-4a82ae7e0e6e0725",
+      "E-1dcd88601c984435",
+      "E-a2a4cda54ef19ad3",
+      "E-7869b53c175cd1ee",
+      "E-9042f8b846386dc0"
+    ],
+    "must_link_event_ids": [],
+    "must_not_link_event_ids": [],
+    "must_not_pair": []
+  },
+  "incident_present": true,
+  "design": "同一 IP 在 2 分钟内对 15 个账号各失败 1 次后其中一个账号成功登录，属于撞库形态。",
+  "note": "规则结论层无法表达此类事件；判分只看关键证据召回，不看 verdict。"
+}

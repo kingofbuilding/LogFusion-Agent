@@ -1,0 +1,15 @@
+{
+  "suite": "logfusion-agent-hard-cases",
+  "version": 1,
+  "seed": 20260210,
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "total": 12,
+  "counts": {
+    "distributed_spray": 3,
+    "low_and_slow": 3,
+    "many_accounts_one_ip": 3,
+    "spray_then_other_host": 3
+  },
+  "generator": "benchmarks/generate_hard_cases.py",
+  "note": "规则剧本结构性失效的用例；verdict 恒为 insufficient_evidence，指标为关键证据召回"
+}

@@ -1,0 +1,38 @@
+{
+  "case_id": "hard-002",
+  "category": "distributed_spray",
+  "log_file": "hard-002.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "insufficient_evidence",
+    "must_find_event_ids": [
+      "E-b984466266382b9f",
+      "E-5ae9a6569cf257b2",
+      "E-6c3dad04b9790420",
+      "E-e9410a19276574ad",
+      "E-dfdf27afdda62e66",
+      "E-55327d08d09198c8",
+      "E-8ee974c022f20397",
+      "E-67dc5c6c41e24ac6",
+      "E-1390bea5d3f4356f",
+      "E-a1cc7196da407090",
+      "E-96c12b05e605398e",
+      "E-b3c2e8b068c67609",
+      "E-5c10881437b352ea",
+      "E-6ccfec5beb93fc1c",
+      "E-e3e3488e44c9a93e",
+      "E-ee7e527c4f356fee",
+      "E-2fe6150499e12748",
+      "E-18ec51a57b6ca586",
+      "E-1849a15ea35d7b24",
+      "E-00e4341f981c6f14",
+      "E-5faa423975a6ad0f"
+    ],
+    "must_link_event_ids": [],
+    "must_not_link_event_ids": [],
+    "must_not_pair": []
+  },
+  "incident_present": true,
+  "design": "20 个不同 IP 各失败 1 次后同一账号成功登录；任一 (IP,账号,主机) 都达不到 5 次阈值。",
+  "note": "规则结论层无法表达此类事件；判分只看关键证据召回，不看 verdict。"
+}

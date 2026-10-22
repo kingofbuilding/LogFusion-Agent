@@ -1,0 +1,38 @@
+{
+  "case_id": "hard-011",
+  "category": "spray_then_other_host",
+  "log_file": "hard-011.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "insufficient_evidence",
+    "must_find_event_ids": [
+      "E-7b072a9ea6509b7f",
+      "E-44eca53be82eb422",
+      "E-054729ff551838f9",
+      "E-6df925e5300ba638",
+      "E-9ced5c2e1273938b",
+      "E-24d6f343de2115e1",
+      "E-5e6b185947ad378b",
+      "E-d036615497b69969",
+      "E-509c194de9be622e",
+      "E-2ac3f46dc812a3dd",
+      "E-6e2a826bdee00106",
+      "E-3bef0a29f1049b55",
+      "E-6a5024d4b8024d35",
+      "E-0f4e46ab4799f465",
+      "E-c13c594227885e01",
+      "E-c6125ecdb0ee3e55",
+      "E-332fa8ac4afd1aeb",
+      "E-6aab3121a9302d6a",
+      "E-165a8831940afa32",
+      "E-1cabf8ba5400f224",
+      "E-7187bbc6f4ed8d79"
+    ],
+    "must_link_event_ids": [],
+    "must_not_link_event_ids": [],
+    "must_not_pair": []
+  },
+  "incident_present": true,
+  "design": "分布式喷洒发生在 web-01，成功登录落在 db-01，跨主机且无实体达到阈值。",
+  "note": "规则结论层无法表达此类事件；判分只看关键证据召回，不看 verdict。"
+}

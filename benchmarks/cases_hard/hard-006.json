@@ -1,0 +1,30 @@
+{
+  "case_id": "hard-006",
+  "category": "low_and_slow",
+  "log_file": "hard-006.jsonl",
+  "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
+  "expected": {
+    "verdict": "insufficient_evidence",
+    "must_find_event_ids": [
+      "E-d78f1a94529392a9",
+      "E-8015b10db4cc2f28",
+      "E-16454790fcc00041",
+      "E-5853cd47f63406c4",
+      "E-510cb1f04f24107c",
+      "E-ab2890a5460035f6",
+      "E-220329fac3107c02",
+      "E-2810fa38ea755f6d",
+      "E-7ebc6bc040a29c45",
+      "E-1064d804cfe2778a",
+      "E-9acc8389456b2540",
+      "E-31d3de43cbfeae85",
+      "E-2ca85e4247f9b2ce"
+    ],
+    "must_link_event_ids": [],
+    "must_not_link_event_ids": [],
+    "must_not_pair": []
+  },
+  "incident_present": true,
+  "design": "同一实体每 10 分钟错 4 次、连续三个窗口后成功；任一 5 分钟窗口内最多 4 次。",
+  "note": "规则结论层无法表达此类事件；判分只看关键证据召回，不看 verdict。"
+}
