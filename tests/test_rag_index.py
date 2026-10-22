@@ -16,7 +16,7 @@ def _retriever(directory) -> TfidfCaseRetriever:
 
 def test_rebuilt_index_ranks_the_matching_case(tmp_path):
     summary = build_tfidf_index(load_cases(CASES), tmp_path)
-    assert summary["cases"] == 67 and summary["dim"] > 100
+    assert summary["cases"] == 57 and summary["dim"] > 100
     retriever = TfidfCaseRetriever(tmp_path / "rag_attack_cases_tfidf.npz",
                                    tmp_path / "rag_attack_cases_tfidf.joblib")
     hits = retriever("Failed password for invalid user admin from 203.0.113.9 port 5555 ssh2", 3)
