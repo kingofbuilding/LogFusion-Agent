@@ -70,6 +70,21 @@ LLM 决定查询路径，规则发现受 SSH 证据规则约束；综合研判�
 评测新增 `gate_terminal_refusals`（终局被闸门拒绝的次数），与 `gate_triggers` 分开统计，避免把“审计发现缺口”和“模型被退回后补齐”混为一谈。
 
 
+## 2026-10-22 上下文成本：折叠、台账与空结果熔断
+
+原先每轮都按完整 trace 重建 messages，第 n 步的输入包含前 n-1 步的全部观察，成本随步数平方增长。实测拆解（19 条 trace / 16 次调用 / 88,615 token）：固定开销（system 1,417 + 8 个 schema 4,574 字符 ≈ 1,536/次）占 29%，历史重发占 70%，模型输出仅 1.4%。这也是“预算翻倍、步数只多两步”的原因。
+
+现在的做法：
+
+1. `build_messages()` 独立成可测函数，`fold=False` 保留旧行为，供 `benchmarks/measure_context.py` 离线回放对照（不需要 API key）。
+2. **折叠（默认）**：除最近 `HISTORY_VERBATIM_ITEMS=4` 条外，旧观察替换为**保形**定位投影——`events` 仍是列表，只保留 `event_id/timestamp/event_type/host/user/src_ip`，最多 6 行，丢弃 `raw/source/line`；小于 420 字符的观察不折叠（摘要本身更大）。
+3. **台账（`AGENT_HISTORY_MODE=compact`，默认关）**：旧轮次压成一条 user 消息的台账，历史成本从平方降为常数。
+4. **空结果熔断**：连续 2 次返回空集注入“换维度”提示（`control=EmptyResultHint`），第 3 次直接进入收尾，`stop_reason` 仍是 `evidence_budget` 类，不伪装成功。
+5. `prompt_cache_hit_tokens` 单独累计为 `tokens_cached`：预算仍按名义值守口（保守），但成本口径可解释。
+
+折叠只改发给模型的消息，不改 trace：完整性闸门的 `_coverage_gaps()` 与研判的 `validate_judgment()` 读的是 trace 与工具层状态，因此“引用必须真查过”这条纪律不受影响。回放 44 条轨迹（378 次调用）：折叠平均降 13.6%（≥10 步轨迹 16.0%，最长轨迹 22.1%），台账 ≥10 步降 33.7%、16 步轨迹降 49.5%；空结果占 20/378 次。台账的行为等价性尚未用真实模型验证，故默认关闭。
+
+
 ## 迭代顺序
 
 1. 更完整的 SSH 解析、时间补全、多失败窗口与分页查询。

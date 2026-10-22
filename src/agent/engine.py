@@ -20,6 +20,22 @@ WRAP_UP_TOOLS = {"build_timeline", "retrieve_cases", "update_hypothesis", "finis
 # this cap a planner that never calls finish_investigation can consume the whole remaining budget and
 # the completeness gate is never consulted, because the gate only runs on a finish request.
 WRAP_UP_TURNS = 2
+# A tool call that returns no rows still costs a full replay of the conversation. Two in a row is
+# usually one bad query filter, not a dead end, so the planner is told to change dimension; a third
+# means the remaining budget would be spent on the same empty query shape, so wrap-up starts early.
+EMPTY_RESULT_HINT_AT = 2
+EMPTY_RESULT_WRAP_AT = 3
+
+
+def is_empty_observation(result) -> bool:
+    """True when a successful tool call located nothing (as opposed to failing)."""
+    if not isinstance(result, dict) or result.get("error"):
+        return False
+    for key in ("events", "groups", "cases"):
+        rows = result.get(key)
+        if isinstance(rows, list):
+            return len(rows) == 0
+    return False
 
 
 @dataclass
@@ -48,6 +64,7 @@ class InvestigationResult:
     judgment: dict = field(default_factory=lambda: {"status": "not_requested"})
     plan: list[dict] = field(default_factory=list)
     gate_triggers: int = 0
+    tokens_cached: int = 0
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def to_dict(self):
@@ -356,6 +373,7 @@ class InvestigationAgent:
         # so wrap-up would be entered and skipped in the same iteration. Reserve ~1.5 observed turns.
         wrap_up_steps = max(1, tool_step_limit - 2)
         repeated_calls = 0
+        empty_streak = 0
         wrap_up = False
         wrap_up_turns = 0
         wrap_up_final = False
@@ -385,11 +403,14 @@ class InvestigationAgent:
             wrap_up_headroom = min(max(1_200, int(self.planner.tokens_used / turns_done * 1.5)),
                                    tool_token_limit // 2)
             if not wrap_up and (self.planner.tokens_used >= tool_token_limit - wrap_up_headroom
-                                or actions_done() >= wrap_up_steps):
+                                or actions_done() >= wrap_up_steps
+                                or empty_streak >= EMPTY_RESULT_WRAP_AT):
                 wrap_up = True
+                why = ("连续空结果，继续同一查询形状只会重复付费" if empty_streak >= EMPTY_RESULT_WRAP_AT
+                       else "预算接近上限")
                 notice = {"step": step, "tool": "wrap_up", "arguments": {}, "stage": "wrap_up",
                           "result": {"mode": "wrap_up",
-                                     "notice": "预算接近上限：停止探索。本轮先用 update_hypothesis 收束假设，"
+                                     "notice": f"{why}：停止探索。本轮先用 update_hypothesis 收束假设，"
                                                "可再用 build_timeline 整理证据，随后必须调用 "
                                                f"finish_investigation；{WRAP_UP_TURNS} 轮后强制收口。"}}
                 trace.append(notice)
@@ -532,6 +553,24 @@ class InvestigationAgent:
             trace.append(entry)
             if on_step:
                 on_step(entry)
+            # Empty observations are not free: each one is resent on every later turn. Two in a row
+            # usually means the filter is wrong, so the planner is redirected before a third attempt.
+            if entry.get("error"):
+                empty_streak = 0
+            elif is_empty_observation(entry.get("result")):
+                empty_streak += 1
+                if empty_streak == EMPTY_RESULT_HINT_AT:
+                    hint = {"step": next_step(), "tool": "empty_result", "arguments": {},
+                            "stage": "hint", "control": "EmptyResultHint",
+                            "result": {"streak": empty_streak,
+                                       "notice": f"连续 {empty_streak} 次没有取到任何记录。不要沿同一条件放宽时间或加大 limit，"
+                                                 "换一个维度：另一实体、另一 event_type，或用 get_event_context 核对此前"
+                                                 "已返回的事件 ID；也可以直接 build_timeline 整理已有证据。"}}
+                    trace.append(hint)
+                    if on_step:
+                        on_step(hint)
+            else:
+                empty_streak = 0
             # Pull completeness checks forward: once a failure cluster is observed, the planner is
             # told to search that entity's follow-up logins now, not at finish time when the budget
             # is gone. Each entity is nudged once.
@@ -696,4 +735,5 @@ class InvestigationAgent:
                                     list(self.tools.case_references.values()), trace, limitations,
                                     round(time.monotonic() - started, 3),
                                     self.planner.tokens_used + (self.reviewer.tokens_used if self.reviewer else 0),
-                                    judgment=judgment, plan=plan, gate_triggers=gate_triggers)
+                                    judgment=judgment, plan=plan, gate_triggers=gate_triggers,
+                                    tokens_cached=int(getattr(self.planner, "cached_tokens", 0) or 0))

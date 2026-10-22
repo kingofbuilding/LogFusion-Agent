@@ -2869,3 +2869,25 @@
 
 ### Git 状态
 - 未提交
+
+## 2026-10-22 上下文成本优化：折叠 / 台账 / 空结果熔断
+
+### 修改内容
+- `planner.py`：抽出 `build_messages()`（`fold` 与 `compact` 两种历史策略，`fold=False` 保留旧行为）、`project_observation()`、`fold_observation()`、`build_ledger()`、`_brief()`。折叠为**保形**投影：`events/groups/cases` 仍是列表，只留定位字段，行数截到 6，丢弃 `raw/source/line`；小于 420 字符的观察不折叠。
+- `planner.py`：新增 `LLMPlanner._account()`，单独累计 `prompt_cache_hit_tokens` → `cached_tokens`；`AGENT_HISTORY_MODE=full|fold|compact`（默认 fold）。
+- `engine.py`：新增 `is_empty_observation()` 与空结果熔断——连续 2 次空集注入 `EmptyResultHint`，第 3 次提前进入收尾（wrap_up 提示改为按原因区分文案）。
+- `engine.py`：`InvestigationResult` 新增 `tokens_cached`。
+- `benchmarks/run_eval.py`：新增 `tokens_cached`、`empty_calls` 逐例字段与 `mean_tokens_cached`、`mean_empty_calls` 汇总，总体行输出缓存命中与空结果调用。
+- 新增 `benchmarks/measure_context.py`：离线回放 `outputs/investigations/*/investigation.json`，对比 full / fold / compact 三种策略的 payload 成本，不需要 API key。
+- 新增 `tests/test_context_budget.py`（7 个测试）：折叠降体积且保留全部证据 ID、小观察不折叠、台账严格更省、观察投影截断、空结果判定、熔断触发提示并提前收口、缓存命中与预算分离记账。
+- 新增 `reports/resume_token_efficiency.md`：面向简历的归因、改动、数据、边界与面试问答。
+
+### 依据
+- 调用级重算 INV-a629dd03638c（16 次调用 / 88,615 token）：固定开销 29%、历史重发 70%、输出 1.4%；自建估算模型给出 84,771，误差 4%。
+- 回放 44 条轨迹 / 378 次调用：折叠 961,692 → 830,534（−13.6%），≥10 步 19 条 603,489 → 506,656（−16.0%），最长 16 步 52,628 → 40,981（−22.1%）；台账 691,677（−28.1%）/ ≥10 步 −33.7% / 16 步 26,597（−49.5%）。空结果 20/378（5.3%），10 条轨迹受影响，单条最多 7 次。
+
+### 结果说明
+- `pytest`：115 passed（原 108 + 7）。
+- 规则模式冒烟（12 条失效集）：完成率 1.00、证据召回 1.00、平均 8.7 步、空结果 0.3 次/次，管线正常。
+- **未做真实模型复测**：DeepSeek 账户余额为 0，`/user/balance` 返回 `is_available=false`，任何 LLM 调用 402。台账模式的行为等价性待余额恢复后用 `--limit 3 --repeats 3` 对照，通过后再考虑改默认。
+- 折叠不改变 trace，因此闸门与引用校验的行为不变（`_coverage_gaps` / `validate_judgment` 读 trace 与工具层状态）。

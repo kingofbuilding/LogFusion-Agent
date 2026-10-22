@@ -26,7 +26,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from src.agent.engine import InvestigationAgent
+from src.agent.engine import InvestigationAgent, is_empty_observation
 from src.agent.events import EventStore
 from src.agent.planner import RulePlanner
 from src.agent.tools import ROOT
@@ -124,6 +124,10 @@ def score_case(meta: dict, result) -> dict:
         "tool_errors": sum(bool(t.get("error")) for t in result.trace),
         "tool_error_types": sorted({t["error"] for t in result.trace if t.get("error")}),
         "tokens": result.tokens_used,
+        "tokens_cached": getattr(result, "tokens_cached", 0),
+        "empty_calls": sum(1 for t in result.trace
+                           if not t.get("error") and t.get("stage") not in ("plan", "gate", "wrap_up", "hint")
+                           and is_empty_observation(t.get("result"))),
         "elapsed": result.elapsed_seconds,
         "status": result.status,
         "stop_reason": result.stop_reason,
@@ -160,6 +164,8 @@ def summarize(rows: list[dict]) -> dict:
                "pair_violations": sum(bool(r["pair_violations"]) for r in rows),
                "mean_tool_steps": _mean([r["tool_steps"] for r in rows]),
                "mean_tokens": _mean([r["tokens"] for r in rows]),
+               "mean_tokens_cached": _mean([r.get("tokens_cached", 0) for r in rows]),
+               "mean_empty_calls": _mean([r.get("empty_calls", 0) for r in rows]),
                "tool_error_rate": _mean([bool(r.get("tool_errors", 0)) for r in rows]),
                "tool_error_types": {name: sum(name in r.get("tool_error_types", []) for r in rows)
                                     for name in sorted({e for r in rows for e in r.get("tool_error_types", [])})},
@@ -302,7 +308,8 @@ def markdown_table(group: str, summary: dict) -> str:
     lines += ["", f"总体：结论正确率 {fmt(summary['verdict_accuracy'])}，证据召回 {fmt(summary['evidence_recall'])}，"
                   f"证据精度 {fmt(summary['evidence_precision'])}，关联召回 {fmt(summary['link_recall'])}，"
                   f"误关联 {summary['mislink_cases']} 例，平均 {fmt(summary['mean_tool_steps'], 1)} 步，"
-                  f"平均 {fmt(summary['mean_tokens'], 0)} tokens，"
+                  f"平均 {fmt(summary['mean_tokens'], 0)} tokens（缓存命中 {fmt(summary['mean_tokens_cached'], 0)}），"
+                  f"空结果调用 {fmt(summary['mean_empty_calls'], 1)} 次/次，"
                   f"完成率 {fmt(summary['completion_rate'])}（完全完成 {fmt(summary['completed_rate'])}，部分完成 {fmt(summary['partial_rate'])}），"
                   f"闸门 {fmt(summary['mean_gate_triggers'], 1)} 次/次（终局拒绝 {fmt(summary['mean_gate_terminal_refusals'], 1)}），"
                   f"理由覆盖 {fmt(summary['rationale_rate'])}，"
