@@ -1,0 +1,37 @@
+{
+  "csv": "D:\\毕业设计\\log_analysis_system_complete\\data\\processed\\fox\\fox_parsed.csv",
+  "rows": [
+    {
+      "backend": "minilm",
+      "dataset": "fox",
+      "query_mode": "template",
+      "n": 815,
+      "top1_mean": 0.3308,
+      "top1_median": 0.3163,
+      "top1_p90": 0.3556,
+      "share_strong": 0.0258,
+      "share_medium_or_better": 0.0699,
+      "share_weak": 0.9301,
+      "distinct_top1_cases": 17,
+      "top1_top_case_share": 0.9006,
+      "top1_group_dist": {
+        "unknown": 5,
+        "security_attack": 810
+      }
+    },
+    {
+      "backend": "tfidf",
+      "dataset": "fox",
+      "query_mode": "template",
+      "n": 815,
+      "top1_mean": 0.273,
+      "top1_median": 0.2651,
+      "top1_p90": 0.2672,
+      "share_strong": 0.0479,
+      "share_medium_or_better": 0.9779,
+      "share_weak": 0.0221,
+      "distinct_top1_cases": 15,
+      "top1_top_case_share": 0.9092
+    }
+  ]
+}

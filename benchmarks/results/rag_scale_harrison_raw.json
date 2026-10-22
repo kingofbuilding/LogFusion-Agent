@@ -1,0 +1,38 @@
+{
+  "csv": "D:\\毕业设计\\log_analysis_system_complete\\data\\processed\\harrison\\harrison_parsed.csv",
+  "rows": [
+    {
+      "backend": "minilm",
+      "dataset": "harrison",
+      "query_mode": "raw",
+      "n": 500,
+      "top1_mean": 0.4595,
+      "top1_median": 0.4545,
+      "top1_p90": 0.5739,
+      "share_strong": 0.14,
+      "share_medium_or_better": 0.776,
+      "share_weak": 0.224,
+      "distinct_top1_cases": 14,
+      "top1_top_case_share": 0.788,
+      "top1_group_dist": {
+        "unknown": 432,
+        "security_attack": 67,
+        "system_anomaly": 1
+      }
+    },
+    {
+      "backend": "tfidf",
+      "dataset": "harrison",
+      "query_mode": "raw",
+      "n": 500,
+      "top1_mean": 0.2368,
+      "top1_median": 0.208,
+      "top1_p90": 0.2943,
+      "share_strong": 0.068,
+      "share_medium_or_better": 0.588,
+      "share_weak": 0.412,
+      "distinct_top1_cases": 14,
+      "top1_top_case_share": 0.402
+    }
+  ]
+}
