@@ -225,3 +225,34 @@ def test_full_llm_planner_retrieval_synthesis_pipeline():
     assert result.plan and result.plan[0]["statement"] == "存在集中失败"
     assert result.tokens_used >= 450
     assert result.trace[-1]["tool"] == "synthesize_judgment"
+
+
+def test_claim_citing_only_other_typed_events_is_rejected():
+    """Evidence-relevance gate: a claim backed solely by unclassified (`other`) events cannot stand."""
+    evidence = {"E1": {"event_id": "E1", "event_type": "other", "timestamp": "t", "line": 1}}
+    payload = {"assessment": "suspicious",
+               "claims": [{"kind": "observation", "statement": "可疑",
+                           "evidence_ids": ["E1"], "case_ids": []}],
+               "recommendations": [], "uncertainties": []}
+    with pytest.raises(JudgmentValidationError, match="claim_evidence_not_semantic"):
+        validate_judgment(payload, evidence, {}, semantic_types={"auth_failure", "auth_success"})
+
+
+def test_suspicious_verdict_requires_at_least_one_semantic_event():
+    """The gate also fires at assessment level through the union: a suspicious verdict needs
+    at least one semantic event somewhere among the claims."""
+    evidence = {"E1": {"event_id": "E1", "event_type": "other", "timestamp": "t", "line": 1},
+                "E2": {"event_id": "E2", "event_type": "auth_failure", "timestamp": "t2", "line": 2}}
+    with pytest.raises(JudgmentValidationError, match="claim_evidence_not_semantic"):
+        validate_judgment({"assessment": "suspicious",
+                           "claims": [{"kind": "observation", "statement": "s",
+                                       "evidence_ids": ["E1"], "case_ids": []}],
+                           "recommendations": [], "uncertainties": ["时间戳缺失，结论置信度受限"]},
+                          evidence, {}, semantic_types={"auth_failure", "auth_success"})
+    # Mixing in one semantic event lets the same claim stand.
+    ok = validate_judgment({"assessment": "suspicious",
+                            "claims": [{"kind": "observation", "statement": "s",
+                                        "evidence_ids": ["E1", "E2"], "case_ids": []}],
+                            "recommendations": [], "uncertainties": ["时间戳缺失，结论置信度受限"]},
+                           evidence, {}, semantic_types={"auth_failure", "auth_success"})
+    assert ok["assessment"] == "suspicious"

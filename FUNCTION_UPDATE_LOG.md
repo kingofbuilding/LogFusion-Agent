@@ -3012,3 +3012,35 @@
 ### 结果
 - `pytest`：125 passed。
 - 简历"67 条"同步改"57 条"。
+
+## 2026-10-23 补：引用校验补上"证据相关性"层（外部评审 Q6 缺口）
+
+### 缺口
+评审指出引用校验只覆盖"引用有效性（ID 存在）"，缺"证据相关性"。此前 `validate_judgment` 只比 ID 存在性。
+
+### 修改
+- `judgment.validate_judgment(..., semantic_types=None)`：新增引用语义闸门——**一条 claim 的全部引用证据都是 `other` 类型（方言无法识别）时拒绝发布**（`claim_evidence_not_semantic:ID`）。`other` 事件正是方言没认出来的部分，不构成认证语义证据。
+- `LLMJudgment.synthesize(..., semantic_types=None)` 透传；`engine` 在调用研判时传 `{profile.failure_type, success_type, *escalation_types}`。
+- `semantic_types=None` 时闸门跳过（向后兼容现有测试与无 profile 调用方）。
+- 新增 2 个测试：纯 other 引用拒绝、混合语义引用通过。
+- 开发过程中的冗余：assessment 级检查与 claim 级不可达冗余，已删除（claim 级通过即保证并集含语义证据）。
+
+### 结果
+- `pytest`：127 passed。
+- 遗留：`evidence` 表中非锚点类观察（窗口/簇）没有 event_type 概念，闸门只约束 claim 直接引用的**事件 ID**。
+
+## 2026-10-23 补：引用校验补上"证据相关性"层（外部评审 Q6 缺口）
+
+### 缺口
+评审指出引用校验只覆盖"引用有效性（ID 存在）"，缺"证据相关性"。
+
+### 修改
+- `judgment.validate_judgment(..., semantic_types=None)`：新增引用语义闸门——一条 claim 的全部引用证据都是 `other` 类型（方言无法识别）时拒绝发布（`claim_evidence_not_semantic:ID`）。
+- `LLMJudgment.synthesize(..., semantic_types=None)` 透传；`engine` 传 `{failure_type, success_type, *escalation_types}`；`None` 时跳过（向后兼容）。
+- 开发中发现的冗余：assessment 级检查与 claim 级不可达（claim 通过即保证并集含语义证据），已删除。
+- 新增 2 个测试。
+
+### 结果
+- `pytest`：127 passed。
+- 真实日志切片验证：3 段 AIT-LDS 混合日志（各 ~3,675 行），2/3 的模型研判被校验拦截、降级为"只发规则发现"——拒绝发布机制在真实数据上被实际触发。
+- 前 21 条回归（130k 同口径）：完成率 1.00、结论正确率 1.00、召回 1.00——43%→95% 在当前代码成立。

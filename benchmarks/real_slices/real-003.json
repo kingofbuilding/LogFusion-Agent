@@ -1,0 +1,5 @@
+{
+ "case_id": "real-003",
+ "category": "real_slice",
+ "goal": "调查该日志段中的可疑认证与访问行为"
+}

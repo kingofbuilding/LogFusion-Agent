@@ -14,7 +14,7 @@ def _text(value, maximum=2000):
     return value.strip()
 
 
-def validate_judgment(payload, evidence, cases):
+def validate_judgment(payload, evidence, cases, semantic_types=None):
     """Check structure and referential integrity, NOT whether natural-language claims are true."""
     if not isinstance(payload, dict) or set(payload) != {"assessment", "claims", "recommendations", "uncertainties"}:
         raise JudgmentValidationError("invalid_structure")
@@ -44,6 +44,16 @@ def validate_judgment(payload, evidence, cases):
                            "evidence_ids": list(dict.fromkeys(ids)), "case_ids": list(dict.fromkeys(case_ids))})
     if assessment != "insufficient_evidence" and not normalized:
         raise JudgmentValidationError("assessment_without_evidence")
+    # Referential-semantics gate (the "evidence relevance" layer of citation checking).
+    # A claim whose entire evidence set is typed `other` supports nothing: those are exactly the
+    # events the dialect could not classify. `semantic_types=None` skips the gate (tests, callers
+    # without a profile).
+    if semantic_types:
+        for claim in normalized:
+            kinds = {evidence[i].get("event_type") for i in claim["evidence_ids"] if i in evidence}
+            if kinds and kinds.isdisjoint(semantic_types):
+                raise JudgmentValidationError("claim_evidence_not_semantic:" + claim["evidence_ids"][0])
+
     recommendations = payload["recommendations"]
     if not isinstance(recommendations, list) or len(recommendations) > 8:
         raise JudgmentValidationError("invalid_recommendations")
@@ -104,7 +114,8 @@ class LLMJudgment:
         self.request_options = dict(request_options or {})
         self.tokens_used = 0
 
-    def synthesize(self, goal, evidence, cases, findings, coverage, timeout, output_tokens=2400, feedback=""):
+    def synthesize(self, goal, evidence, cases, findings, coverage, timeout, output_tokens=2400, feedback="",
+                   semantic_types=None):
         # Prioritize cited evidence before filling the remaining preview; never silently allow unseen IDs.
         cited = list(dict.fromkeys(eid for f in findings for eid in f.evidence_ids))
         order = cited + [eid for eid in evidence if eid not in cited]
@@ -137,7 +148,8 @@ class LLMJudgment:
             payload = json.loads(calls[0].function.arguments)
         except (TypeError, ValueError):
             raise JudgmentValidationError("invalid_json") from None
-        validated = validate_judgment(payload, allowed_evidence, allowed_cases)
+        validated = validate_judgment(payload, allowed_evidence, allowed_cases,
+                                      semantic_types=semantic_types)
         return {"status": "completed", "backend": "llm", "model": self.model,
                 "validation": "structure_and_reference_ids_only", "content": validated,
                 "preview": {"event_ids": list(allowed_evidence), "case_ids": list(allowed_cases),

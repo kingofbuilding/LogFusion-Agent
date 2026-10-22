@@ -761,11 +761,13 @@ class InvestigationAgent:
                         entry = {"step": next_step(), "tool": "synthesize_judgment",
                                  "arguments": {"attempt": attempt + 1}, "stage": "agent_completion"}
                         try:
+                            profile = self.store.profile
+                            semantic = {profile.failure_type, profile.success_type, *profile.escalation_types}
                             judgment = self.reviewer.synthesize(
                                 goal, self.tools.evidence, self.tools.case_references, findings, self.store.coverage(),
                                 timeout=max(.1, min(20, self.max_seconds - (time.monotonic() - started))),
                                 output_tokens=min(2400, self.max_tokens - self.planner.tokens_used - self.reviewer.tokens_used),
-                                feedback=feedback)
+                                feedback=feedback, semantic_types=semantic)
                             # In-flight calls may exceed a soft budget; never publish their result as completed.
                             stopped = ""
                             if self.planner.tokens_used + self.reviewer.tokens_used >= self.max_tokens:
