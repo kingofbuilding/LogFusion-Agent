@@ -106,6 +106,26 @@ LLM 决定查询路径，规则发现受 SSH 证据规则约束；综合研判�
 
 
 
+## 2026-10-22 日志方言层：LogProfile
+
+此前“哪种日志”这件事散落在 6 个文件、31 处字面量里：事件分类 if 链（`events.py`）、失败/成功过滤与覆盖检查（`engine.py`、`tools.py`）、规则剧本与系统提示（`planner.py`）、完成阶段固定查询 `"SSH brute force ..."`、结论话术。结果是：换一种日志就要改引擎，而引擎本身对日志格式没有任何依赖。
+
+现在把它收拢成一层（`src/agent/profiles.py`）：
+
+| 字段 | 作用 |
+|---|---|
+| `rules` | 有序谓词表，决定一行日志归类为 failure / success / escalation / other（`all_of` / `any_of` / `regex` 可嵌套） |
+| `failure_type` / `success_type` / `escalation_types` | 引擎、工具层、规则剧本引用的语义名，不再写字面量 |
+| `completion_query` | 完成阶段补检索案例用的查询 |
+| `label` | 报告与限制文案里的域名称 |
+| `user_patterns` | 从原文抽账号的正则 |
+
+引擎按 `store.profile` 取词汇；`InvestigationAgent` 构造时把 planner 的 profile 同步成日志的 profile，避免“提示词说 SSH、日志是 RADIUS”的静默错配。CLI 新增 `--profile`，未知值回退默认。
+
+已实现两个 profile：`ssh_auth`（默认，行为与改造前逐字节一致）与 `auth_generic`（RADIUS/PAM 风格，不含 `sshd` 字样）。后者用 7 条合成日志端到端跑通：规则剧本产出 2 条结论、引用可解析、限制文案自动变成“通用认证日志”。7 个新测试覆盖方言分类、跨方言不误分类、非 SSH 端到端、提示词渲染与回退。
+
+**边界必须说清**：profile 换的是**日志方言**（词汇、话术、完成查询），不是**安全语义**。结论规则（5 分钟 5 次簇、喷洒、撞库、低速爆破）与案例库仍假设“失败爆发 → 同实体成功 → 后继活动”这条认证叙事；Web 访问日志、进程行为需要新的结论规则，尚未实现。把这条写进文档，比假装“通用日志分析”更经得起追问。
+
 ## 迭代顺序
 
 1. 更完整的 SSH 解析、时间补全、多失败窗口与分页查询。

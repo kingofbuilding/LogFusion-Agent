@@ -2905,3 +2905,20 @@
 - `pytest`：118 passed（原 115 + 3 个策略层测试：非法 mode 回退、`layout()` 三层计数、full 模式等价旧行为）。
 - 离线回放结果与重构前完全一致（fold −13.6% / ≥10 步 −16.0%，compact ≥10 步 −33.7%），说明抽取未改变行为。
 - 仍未做真实模型 A/B（余额 0）。
+
+## 2026-10-22 日志方言层：LogProfile
+
+### 修改内容
+- 新增 `src/agent/profiles.py`：`LogProfile`（`rules` 有序谓词 / `failure_type` / `success_type` / `escalation_types` / `completion_query` / `label` / `user_patterns`）+ `all_of` / `any_of` / `regex` 组合子 + `get_profile()` 回退。实现 `ssh_auth`（默认）与 `auth_generic`。
+- `events.py`：分类与账号抽取改为 profile 驱动；`EventStore` 记住 `profile`，`from_bytes` / `from_path` 支持传入。
+- `tools.py` / `engine.py`：`failure_clusters` 增加 `failure_type` 参数；覆盖检查、结论生成、完成阶段查询、限制文案全部按 `store.profile` 渲染。
+- `planner.py`：`SYSTEM_PROMPT` 改为 `SYSTEM_PROMPT_TEMPLATE` + `system_prompt(profile)`；`RulePlanner` / `LLMPlanner` / `from_env` 接受 profile。
+- `engine.py`：构造时把 planner 的 profile 同步为 `store.profile`，避免提示词与日志方言错配。
+- `__main__.py`：新增 `--profile`（choices 来自 PROFILES，未知值回退默认）。
+- 新增 `tests/test_profiles.py`（7 个）：SSH 方言行为不变、通用方言分类、跨方言不误分类、非 SSH 端到端产出结论、提示词渲染、未知 profile 回退、规则剧本使用 profile 的成功类型。
+
+### 结果说明
+- `pytest`：125 passed（118 + 7）。
+- `ssh_auth` 行为与改造前一致（原 118 个测试全绿，未改断言）。
+- 非 SSH 方言实测：7 条 RADIUS 风格合成日志 → `completed / planner_finished`，2 条结论（`suspected_bruteforce`、`success_after_failures`），7 条证据全部可引用，报告限制文案为“第一版仅对通用认证日志…”。
+- 边界：profile 换方言不换安全语义，结论规则与案例库仍属认证域；Web / 进程行为需新结论规则，未实现。

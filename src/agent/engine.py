@@ -12,6 +12,7 @@ from uuid import uuid4
 from .events import EventStore, parse_time
 from .judgment import JudgmentValidationError
 from .planner import RulePlanner
+from .profiles import DEFAULT_PROFILE
 from .tools import InvestigationTools, ToolArgumentError, failure_clusters
 
 # Tools still allowed once the agent enters wrap-up mode: consolidate and finish, no new exploration.
@@ -155,10 +156,11 @@ def _max_window_count(rows, minutes):
     return best
 
 
-def _pattern_findings(events, findings, cited):
+def _pattern_findings(events, findings, cited, profile=DEFAULT_PROFILE):
     """Patterns the 5-in-5-minutes entity rule cannot express: spray, stuffing, low-and-slow."""
-    failures = [e for e in events if e.event_type == "auth_failure" and e.timestamp and e.src_ip and e.user and e.host]
-    successes = [e for e in events if e.event_type == "auth_success" and e.timestamp]
+    failures = [e for e in events if e.event_type == profile.failure_type
+                and e.timestamp and e.src_ip and e.user and e.host]
+    successes = [e for e in events if e.event_type == profile.success_type and e.timestamp]
 
     by_account = defaultdict(list)
     for event in failures:
@@ -233,9 +235,10 @@ def _pattern_findings(events, findings, cited):
 
 def grounded_findings(tools: InvestigationTools) -> list[Finding]:
     """Conclusions are derived from observed evidence; the planner cannot invent them."""
+    profile = tools.store.profile
     events = [tools.store.by_id[eid] for eid in tools.evidence]
     # Discovery tool aggregation may use another threshold. Report uses the documented 5/5 default.
-    groups = failure_clusters(events)
+    groups = failure_clusters(events, failure_type=profile.failure_type)
     findings = []
     cited = set()
     for group in groups[:10]:
@@ -244,7 +247,7 @@ def grounded_findings(tools: InvestigationTools) -> list[Finding]:
         findings.append(Finding("suspected_bruteforce", f"{prefix}在 5 分钟窗口内出现 {group['count']} 次认证失败，疑似暴力破解。",
                                 ids, "规则推断；合法重试或自动化配置错误也可能产生类似行为"))
         end = parse_time(group["end"])
-        successes = [e for e in events if e.event_type == "auth_success" and e.timestamp
+        successes = [e for e in events if e.event_type == profile.success_type and e.timestamp
                      and (e.src_ip, e.user, e.host) == (group["src_ip"], group["user"], group["host"])
                      and end < parse_time(e.timestamp) <= end + timedelta(minutes=15)]
         for success in successes[:3]:
@@ -254,15 +257,16 @@ def grounded_findings(tools: InvestigationTools) -> list[Finding]:
             findings.append(Finding("success_after_failures", f"{prefix}的失败窗口结束后 15 分钟内出现成功登录。",
                                     [*ids, success.event_id], "时间与实体关联；尚不能确认凭据被盗或登录未经授权"))
             later = [e for e in events if e.timestamp and e.user == success.user and e.host == success.host
-                     and e.event_type in ("privileged_command", "account_change")
+                     and e.event_type in profile.escalation_types
                      and parse_time(success.timestamp) <= parse_time(e.timestamp) <= parse_time(success.timestamp) + timedelta(minutes=15)]
             if later:
                 findings.append(Finding("post_login_activity", f"该成功登录后 15 分钟内，同账号、同主机出现特权命令或账户变更记录。",
                                         [success.event_id, *[e.event_id for e in later[:20]]],
                                         "上下文关联；缺少会话 ID 时不能确认由同一登录会话执行，也不直接证明恶意提权"))
-    _pattern_findings(events, findings, cited)
+    _pattern_findings(events, findings, cited, profile)
     if not findings:
-        findings.append(Finding("insufficient_evidence", "已查看证据尚不足以建立 SSH 集中失败与后续登录的关联链。", [],
+        findings.append(Finding("insufficient_evidence",
+                                f"已查看证据尚不足以建立{profile.label}中集中失败与后续登录的关联链。", [],
                                 "证据不足；不能据此认定日志正常或不存在入侵"))
     if any(eid not in tools.evidence for f in findings for eid in f.evidence_ids):
         raise ValueError("Finding contains unknown evidence citation")
@@ -276,7 +280,11 @@ class InvestigationAgent:
         if not 1 <= max_steps <= 40 or not 1 <= max_seconds <= 600 or not 1 <= max_tokens <= 200_000:
             raise ValueError("Invalid investigation budget")
         self.store = store
-        self.planner = planner or RulePlanner()
+        self.planner = planner or RulePlanner(profile=store.profile)
+        # A planner still rendering another dialect's vocabulary would ask for event types that do
+        # not exist in this store, so the profile always follows the logs being investigated.
+        if hasattr(self.planner, "profile"):
+            self.planner.profile = store.profile
         self.tools = tools or InvestigationTools(store)
         self.reviewer = reviewer
         self.max_steps, self.max_seconds, self.max_tokens = max_steps, max_seconds, max_tokens
@@ -288,20 +296,20 @@ class InvestigationAgent:
         if not self.tools.evidence:
             return ["尚未查看任何日志证据：先执行一次聚合或检索再结束"]
         events = [self.tools.store.by_id[eid] for eid in self.tools.evidence]
-        clusters = failure_clusters(events)[:3]
+        clusters = failure_clusters(events, failure_type=self.store.profile.failure_type)[:3]
         ends = [parse_time(group["end"]) for group in clusters]
         for group in clusters:
             searched = any(t["tool"] == "search_logs" and not t.get("error")
                            and t["arguments"].get("user") == group["user"]
                            and t["arguments"].get("host") == group["host"]
-                           and t["arguments"].get("event_type") == "auth_success"
+                           and t["arguments"].get("event_type") == self.store.profile.success_type
                            for t in trace)
             if not searched:
                 gaps.append(f"失败簇 {group['src_ip']}/{group['user']}@{group['host']} 尚未查询后续成功登录")
         # Only successes that could complete a chain (same account and host, just after a cluster) are
         # required to have context; unrelated successes in the evidence are not a completeness gap.
         for event in events:
-            if event.event_type != "auth_success" or not event.timestamp:
+            if event.event_type != self.store.profile.success_type or not event.timestamp:
                 continue
             relevant = any(
                 (event.user, event.host) == (group["user"], group["host"])
@@ -321,14 +329,14 @@ class InvestigationAgent:
         """Failure clusters whose follow-up success login has not been searched yet."""
         events = [self.tools.store.by_id[eid] for eid in self.tools.evidence]
         missing = []
-        for group in failure_clusters(events)[:3]:
+        for group in failure_clusters(events, failure_type=self.store.profile.failure_type)[:3]:
             key = (group["src_ip"], group["user"], group["host"])
             if key in hinted:
                 continue
             searched = any(t["tool"] == "search_logs" and not t.get("error")
                            and t["arguments"].get("user") == group["user"]
                            and t["arguments"].get("host") == group["host"]
-                           and t["arguments"].get("event_type") == "auth_success"
+                           and t["arguments"].get("event_type") == self.store.profile.success_type
                            for t in trace)
             if not searched:
                 missing.append(key)
@@ -631,7 +639,7 @@ class InvestigationAgent:
                 stopped = budget_reason()
                 if not stopped and not any(t["tool"] == "retrieve_cases" and not t.get("error") for t in trace):
                     entry = {"step": next_step(), "tool": "retrieve_cases",
-                             "arguments": {"query": "SSH brute force failed password accepted sudo", "top_k": 3},
+                             "arguments": {"query": self.store.profile.completion_query, "top_k": 3},
                              "stage": "agent_completion"}
                     try:
                         entry["result"] = self.tools.call(entry["tool"], entry["arguments"])
@@ -693,7 +701,8 @@ class InvestigationAgent:
         coverage = self.store.coverage()
         coverage["input_sha256"] = hashlib.sha256(json.dumps([e.to_dict() for e in self.store.events],
                                                               sort_keys=True, ensure_ascii=False).encode()).hexdigest()
-        limitations = ["第一版仅对 SSH 集中认证失败、后续成功登录、账户上下文，以及分布式喷洒/撞库/低速爆破的聚合形态生成结构化结论；其他调查目标尚不保证覆盖。",
+        limitations = [f"第一版仅对{self.store.profile.label}的集中认证失败、后续成功登录、账户上下文，"
+                       "以及分布式喷洒/撞库/低速爆破的聚合形态生成结构化结论；其他调查目标尚不保证覆盖。",
                        "调查范围仅为当前上传日志，缺少的日志或未查询的记录不能当作不存在。",
                        "成功登录、sudo 和账户变更均可能是合法行为；确认入侵仍需授权记录、会话或审计证据。",
                        "关联默认要求同 IP、同账号、同主机；失败窗口 5 分钟至少 5 次，后续登录窗口 15 分钟；跨主机成功登录不关联。",

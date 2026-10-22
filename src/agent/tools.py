@@ -53,11 +53,12 @@ def _fit_observation(result: dict, limit: int = OBSERVATION_CHAR_LIMIT):
 
 
 
-def failure_clusters(events, window_minutes: int = 5, min_failures: int = 5) -> list[dict]:
+def failure_clusters(events, window_minutes: int = 5, min_failures: int = 5,
+                     failure_type: str = "auth_failure") -> list[dict]:
     """One maximum-density bounded window per (IP, user, host), with exact citations."""
     groups = defaultdict(list)
     for e in events:
-        if e.event_type == "auth_failure" and e.src_ip and e.user and e.host and e.timestamp:
+        if e.event_type == failure_type and e.src_ip and e.user and e.host and e.timestamp:
             groups[(e.src_ip, e.user, e.host)].append(e)
     results = []
     for (ip, user, host), rows in groups.items():
@@ -152,7 +153,8 @@ class InvestigationTools:
             raise ToolArgumentError("group_by must be one of entity, user, ip, host.")
         if group_by != "entity":
             return self._aggregate_by(group_by, max_groups)
-        groups = failure_clusters(self.store.events, window_minutes, min_failures)
+        groups = failure_clusters(self.store.events, window_minutes, min_failures,
+                                  self.store.profile.failure_type)
         # Bound response and citations even for very large failure bursts.
         selected = groups[:max_groups]
         for g in selected:
@@ -171,7 +173,7 @@ class InvestigationTools:
         buckets = defaultdict(list)
         for event in self.store.events:
             key = getattr(event, field, "")
-            if event.event_type == "auth_failure" and key and event.timestamp:
+            if event.event_type == self.store.profile.failure_type and key and event.timestamp:
                 buckets[key].append(event)
         ordered = sorted(buckets.items(), key=lambda kv: (-len(kv[1]), kv[0]))[:max_groups]
         groups = []

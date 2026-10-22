@@ -7,6 +7,7 @@ from .adapters import upstream_detector, upstream_retriever
 from .engine import InvestigationAgent
 from .events import EventStore
 from .planner import LLMPlanner
+from .profiles import DEFAULT_PROFILE, PROFILES, get_profile
 from .judgment import LLMJudgment
 from .demo import SimulatedJudgment
 from .tools import InvestigationTools, ROOT
@@ -74,6 +75,8 @@ def run_suite(args) -> int:
 def main():
     parser = argparse.ArgumentParser(description="LogFusion-Agent：证据驱动的安全日志调查")
     parser.add_argument("--input", type=Path, help="UTF-8 .log/.txt/.jsonl/.json/.csv")
+    parser.add_argument("--profile", default=DEFAULT_PROFILE.name,
+                        choices=sorted(PROFILES), help="日志方言（决定事件分类与话术）")
     parser.add_argument("--demo", action="store_true", help="使用合成 SSH 场景，无需模型权重或密钥")
     parser.add_argument("--demo-suite", action="store_true", help="依次运行三种输入，展示不同轨迹")
     parser.add_argument("--mode", choices=["rule", "llm", "simulated"], default="rule",
@@ -96,7 +99,8 @@ def main():
     if args.mode == "simulated" and args.llm_judge:
         parser.error("模拟模式不能与 --llm-judge 同时使用")
     try:
-        store = EventStore.from_path(ROOT / "data/demo/ssh_investigation.jsonl" if args.demo else args.input)
+        store = EventStore.from_path(ROOT / "data/demo/ssh_investigation.jsonl" if args.demo else args.input,
+                                     profile=get_profile(args.profile))
         agent = _agent_for(args, store)
         result = agent.run(
             args.goal, on_step=lambda t: print(f"[{t['step']}] {t['tool']} {'ERROR' if t.get('error') else 'OK'}"))
