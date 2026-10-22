@@ -228,6 +228,8 @@ def _exception_row(meta: dict, exc: Exception) -> dict:
 def run_group(group: str, cases: list[dict], repeats: int, progress=print, cases_dir: Path = CASES_DIR) -> dict:
     shared: dict = {}
     rows = []
+    streak = 0
+    aborted = ""
     for meta in cases:
         store = EventStore.from_path(cases_dir / meta["log_file"])
         for attempt in range(1, repeats + 1):
@@ -238,16 +240,31 @@ def run_group(group: str, cases: list[dict], repeats: int, progress=print, cases
                 result = _run_once(agent, meta["goal"])
             except Exception as exc:  # provider outage must not silently become a "wrong verdict"
                 rows.append(_exception_row(meta, exc))
+                streak += 1
                 progress(f"  {meta['case_id']} #{attempt} EXCEPTION {type(exc).__name__}")
+                if streak >= 3:
+                    aborted = f"连续 {streak} 次调用失败（{type(exc).__name__}），已中止批次"
+                    break
                 continue
             row = score_case(meta, result)
             row["attempt"] = attempt
             rows.append(row)
+            # A provider outage shows up as an engine-level error, not an exception.
+            provider_failure = row["status"] == "error" and row["stop_reason"].startswith("planner_error")
+            streak = streak + 1 if provider_failure else 0
             progress(f"  {meta['case_id']} #{attempt} {row['status']}/{row['stop_reason']} "
                      f"verdict={'ok' if row['verdict_ok'] else 'MISS'} "
                      f"recall={row['evidence_recall']} prec={row['evidence_precision']} "
                      f"steps={row['tool_steps']} tokens={row['tokens']}")
-    return {"group": group, "repeats": repeats, "cases": rows, "summary": summarize(rows)}
+            if streak >= 3:
+                aborted = f"连续 {streak} 次模型调用失败（{row['stop_reason']}），已中止批次"
+                break
+        if aborted:
+            break
+    data = {"group": group, "repeats": repeats, "cases": rows, "summary": summarize(rows)}
+    if aborted:
+        data["aborted"] = aborted
+    return data
 
 
 def markdown_table(group: str, summary: dict) -> str:
@@ -322,6 +339,10 @@ def main() -> int:
         data = run_group(group, metas, args.repeats, cases_dir=cases_dir)
         payload["groups"][group] = data
         print(markdown_table(group, data["summary"]))
+        if data.get("aborted"):
+            # Do not publish a summary that mostly measures a provider outage.
+            print(f"批次中止：{data['aborted']}；未写入结果文件。")
+            return 2
     # Include the suite name: two runs started in the same second used to overwrite each other.
     target = args.out / f"eval_{cases_dir.name}_{'_'.join(groups)}_{stamp}.json"
     target.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
