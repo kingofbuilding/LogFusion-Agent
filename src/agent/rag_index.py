@@ -136,3 +136,46 @@ class MiniLMRetriever:
                          "match_level": ("strong" if score >= MINILM_STRONG
                                          else "medium" if score >= MINILM_MEDIUM else "weak")})
         return hits
+
+
+def reciprocal_rank_fusion(hit_lists, k: int = 10) -> list[dict]:
+    """Fuse ranked lists without assuming comparable score scales."""
+    scores: dict[str, float] = {}
+    meta: dict[str, dict] = {}
+    for hits in hit_lists:
+        for rank, hit in enumerate(hits, start=1):
+            case_id = hit["case_id"]
+            scores[case_id] = scores.get(case_id, 0.0) + 1.0 / (k + rank)
+            meta.setdefault(case_id, hit)
+    if not scores:
+        return []
+    order = sorted(scores, key=lambda case_id: -scores[case_id])
+    top = scores[order[0]]
+    return [{**meta[case_id], "raw_score": round(scores[case_id] / top, 4)} for case_id in order]
+
+
+class HybridCaseRetriever:
+    """TF-IDF for exact log terms plus MiniLM for paraphrase, fused by reciprocal rank."""
+
+    backend = "local_hybrid_cases"
+
+    def __init__(self, tfidf: TfidfCaseRetriever, minilm: MiniLMRetriever, pool: int = 10):
+        self.tfidf, self.minilm, self.pool = tfidf, minilm, pool
+
+    def __call__(self, query: str, top_k: int) -> list[dict]:
+        lexical = self.tfidf(query, self.pool)
+        semantic = self.minilm(query, self.pool)
+        by_id = {hit["case_id"]: hit for hit in lexical + semantic}
+        fused = reciprocal_rank_fusion([lexical, semantic])[:top_k]
+        hits = []
+        for item in fused:
+            lexical_hit = next((hit for hit in lexical if hit["case_id"] == item["case_id"]), {})
+            semantic_hit = next((hit for hit in semantic if hit["case_id"] == item["case_id"]), {})
+            strong = (lexical_hit.get("raw_score", 0) >= STRONG_MATCH) or (semantic_hit.get("raw_score", 0) >= MINILM_STRONG)
+            medium = (lexical_hit.get("raw_score", 0) >= MEDIUM_MATCH) or (semantic_hit.get("raw_score", 0) >= MINILM_MEDIUM)
+            hits.append({**by_id[item["case_id"]], "raw_score": item["raw_score"],
+                         "tfidf_score": lexical_hit.get("raw_score", 0.0),
+                         "minilm_score": semantic_hit.get("raw_score", 0.0),
+                         "evidence_usable": bool(strong),
+                         "match_level": "strong" if strong else ("medium" if medium else "weak")})
+        return hits

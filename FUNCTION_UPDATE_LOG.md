@@ -2756,3 +2756,23 @@
 
 ### Git 状态
 - 未提交
+
+## 2026-10-22 混合检索（TF-IDF + MiniLM，RRF）
+
+### 修改内容
+- 新增 `HybridCaseRetriever` 与 `reciprocal_rank_fusion`：两路各取 Top-10，按排名融合，不依赖分数量纲；返回体同时给出 `tfidf_score`、`minilm_score` 与综合 `match_level`。
+- 默认后端改为 `local_hybrid_cases`；`AGENT_RAG_BACKEND=tfidf|minilm|hash` 可强制切换。
+- 新增 2 个测试（RRF 融合、混合检索），共 105 个测试。
+
+### 结果说明
+- 13 条查询（8 条日志式 + 5 条改写）Top-1：TF-IDF 10/13、MiniLM 9/13、Hybrid 11/13。
+- 日志式查询三者都接近满分（TF-IDF 8/8、Hybrid 8/8、MiniLM 6/8）；改写查询 MiniLM 与 Hybrid 3/5，优于 TF-IDF 2/5。
+- 结论：混合检索在不牺牲精确匹配的前提下补上了改写查询的覆盖。
+
+### 输出文件
+- `src/agent/rag_index.py`、`src/agent/adapters.py`
+- `tests/test_rag_index.py`
+- `README.md`、`docs/EVAL_REPORT.md`、`reports/resume_project_logfusion_agent.md`
+
+### Git 状态
+- 未提交

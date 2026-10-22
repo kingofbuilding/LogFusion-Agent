@@ -40,6 +40,36 @@ def test_retriever_marks_unrelated_text_as_candidate(tmp_path):
     assert hits and all(hit["evidence_usable"] is False for hit in hits)
 
 
+def test_reciprocal_rank_fusion_prefers_consensus():
+    from src.agent.rag_index import reciprocal_rank_fusion
+
+    first = [{"case_id": "x", "title": "X"}, {"case_id": "y", "title": "Y"}]
+    second = [{"case_id": "y", "title": "Y"}, {"case_id": "z", "title": "Z"}]
+    fused = reciprocal_rank_fusion([first, second])
+    assert [hit["case_id"] for hit in fused] == ["y", "x", "z"]
+    assert fused[0]["raw_score"] == 1.0
+
+
+def test_hybrid_retriever_if_both_indexes_exist():
+    import json
+
+    import pytest
+
+    from src.agent.rag_index import HybridCaseRetriever, MiniLMRetriever, TfidfCaseRetriever
+
+    tfidf_path = ROOT / "data/vectors/rag_attack_cases_tfidf.npz"
+    minilm_path = ROOT / "data/vectors/rag_attack_cases_minilm.npz"
+    if not (tfidf_path.exists() and minilm_path.exists()):
+        pytest.skip("需要先重建 TF-IDF 与 MiniLM 索引")
+    retriever = HybridCaseRetriever(
+        TfidfCaseRetriever(tfidf_path, ROOT / "data/vectors/rag_attack_cases_tfidf.joblib"),
+        MiniLMRetriever(minilm_path, json.loads(
+            (ROOT / "data/vectors/rag_attack_cases_minilm.json").read_text(encoding="utf-8"))["model_dir"]))
+    exact = retriever("Failed password for invalid user admin from 203.0.113.9", 3)
+    assert exact[0]["case_id"] in {"CASE-SEC-001", "CASE-SEC-015A"}
+    assert "tfidf_score" in exact[0] and "minilm_score" in exact[0]
+
+
 def test_minilm_index_if_present():
     import json
 

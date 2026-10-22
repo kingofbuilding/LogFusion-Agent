@@ -124,7 +124,7 @@ python scripts/rebuild_rag_index.py            # TF-IDF（默认），67 条案�
 python scripts/rebuild_rag_index.py --backend minilm --model-dir /path/to/all-MiniLM-L6-v2
 ```
 
-同一批查询上，TF-IDF 的 Top-1 命中好于量化 MiniLM（5/5 vs 2–3/5），因此默认走 TF-IDF；MiniLM 保留为可切换后端，适合更自然的问句。两者都会返回 `raw_score` 与 `match_level`（TF-IDF：strong ≥0.35 / medium ≥0.2；MiniLM：≥0.55 / ≥0.4），案例始终只作解释参考，不参与结论。
+同一批查询上（8 条日志式 + 5 条改写）：TF-IDF Top-1 10/13、MiniLM 9/13、RRF 混合 11/13。因此默认走 `local_hybrid_cases`（TF-IDF 负责精确术语、MiniLM 负责改写），可用 `AGENT_RAG_BACKEND=tfidf|minilm|hash` 切换。返回体包含 `raw_score`、`tfidf_score`、`minilm_score` 与 `match_level`（TF-IDF：strong ≥0.35 / medium ≥0.2；MiniLM：≥0.55 / ≥0.4），案例始终只作解释参考，不参与结论。
 
 原检测器的窗口分数映射到末行事件 ID。各视图仍遵循上游代理分数与 hash 回退逻辑；融合模型存在不代表所有视图模型已训练加载。
 
