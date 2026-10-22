@@ -119,7 +119,7 @@ def score_case(meta: dict, result) -> dict:
                             if any(set(pair) <= set(f.evidence_ids) for f in result.findings
                                    if f.kind == "success_after_failures")],
         "evidence_count": len(observed),
-        "tool_steps": len([t for t in result.trace if t.get("stage") not in ("plan", "gate", "wrap_up")
+        "tool_steps": len([t for t in result.trace if t.get("stage") not in ("plan", "gate", "wrap_up", "hint")
                            and t["tool"] != "synthesize_judgment"]),
         "tool_errors": sum(bool(t.get("error")) for t in result.trace),
         "tool_error_types": sorted({t["error"] for t in result.trace if t.get("error")}),

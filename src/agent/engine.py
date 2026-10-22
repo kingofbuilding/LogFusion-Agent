@@ -300,6 +300,23 @@ class InvestigationAgent:
             gaps.append("计划中的假设都还没有结论（可用 update_hypothesis 标注）")
         return gaps[:4]
 
+    def _unsearched_clusters(self, trace, hinted) -> list[tuple[str, str, str]]:
+        """Failure clusters whose follow-up success login has not been searched yet."""
+        events = [self.tools.store.by_id[eid] for eid in self.tools.evidence]
+        missing = []
+        for group in failure_clusters(events)[:3]:
+            key = (group["src_ip"], group["user"], group["host"])
+            if key in hinted:
+                continue
+            searched = any(t["tool"] == "search_logs" and not t.get("error")
+                           and t["arguments"].get("user") == group["user"]
+                           and t["arguments"].get("host") == group["host"]
+                           and t["arguments"].get("event_type") == "auth_success"
+                           for t in trace)
+            if not searched:
+                missing.append(key)
+        return missing
+
     def run(self, goal: str, on_step=None, cancelled=None):
         if not goal.strip() or len(goal) > 2000:
             raise ValueError("调查目标须为 1..2000 字符")
@@ -344,13 +361,14 @@ class InvestigationAgent:
         wrap_up_final = False
         wrap_up_restricted = 0
         gate_triggers = 0
+        hinted_clusters: set[tuple[str, str, str]] = set()
         unresolved_gaps: list[str] = []
 
         def next_step():
             return max((item.get("step", 0) for item in trace), default=0) + 1
 
         def actions_done():
-            return sum(1 for item in trace if item.get("stage") not in ("wrap_up", "plan", "gate"))
+            return sum(1 for item in trace if item.get("stage") not in ("wrap_up", "plan", "gate", "hint"))
 
         for step in range(1, self.max_steps + 1):
             if cancelled and cancelled():
@@ -363,7 +381,7 @@ class InvestigationAgent:
             # at least one turn before the tool-token hard limit. Never reserve more than half the
             # tool budget, otherwise a deliberately tiny budget would start in wrap-up.
             turns_done = max(1, sum(1 for item in trace
-                                    if item.get("stage") not in ("plan", "gate", "wrap_up")))
+                                    if item.get("stage") not in ("plan", "gate", "wrap_up", "hint")))
             wrap_up_headroom = min(max(1_200, int(self.planner.tokens_used / turns_done * 1.5)),
                                    tool_token_limit // 2)
             if not wrap_up and (self.planner.tokens_used >= tool_token_limit - wrap_up_headroom
@@ -514,6 +532,21 @@ class InvestigationAgent:
             trace.append(entry)
             if on_step:
                 on_step(entry)
+            # Pull completeness checks forward: once a failure cluster is observed, the planner is
+            # told to search that entity's follow-up logins now, not at finish time when the budget
+            # is gone. Each entity is nudged once.
+            if name == "aggregate_events" and not entry.get("error"):
+                cluster_keys = self._unsearched_clusters(trace, hinted_clusters)
+                if cluster_keys:
+                    hinted_clusters.update(cluster_keys)
+                    hint = {"step": next_step(), "tool": "required_action", "arguments": {},
+                            "stage": "hint", "control": "RequiredAction",
+                            "result": {"clusters": [f"{ip}/{user}@{host}" for ip, user, host in cluster_keys],
+                                       "notice": "发现失败簇后先查询同实体、同主机的后继成功登录，再继续其他线索；"
+                                                 "这是完整性检查要求，不是新发现。"}}
+                    trace.append(hint)
+                    if on_step:
+                        on_step(hint)
             if sum(bool(t.get("error")) for t in trace) >= 3:
                 # Repeated tool failures should degrade to a partial report, not kill the run.
                 status, reason = "completed", "evidence_budget"
@@ -648,7 +681,9 @@ class InvestigationAgent:
             limitations.append("结束前仍未覆盖：" + "；".join(unresolved_gaps[:4]) + "。")
         if any(t.get("tool") == "detect_anomalies" and t.get("error") for t in trace):
             limitations.append("检测器不可用（日志条数不足或模型缺失），本次结论仅基于规则信号与日志检索。")
-        if status != "completed":
+        if reason == "gate_unresolved":
+            limitations.append("收尾阶段被完整性闸门拦下：未覆盖项见上，报告作为部分完成发布。")
+        elif status != "completed":
             limitations.append("本次调查未正常完成，请结合停止原因检查预算或服务状态。")
         if self.reviewer:
             limitations.append("LLM 综合研判为辅助意见；引用检查验证结构与引用 ID，不保证文字与证据的语义一致性。")

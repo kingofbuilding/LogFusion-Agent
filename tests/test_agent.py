@@ -168,8 +168,9 @@ def test_llm_selects_tools_from_observations_and_usage_is_recorded():
     assert result.status == "completed" and result.mode == "llm_tool_calling"
     assert result.tokens_used == 300, "plan + aggregate + finish"
     assert result.plan[0]["id"] == "H1"
-    assert calls[2]["messages"][-1]["role"] == "tool"
-    assert "event_ids" in calls[2]["messages"][-1]["content"]
+    tool_messages = [message for message in calls[2]["messages"] if message["role"] == "tool"]
+    assert tool_messages and any("event_ids" in message["content"] for message in tool_messages)
+    assert any(item.get("control") == "RequiredAction" for item in result.trace)
     assert "UNTRUSTED DATA" in SYSTEM_PROMPT
 
 
