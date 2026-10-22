@@ -2553,3 +2553,34 @@
 
 ### Git 状态
 - 未提交
+
+## 2026-10-22 有界工具观察、双锚点修复、剧本失效集
+
+### 修改内容
+- `detect_anomalies` 改为只返回 top-N 窗口（默认 5，schema 范围 1..10），每个窗口带跨度、风险分、主要贡献视图与三视图分数，不再返回逐条原始分数；单次观察从约 10 KB 降到 876 字符。
+- 新增 `_fit_observation`：所有工具结果统一 6000 字符上限，超限时裁剪首个大列表并写 `observation_truncated`，供后续 Web 场景工具复用。
+- 修复窗口只记录结束锚点的问题：开始与结束锚点都写入证据，模型查询 `start_event_id` 上下文不再报未知事件；D 组工具报错率 0.67 → 0.10。
+- 新增 `benchmarks/generate_hard_cases.py` 与 `benchmarks/cases_hard/`：4 类剧本结构性失效用例（分布式喷洒、低速、单 IP 多账号、跨主机成功），生成器断言无失败簇。
+- `run_eval.py` 增加 `--cases-dir` 与结果中的 `git_sha`，C 组预算对齐到 16 步。
+- 新增 7 个观察上限测试（共 74 个），覆盖窗口裁剪、参数越界、未知事件、通用上限。
+
+### 输出文件
+- `src/agent/tools.py`、`src/agent/adapters.py`、`src/agent/planner.py`
+- `benchmarks/generate_hard_cases.py`、`benchmarks/cases_hard/`
+- `benchmarks/run_eval.py`（`--cases-dir`、`git_sha`）
+- `tests/test_observation_limits.py`
+- `benchmarks/results/eval_llm_20261021T235856Z.json`（C1）
+- `benchmarks/results/eval_agent+upstream_20261022T000601Z.json`（D）
+- `benchmarks/results/eval_rule_20261022T000633Z.json`（B·失效集）
+- `benchmarks/results/eval_llm_20261022T001220Z.json`（C1·失效集）
+- `benchmarks/results/eval_agent+upstream_20261022T001220Z.json`（D·失效集）
+- `docs/EVAL_REPORT.md`、`docs/ENGINEERING_ISSUES.md`
+
+### 结果说明
+- 标准集 D 组：完成率 0.52 → 0.81，平均 token 88768 → 77216，工具报错率 0.67 → 0.10；结论正确率仍与 C1 打平。
+- 剧本失效集：B 召回 0.00，C1 与 D 召回 1.00；但 D 精度更低（0.35 vs 0.44）、更贵（98505 vs 89849 tokens），完成率同为 0.33。
+- 结论：Agent 的价值体现在“规则看不见时仍能取证”，检测器在当前哈希嵌入与窗口粒度下没有带来增量；失效集瓶颈转为预算。
+- 代码已提交：500ba60、307a658、27e147d、0e1c85a；结果 JSON 记录运行时 SHA。
+
+### Git 状态
+- 结果文件与文档待提交
