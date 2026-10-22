@@ -22,8 +22,9 @@ Tool events are facts; reference cases are not incident evidence. Missing eviden
 Yearless timestamps are unknown. No detected success does NOT establish that intrusion did not occur.
 You choose investigation tools. After you finish, the Agent orchestrator retrieves reference cases
 if needed and calls a separate LLM synthesis stage, validating citation IDs before publishing.
-Every tool call MUST include a short `rationale` explaining why that action is next.
-When evidence settles a planned hypothesis, call update_hypothesis with confirmed or refuted.
+Every tool call MUST include a short `rationale` explaining why that action is next; a call without
+it is invalid. When evidence settles a planned hypothesis, call update_hypothesis with confirmed or
+refuted. Before finishing, every hypothesis should be confirmed or refuted.
 Do not repeat identical calls. Limit scope to uploaded logs. Only supported structured tools are allowed.
 """
 
@@ -65,10 +66,10 @@ class RulePlanner:
         if wrap_up:
             # Stop exploring: consolidate what was already observed.
             if not any(t["tool"] == "build_timeline" for t in actions):
-                return "build_timeline", {}
+                return "build_timeline", {"rationale": "汇总已查证据，准备结束。"}
             return "finish_investigation", {}
         if not actions:
-            return "detect_anomalies", {"top_windows": 5}
+            return "detect_anomalies", {"top_windows": 5, "rationale": "先取检测器候选窗口，避免只看单一规则。"}
         successful = [t for t in actions if not t.get("error")]
 
         def updated(hypothesis_id):
@@ -76,7 +77,8 @@ class RulePlanner:
                        for t in actions)
 
         if not any(t["tool"] == "aggregate_events" for t in successful):
-            return "aggregate_events", {"window_minutes": 5, "min_failures": 5, "max_groups": 3}
+            return "aggregate_events", {"window_minutes": 5, "min_failures": 5, "max_groups": 3,
+                                         "rationale": "按 5 次/5 分钟聚合，找出集中失败的实体。"}
         groups = next(t["result"]["groups"] for t in successful if t["tool"] == "aggregate_events")
         if not updated("H1"):
             if groups:
@@ -91,7 +93,8 @@ class RulePlanner:
                     "event_type": "auth_success", "start": group["end"],
                     "end": (parse_time(group["end"]) + timedelta(minutes=15)).isoformat(), "limit": 20}
             if not any(t["tool"] == "search_logs" and t["arguments"] == args for t in actions):
-                return "search_logs", args
+                return "search_logs", {**args,
+                                       "rationale": f"检查 {group['user']}@{group['host']} 是否在失败窗口后登录成功。"}
         successes = [e for t in successful if t["tool"] == "search_logs" for e in t["result"]["events"]]
         if not updated("H2"):
             if successes:
@@ -103,7 +106,8 @@ class RulePlanner:
                                          "rationale": "已查窗口内没有成功登录"}
         for event in successes[:3]:
             if not any(t["tool"] == "get_event_context" and t["arguments"].get("event_id") == event["event_id"] for t in actions):
-                return "get_event_context", {"event_id": event["event_id"], "before_minutes": 0, "after_minutes": 15}
+                return "get_event_context", {"event_id": event["event_id"], "before_minutes": 0, "after_minutes": 15,
+                                           "rationale": "核对成功登录前后的同账号、同主机活动。"}
         if not updated("H3"):
             later = [e for t in successful if t["tool"] == "get_event_context" for e in t["result"].get("events", [])
                      if e.get("event_type") in ("privileged_command", "account_change")]
@@ -115,9 +119,10 @@ class RulePlanner:
                                          "note": "上下文未发现特权命令或账户变更",
                                          "rationale": "已查上下文没有提权迹象"}
         if not any(t["tool"] == "retrieve_cases" for t in actions):
-            return "retrieve_cases", {"query": "SSH brute force failed password accepted sudo", "top_k": 3}
+            return "retrieve_cases", {"query": "SSH brute force failed password accepted sudo", "top_k": 3,
+                                          "rationale": "检索相似案例，仅作解释参考。"}
         if not any(t["tool"] == "build_timeline" for t in actions):
-            return "build_timeline", {}
+            return "build_timeline", {"rationale": "汇总已查证据，准备结束。"}
         return "finish_investigation", {}
 
 
@@ -167,8 +172,10 @@ class LLMPlanner:
         system = SYSTEM_PROMPT
         if wrap_up:
             system += ("\nWRAP-UP MODE: the investigation budget is nearly exhausted. Do not open new "
-                       "lines of enquiry. Only build_timeline is available; then call finish_investigation. "
-                       "State what the observed evidence supports and what remains unverified.")
+                       "lines of enquiry. First call update_hypothesis for any hypothesis the evidence "
+                       "settles, then call finish_investigation. Only build_timeline, retrieve_cases, "
+                       "update_hypothesis and finish_investigation are available. State what the observed "
+                       "evidence supports and what remains unverified.")
         messages = [{"role": "system", "content": system}, {"role": "user", "content": goal}]
         # Compact tool observations preserve evidence IDs and aggregate counts while bounding context.
         for index, step in enumerate(trace):
@@ -185,7 +192,8 @@ class LLMPlanner:
                              "content": json.dumps(observation, ensure_ascii=False)})
         response = self.client.chat.completions.create(
             model=self.model, messages=messages,
-            tools=([TOOL_SCHEMAS["build_timeline"], FINISH_SCHEMA] if wrap_up
+            tools=([TOOL_SCHEMAS["build_timeline"], TOOL_SCHEMAS["retrieve_cases"],
+                    TOOL_SCHEMAS["update_hypothesis"], FINISH_SCHEMA] if wrap_up
                    else [*TOOL_SCHEMAS.values(), FINISH_SCHEMA]),
             tool_choice="required", temperature=0, max_tokens=self.max_tokens, **self.request_options)
         if response.usage is None:

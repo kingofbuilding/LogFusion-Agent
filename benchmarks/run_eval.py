@@ -79,6 +79,15 @@ def _judgment_evidence(judgment: dict) -> set[str]:
     return ids
 
 
+def _rationale_rate(trace) -> float | None:
+    """Share of action steps that state why they were taken."""
+    actions = [item for item in trace if item.get("stage") not in ("plan", "gate", "wrap_up")
+               and item.get("tool") != "synthesize_judgment"]
+    if not actions:
+        return None
+    return round(sum(bool(item.get("rationale")) for item in actions) / len(actions), 4)
+
+
 def score_case(meta: dict, result) -> dict:
     expected = meta["expected"]
     must_find = expected["must_find_event_ids"]
@@ -119,6 +128,10 @@ def score_case(meta: dict, result) -> dict:
         "stop_reason": result.stop_reason,
         "judgment_status": result.judgment.get("status", "not_requested"),
         "claims": len(result.judgment["content"]["claims"]) if result.judgment.get("status") == "completed" else 0,
+        "gate_triggers": getattr(result, "gate_triggers", 0),
+        "rationale_rate": _rationale_rate(result.trace),
+        "hypothesis_rate": (round(sum(1 for item in result.plan if item["status"] != "open") / len(result.plan), 4)
+                            if getattr(result, "plan", None) else None),
     }
 
 
@@ -152,6 +165,9 @@ def summarize(rows: list[dict]) -> dict:
                "completed_rate": _mean([r["status"] == "completed" for r in rows]),
                "partial_rate": _mean([r["status"] == "completed_partial" for r in rows]),
                "completion_rate": _mean([r["status"] in ("completed", "completed_partial") for r in rows]),
+               "mean_gate_triggers": _mean([r.get("gate_triggers", 0) for r in rows]),
+               "rationale_rate": _mean([r.get("rationale_rate") for r in rows]),
+               "hypothesis_rate": _mean([r.get("hypothesis_rate") for r in rows]),
                "judgment_completed_rate": _mean([r["judgment_status"] == "completed" for r in rows])}
     summary["by_category"] = {}
     by_category: dict[str, list[dict]] = {}
@@ -222,7 +238,8 @@ def _exception_row(meta: dict, exc: Exception) -> dict:
             "link_recall": None, "false_links": [], "judgment_decoy_citations": [],
             "pair_violations": [], "evidence_count": 0, "tool_steps": 0, "tool_errors": 0,
             "tool_error_types": [], "tokens": 0, "elapsed": 0.0, "status": "exception",
-            "stop_reason": type(exc).__name__, "judgment_status": "not_requested", "claims": 0}
+            "stop_reason": type(exc).__name__, "judgment_status": "not_requested", "claims": 0,
+            "gate_triggers": 0, "rationale_rate": None, "hypothesis_rate": None}
 
 
 def run_group(group: str, cases: list[dict], repeats: int, progress=print, cases_dir: Path = CASES_DIR) -> dict:
@@ -283,6 +300,8 @@ def markdown_table(group: str, summary: dict) -> str:
                   f"误关联 {summary['mislink_cases']} 例，平均 {fmt(summary['mean_tool_steps'], 1)} 步，"
                   f"平均 {fmt(summary['mean_tokens'], 0)} tokens，"
                   f"完成率 {fmt(summary['completion_rate'])}（完全完成 {fmt(summary['completed_rate'])}，部分完成 {fmt(summary['partial_rate'])}），"
+                  f"闸门 {fmt(summary['mean_gate_triggers'], 1)} 次/次，理由覆盖 {fmt(summary['rationale_rate'])}，"
+                  f"假设结论率 {fmt(summary['hypothesis_rate'])}，"
                   f"工具报错率 {fmt(summary['tool_error_rate'])}，停止原因 {summary['stop_reasons']}，"
                   f"错误类型 {summary['tool_error_types']}。", ""]
     return "\n".join(lines)

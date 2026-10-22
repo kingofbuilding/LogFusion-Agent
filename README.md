@@ -54,14 +54,15 @@ python -m src.agent --input path/to/auth.jsonl --mode llm --goal "调查 SSH 暴
 
 也可使用 `DEEPSEEK_API_KEY` 或 `OPENAI_API_KEY` 及对应 Base URL。不要在实际 `.env` 中保留模板占位符。LLM 模式向配置的服务发送目标及部分日志；规则模式不外发日志。
 
-## 六个只读工具
+## 七个只读工具
 
 | 工具 | 能力 |
 | --- | --- |
-| `detect_anomalies` | 返回规则候选信号，或调用原项目检测模型 |
-| `aggregate_events` | 按时间窗口、IP、账号、主机聚合认证失败 |
-| `search_logs` | 查询完整日志，包括低风险的成功登录 |
-| `get_event_context` | 查询已观察事件前后同账号、同主机活动 |
+| `detect_anomalies` | 返回 top-N 风险窗口（跨度、分数、主要贡献视图），或规则候选信号 |
+| `aggregate_events` | 按实体聚合失败；`group_by=user/ip/host` 可跨来源汇总，一次看出喷洒或撞库 |
+| `search_logs` | 查询完整日志（紧凑投影、已见去重），包括低风险的成功登录 |
+| `get_event_context` | 查询已观察事件前后同账号、同主机活动，返回原文 |
+| `update_hypothesis` | 把计划中的假设标为 confirmed / refuted，并记录理由 |
 | `retrieve_cases` | 检索解释性案例，与事件事实分离 |
 | `build_timeline` | 汇总已查询证据，保留来源、行号和事件 ID |
 
@@ -125,8 +126,9 @@ data/vectors/rag_attack_cases.npz
 |---|---|---|
 | 计划 | 一次模型调用 | 提出 2–4 条待验证假设（`H1..H4`），写进 `investigation.json` 的 `plan` 字段 |
 | 工具阶段 | `max_steps - 2` 步、token 的 2/3 | 自主选择工具；每次调用附带一句 `rationale`；可调用 `update_hypothesis` 把假设标为 confirmed/refuted |
-| 收尾模式 | token 用到 75% 或只差 2 步时进入 | 追加“停止探索”指令，工具只剩 `build_timeline` / `retrieve_cases` / `finish_investigation` |
+| 收尾模式 | 工具 token 上限的 90% 或只差 2 步时进入 | 追加“停止探索”指令，工具只剩 `build_timeline` / `retrieve_cases` / `update_hypothesis` / `finish_investigation` |
 | 收尾阶段 | 保留 ≥2 步、≥1/3 token | 补查案例、调用综合研判、生成报告 |
+| 结束前 | 最多退回 2 次 | 完整性闸门：检查每个失败簇是否查过后继登录、相关成功登录是否核对上下文、计划假设是否都有结论；缺项则退回并列出缺口 |
 
 轨迹里因此能看到“假设 → 动作（含理由）→ 观察 → 假设更新”，而不只是工具调用序列；报告会先列计划与每条假设的状态。
 
@@ -184,6 +186,21 @@ python -m benchmarks.run_eval --groups llm --repeats 3 --limit 20  # C 组：纯
 评测集覆盖 7 类关联/干扰场景，标签只写入 `<case>.json`，工具只能读到 `<case>.jsonl`。指标为结论正确率、关键证据召回、证据精度、误关联、步数、token、完成率与工具报错率；证据精度用于暴露“窗口级证据”召回高但精度低的问题。首版结果与已知限制见 [评测报告](docs/EVAL_REPORT.md)；注意标注规则与证据层同源，结论正确率衡量的是管线一致性而非真实入侵检测能力。
 
 实施过程中遇到并处理的工程问题（工具参数越界、窗口证据映射、哈希索引不可用、并行改动冲突等）记录在 [工程问题记录](docs/ENGINEERING_ISSUES.md)。
+
+## 演示套件
+
+```bash
+python -m src.agent --demo-suite              # 规则模式：基线轨迹
+python -m src.agent --demo-suite --mode llm   # 模型模式：可看到模型自行改用 group_by / 检测器
+```
+
+| 输入 | 期望轨迹 |
+|---|---|
+| 经典暴力破解 | 聚合出失败簇 → 查后续成功登录 → 查上下文 → 出报告 |
+| 分布式喷洒 | 聚合无簇 → 按账号汇总发现跨 IP 失败 → 查后续成功登录（LLM 模式） |
+| 良性重试 | 聚合无簇 → 确认低于阈值 → 提前结束，不做无谓查询 |
+
+三种输入共用同一个 Agent 与同一套工具，差别只来自规划器；每次运行都保存计划、每步理由、假设状态与报告。
 
 ## 许可证
 

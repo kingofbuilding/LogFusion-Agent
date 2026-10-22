@@ -161,7 +161,7 @@ def test_agent_completion_retrieves_cases_when_planner_finishes_without_rag():
         mode, tokens_used = "test", 0
         def choose(self, goal, trace):
             return ("search_logs", {}) if not trace else ("finish_investigation", {})
-    result = InvestigationAgent(demo_store(), planner=EarlyPlanner(), reviewer=SimulatedJudgment()).run("调查")
+    result = InvestigationAgent(demo_store(), planner=EarlyPlanner(), reviewer=SimulatedJudgment(), completeness_gate=False).run("调查")
     assert result.status == "completed"
     assert [t["tool"] for t in result.trace] == ["search_logs", "retrieve_cases", "synthesize_judgment"]
     assert result.trace[1]["stage"] == "agent_completion"

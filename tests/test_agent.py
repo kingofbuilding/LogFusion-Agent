@@ -164,7 +164,7 @@ def test_llm_selects_tools_from_observations_and_usage_is_recorded():
             return SimpleNamespace(usage=SimpleNamespace(total_tokens=100), choices=[SimpleNamespace(message=SimpleNamespace(
                 tool_calls=[SimpleNamespace(function=SimpleNamespace(name=name, arguments="{}"))]))])
     client = SimpleNamespace(chat=SimpleNamespace(completions=Completion()))
-    result = InvestigationAgent(store_from([failed(i) for i in range(5)]), planner=LLMPlanner(client, "test-model")).run("查 SSH")
+    result = InvestigationAgent(store_from([failed(i) for i in range(5)]), planner=LLMPlanner(client, "test-model"), completeness_gate=False).run("查 SSH")
     assert result.status == "completed" and result.mode == "llm_tool_calling"
     assert result.tokens_used == 300, "plan + aggregate + finish"
     assert result.plan[0]["id"] == "H1"

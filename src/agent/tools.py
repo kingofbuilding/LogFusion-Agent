@@ -315,8 +315,9 @@ def _schema(name, description, properties, required=()):
     # Every action carries a one-sentence reason, so the trace shows intent and not just calls.
     fields["rationale"] = {"type": "string",
                            "description": "One short sentence: why this action, given what is known."}
+    required = list(dict.fromkeys([*required, "rationale"]))
     return {"type": "function", "function": {"name": name, "description": description,
-            "parameters": {"type": "object", "properties": fields, "required": list(required),
+            "parameters": {"type": "object", "properties": fields, "required": required,
                 "additionalProperties": False}}}
 
 

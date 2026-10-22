@@ -1,0 +1,194 @@
+{
+  "suite": "benchmarks\\cases",
+  "stamp": "20261022T021727Z",
+  "repeats": 1,
+  "git_sha": "c9816eb379e104b700877b08506a4118eadd5c0f",
+  "budgets": {
+    "rule": {
+      "max_steps": 16,
+      "max_seconds": 60,
+      "max_tokens": 24000
+    },
+    "simulated": {
+      "max_steps": 16,
+      "max_seconds": 60,
+      "max_tokens": 24000
+    },
+    "llm": {
+      "max_steps": 20,
+      "max_seconds": 120,
+      "max_tokens": 100000
+    },
+    "upstream": {
+      "max_steps": 1,
+      "max_seconds": 1,
+      "max_tokens": 1
+    },
+    "agent+upstream": {
+      "max_steps": 20,
+      "max_seconds": 120,
+      "max_tokens": 100000
+    }
+  },
+  "groups": {
+    "llm": {
+      "group": "llm",
+      "repeats": 1,
+      "cases": [
+        {
+          "case_id": "ssh-001",
+          "category": "bruteforce_then_success",
+          "verdict_expected": "correlated_success",
+          "verdict_actual": "correlated_success",
+          "verdict_ok": true,
+          "evidence_recall": 1.0,
+          "evidence_precision": 0.4,
+          "link_recall": 1.0,
+          "false_links": [],
+          "judgment_decoy_citations": [],
+          "pair_violations": [],
+          "evidence_count": 20,
+          "tool_steps": 16,
+          "tool_errors": 1,
+          "tool_error_types": [
+            "JudgmentValidationError"
+          ],
+          "tokens": 84219,
+          "elapsed": 35.328,
+          "status": "completed_partial",
+          "stop_reason": "evidence_budget",
+          "judgment_status": "completed",
+          "claims": 8,
+          "gate_triggers": 0,
+          "rationale_rate": 0.3571,
+          "hypothesis_rate": 0.25,
+          "attempt": 1
+        },
+        {
+          "case_id": "ssh-009",
+          "category": "bruteforce_no_success",
+          "verdict_expected": "no_correlated_success",
+          "verdict_actual": "no_correlated_success",
+          "verdict_ok": true,
+          "evidence_recall": 1.0,
+          "evidence_precision": 0.2308,
+          "link_recall": null,
+          "false_links": [],
+          "judgment_decoy_citations": [],
+          "pair_violations": [],
+          "evidence_count": 26,
+          "tool_steps": 16,
+          "tool_errors": 0,
+          "tool_error_types": [],
+          "tokens": 77208,
+          "elapsed": 22.688,
+          "status": "completed_partial",
+          "stop_reason": "evidence_budget",
+          "judgment_status": "completed",
+          "claims": 8,
+          "gate_triggers": 0,
+          "rationale_rate": 0.2857,
+          "hypothesis_rate": 0.0,
+          "attempt": 1
+        },
+        {
+          "case_id": "ssh-021",
+          "category": "success_other_host",
+          "verdict_expected": "no_correlated_success",
+          "verdict_actual": "no_correlated_success",
+          "verdict_ok": true,
+          "evidence_recall": 1.0,
+          "evidence_precision": 0.1556,
+          "link_recall": null,
+          "false_links": [],
+          "judgment_decoy_citations": [],
+          "pair_violations": [],
+          "evidence_count": 45,
+          "tool_steps": 15,
+          "tool_errors": 2,
+          "tool_error_types": [
+            "JudgmentValidationError"
+          ],
+          "tokens": 96676,
+          "elapsed": 34.344,
+          "status": "completed_partial",
+          "stop_reason": "judgment_rejected",
+          "judgment_status": "rejected",
+          "claims": 0,
+          "gate_triggers": 0,
+          "rationale_rate": 0.4615,
+          "hypothesis_rate": 0.5,
+          "attempt": 1
+        }
+      ],
+      "summary": {
+        "cases": 3,
+        "verdict_accuracy": 1.0,
+        "evidence_recall": 1.0,
+        "evidence_precision": 0.2621,
+        "link_recall": 1.0,
+        "mislink_cases": 0,
+        "judgment_mislink_cases": 0,
+        "pair_violations": 0,
+        "mean_tool_steps": 15.6667,
+        "mean_tokens": 86034.3333,
+        "tool_error_rate": 0.6667,
+        "tool_error_types": {
+          "JudgmentValidationError": 2
+        },
+        "stop_reasons": {
+          "evidence_budget": 2,
+          "judgment_rejected": 1
+        },
+        "completed_rate": 0.0,
+        "partial_rate": 1.0,
+        "completion_rate": 1.0,
+        "mean_gate_triggers": 0.0,
+        "rationale_rate": 0.3681,
+        "hypothesis_rate": 0.25,
+        "judgment_completed_rate": 0.6667,
+        "by_category": {
+          "bruteforce_then_success": {
+            "cases": 1,
+            "verdict_accuracy": 1.0,
+            "evidence_recall": 1.0,
+            "evidence_precision": 0.4,
+            "link_recall": 1.0,
+            "mislink_cases": 0,
+            "evidence_count": 20.0,
+            "mean_tool_steps": 16.0,
+            "mean_tokens": 84219.0,
+            "completed_rate": 0.0,
+            "completion_rate": 1.0
+          },
+          "bruteforce_no_success": {
+            "cases": 1,
+            "verdict_accuracy": 1.0,
+            "evidence_recall": 1.0,
+            "evidence_precision": 0.2308,
+            "link_recall": null,
+            "mislink_cases": 0,
+            "evidence_count": 26.0,
+            "mean_tool_steps": 16.0,
+            "mean_tokens": 77208.0,
+            "completed_rate": 0.0,
+            "completion_rate": 1.0
+          },
+          "success_other_host": {
+            "cases": 1,
+            "verdict_accuracy": 1.0,
+            "evidence_recall": 1.0,
+            "evidence_precision": 0.1556,
+            "link_recall": null,
+            "mislink_cases": 0,
+            "evidence_count": 45.0,
+            "mean_tool_steps": 15.0,
+            "mean_tokens": 96676.0,
+            "completed_rate": 0.0,
+            "completion_rate": 1.0
+          }
+        }
+      }
+    }
+  }
+}

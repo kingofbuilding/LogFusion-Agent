@@ -15,7 +15,7 @@ from .planner import RulePlanner
 from .tools import InvestigationTools, ToolArgumentError, failure_clusters
 
 # Tools still allowed once the agent enters wrap-up mode: consolidate and finish, no new exploration.
-WRAP_UP_TOOLS = {"build_timeline", "retrieve_cases", "finish_investigation"}
+WRAP_UP_TOOLS = {"build_timeline", "retrieve_cases", "update_hypothesis", "finish_investigation"}
 
 
 @dataclass
@@ -43,6 +43,7 @@ class InvestigationResult:
     tokens_used: int
     judgment: dict = field(default_factory=lambda: {"status": "not_requested"})
     plan: list[dict] = field(default_factory=list)
+    gate_triggers: int = 0
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def to_dict(self):
@@ -249,14 +250,51 @@ def grounded_findings(tools: InvestigationTools) -> list[Finding]:
 
 class InvestigationAgent:
     def __init__(self, store: EventStore, planner=None, tools=None,
-                 max_steps: int = 16, max_seconds: float = 90, max_tokens: int = 24_000, reviewer=None):
-        if not 1 <= max_steps <= 40 or not 1 <= max_seconds <= 600 or not 1 <= max_tokens <= 100_000:
+                 max_steps: int = 16, max_seconds: float = 90, max_tokens: int = 24_000, reviewer=None,
+                 completeness_gate: bool = True):
+        if not 1 <= max_steps <= 40 or not 1 <= max_seconds <= 600 or not 1 <= max_tokens <= 200_000:
             raise ValueError("Invalid investigation budget")
         self.store = store
         self.planner = planner or RulePlanner()
         self.tools = tools or InvestigationTools(store)
         self.reviewer = reviewer
         self.max_steps, self.max_seconds, self.max_tokens = max_steps, max_seconds, max_tokens
+        self.completeness_gate = completeness_gate
+
+    def _coverage_gaps(self, trace, plan) -> list[str]:
+        """What the investigation already knows it has not checked before declaring it is done."""
+        gaps = []
+        if not self.tools.evidence:
+            return ["尚未查看任何日志证据：先执行一次聚合或检索再结束"]
+        events = [self.tools.store.by_id[eid] for eid in self.tools.evidence]
+        clusters = failure_clusters(events)[:3]
+        ends = [parse_time(group["end"]) for group in clusters]
+        for group in clusters:
+            searched = any(t["tool"] == "search_logs" and not t.get("error")
+                           and t["arguments"].get("user") == group["user"]
+                           and t["arguments"].get("host") == group["host"]
+                           and t["arguments"].get("event_type") == "auth_success"
+                           for t in trace)
+            if not searched:
+                gaps.append(f"失败簇 {group['src_ip']}/{group['user']}@{group['host']} 尚未查询后续成功登录")
+        # Only successes that could complete a chain (same account and host, just after a cluster) are
+        # required to have context; unrelated successes in the evidence are not a completeness gap.
+        for event in events:
+            if event.event_type != "auth_success" or not event.timestamp:
+                continue
+            relevant = any(
+                (event.user, event.host) == (group["user"], group["host"])
+                and 0 <= (parse_time(event.timestamp) - end).total_seconds() <= 15 * 60
+                for group, end in zip(clusters, ends))
+            if not relevant:
+                continue
+            checked = any(t["tool"] == "get_event_context" and t["arguments"].get("event_id") == event.event_id
+                          for t in trace)
+            if not checked:
+                gaps.append(f"成功登录 {event.event_id} 尚未核对上下文")
+        if plan and all(item["status"] == "open" for item in plan):
+            gaps.append("计划中的假设都还没有结论（可用 update_hypothesis 标注）")
+        return gaps[:4]
 
     def run(self, goal: str, on_step=None, cancelled=None):
         if not goal.strip() or len(goal) > 2000:
@@ -292,16 +330,16 @@ class InvestigationAgent:
         tool_token_limit = self.max_tokens - reserve_tokens
         reserve_steps = 2 if self.max_steps >= 6 else 0
         tool_step_limit = self.max_steps - reserve_steps
-        # Wrap-up starts before the hard limit, so the planner gets a turn to consolidate instead of
-        # being cut off mid-exploration.
-        wrap_up_tokens = int(self.max_tokens * 0.75)
+        # Wrap-up must start below the tool-token hard limit, otherwise it can never fire.
+        wrap_up_tokens = int(tool_token_limit * 0.9)
         wrap_up_steps = max(1, tool_step_limit - 2)
         repeated_calls = 0
         wrap_up = False
         wrap_up_restricted = 0
+        gate_triggers = 0
 
         def actions_done():
-            return sum(1 for item in trace if item.get("stage") not in ("wrap_up", "plan"))
+            return sum(1 for item in trace if item.get("stage") not in ("wrap_up", "plan", "gate"))
 
         for step in range(1, self.max_steps + 1):
             if cancelled and cancelled():
@@ -344,11 +382,29 @@ class InvestigationAgent:
                 if name == "finish_investigation":
                     if arguments:
                         raise ValueError("finish_investigation accepts no arguments")
+                    # Completeness gate: a finish request must account for known clusters and
+                    # successes. The gate may refuse twice, then lets the run finish with disclosure.
+                    gaps = [] if not self.completeness_gate else self._coverage_gaps(trace, plan)
+                    if wrap_up:
+                        # In wrap-up only the hypothesis check is actionable: exploring further is
+                        # exactly what wrap-up forbids.
+                        gaps = [gap for gap in gaps if "假设" in gap]
+                    if gaps and gate_triggers < 2:
+                        gate_triggers += 1
+                        notice = {"step": step, "tool": "completeness_gate", "arguments": {},
+                                  "stage": "gate", "control": "CompletenessGate",
+                                  "result": {"missing": gaps,
+                                             "notice": "结束前请补齐以下检查；若确实无法检查，请说明原因后再结束。",
+                                             "type": "CompletenessGate"}}
+                        trace.append(notice)
+                        if on_step:
+                            on_step(notice)
+                        continue
                     status, reason = "completed", "planner_finished"
                     break
                 if wrap_up and name not in WRAP_UP_TOOLS:
                     wrap_up_restricted += 1
-                    hint = {"step": step, "tool": name, "arguments": arguments, "error": "WrapUpRestricted",
+                    hint = {"step": step, "tool": name, "arguments": arguments, "control": "WrapUpRestricted",
                             "stage": "wrap_up",
                             "result": {"error": "收尾模式：探索类工具已关闭，请用 build_timeline 整理证据或 finish_investigation 结束。",
                                        "type": "WrapUpRestricted"}}
@@ -511,6 +567,8 @@ class InvestigationAgent:
             limitations.append("工具阶段在预留预算内提前收束，研判仅基于已查证据；未覆盖的日志不能视为不存在。")
         if status == "completed_partial":
             limitations.append("状态为部分完成：报告已产出，但调查没有覆盖全部可能路径。")
+        if gate_triggers:
+            limitations.append(f"完整性闸门触发 {gate_triggers} 次：结束前曾被要求补齐未检查的覆盖项。")
         if status != "completed":
             limitations.append("本次调查未正常完成，请结合停止原因检查预算或服务状态。")
         if self.reviewer:
@@ -524,4 +582,4 @@ class InvestigationAgent:
                                     list(self.tools.case_references.values()), trace, limitations,
                                     round(time.monotonic() - started, 3),
                                     self.planner.tokens_used + (self.reviewer.tokens_used if self.reviewer else 0),
-                                    judgment, plan)
+                                    judgment=judgment, plan=plan, gate_triggers=gate_triggers)
