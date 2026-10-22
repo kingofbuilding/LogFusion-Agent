@@ -66,6 +66,7 @@ class InvestigationResult:
     plan: list[dict] = field(default_factory=list)
     gate_triggers: int = 0
     tokens_cached: int = 0
+    recon: str = ""
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def to_dict(self):
@@ -273,6 +274,10 @@ def grounded_findings(tools: InvestigationTools) -> list[Finding]:
     return findings
 
 
+class EngineTemplates:
+    PATTERNS = None
+
+
 class InvestigationAgent:
     def __init__(self, store: EventStore, planner=None, tools=None,
                  max_steps: int = 16, max_seconds: float = 90, max_tokens: int = 24_000, reviewer=None,
@@ -289,6 +294,81 @@ class InvestigationAgent:
         self.reviewer = reviewer
         self.max_steps, self.max_seconds, self.max_tokens = max_steps, max_seconds, max_tokens
         self.completeness_gate = completeness_gate
+
+    _TEMPLATE_PATTERNS = None
+
+    def _template_hotspots(self, top: int = 5) -> list[dict]:
+        """Cluster raw lines into coarse templates (digits/IPs/pids stripped) and keep the hottest.
+
+        This is a dialect-agnostic recon signal: it does not depend on any profile rule, so it still
+        says something useful on logs the classifier routes to ``other``.
+        """
+        import collections
+        import re as _re
+        if EngineTemplates.PATTERNS is None:
+            EngineTemplates.PATTERNS = [
+                (_re.compile(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:[.,]\d+)?(?:Z|[+-]\d{2}:?\d{2})?"), "<ts>"),
+                (_re.compile(r"\b\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?\b"), "<ip>"),
+                (_re.compile(r"\[\d+\]"), "[]"),
+                (_re.compile(r"\b\d+\b"), "<n>"),
+            ]
+        buckets: dict[str, list] = collections.defaultdict(list)
+        for event in self.store.events:
+            key = event.raw
+            for pattern, replacement in EngineTemplates.PATTERNS:
+                key = pattern.sub(replacement, key)
+            buckets[key[:160]].append(event)
+        ranked = sorted(buckets.items(), key=lambda kv: -len(kv[1]))[:top]
+        return [{"template": text[:110], "count": len(rows),
+                 "hosts": len({r.host for r in rows if r.host}),
+                 "event_ids": [r.event_id for r in rows[:3]]} for text, rows in ranked]
+
+    def _recon(self) -> dict:
+        """Pre-plan reconnaissance. Reads the store directly: no model call, no tool side effect.
+
+        Going through ``tools.call`` would register evidence and then trip the completeness gate,
+        which expects every cluster it knows about to be followed up. Recon is context for planning,
+        not evidence: anything it mentions still has to be looked up with a tool before it can be
+        cited.
+        """
+        recon: dict = {"windows": [], "clusters": [], "templates": []}
+        detector = getattr(self.tools, "detector", None)
+        if detector is not None:
+            try:
+                raw = detector(self.store, 3)
+                for span, row in zip(raw.get("windows", []), raw.get("scores", [])):
+                    if span.get("end_event_id") in self.store.by_id:
+                        recon["windows"].append({
+                            "start_event_id": span.get("start_event_id"),
+                            "end_event_id": span.get("end_event_id"),
+                            "risk_score": float(row.get("risk_score", 0.0))})
+            except Exception:
+                pass
+        try:
+            recon["clusters"] = failure_clusters(
+                self.store.events, failure_type=self.store.profile.failure_type)[:3]
+        except Exception:
+            pass
+        try:
+            recon["templates"] = self._template_hotspots(top=5)
+        except Exception:
+            pass
+        return recon
+
+    def _recon_digest(self, recon: dict) -> str:
+        lines = []
+        if recon.get("windows"):
+            lines.append("风险窗口（融合分数，按分降序）：" + "；".join(
+                f"{float(w.get('risk_score', 0)):.3f} [{w.get('start_event_id')}..{w.get('end_event_id')}]"
+                for w in recon["windows"][:3]))
+        if recon.get("clusters"):
+            lines.append("实体聚合出的集中失败组：" + "；".join(
+                f"{g.get('src_ip') or '-'}/{g.get('user') or '-'}@{g.get('host') or '-'}×{g.get('count')}"
+                for g in recon["clusters"][:3]))
+        if recon.get("templates"):
+            lines.append("高频日志模板（去数字/IP 后，前 5）：" + " / ".join(
+                f"×{t['count']} «{t['template'][:60]}»" for t in recon["templates"]))
+        return "\n".join(lines)
 
     def _data_digest(self) -> str:
         """Summarise what the uploaded logs actually contain, so planning is not dialect-blind."""
@@ -368,11 +448,17 @@ class InvestigationAgent:
         if self.reviewer:
             self.reviewer.tokens_used = 0
         trace, seen = [], set()
-        # Plan first: two to four hypotheses the investigation will try to confirm or refute.
+        # Recon before planning: risk windows, entity bursts and template hotspots are cheap to
+        # obtain (no model call), and planning without them produces generic hypotheses.
+        recon = self._recon()
+        recon_note = self._recon_digest(recon)
         plan: list[dict] = []
         if getattr(self.planner, "supports_plan", False) and not (cancelled and cancelled()):
             try:
-                statements = self.planner.plan(goal, digest=self._data_digest()) or []
+                digest = self._data_digest()
+                if recon_note:
+                    digest = digest + "\n侦察结果（工具已执行，事件 ID 可直接引用）：\n" + recon_note
+                statements = self.planner.plan(goal, digest=digest) or []
             except Exception:
                 statements = []  # a planning failure must not prevent the investigation
             plan = [{"id": f"H{i + 1}", "statement": str(text)[:200].strip(), "status": "open"}
@@ -406,7 +492,7 @@ class InvestigationAgent:
             return max((item.get("step", 0) for item in trace), default=0) + 1
 
         def actions_done():
-            return sum(1 for item in trace if item.get("stage") not in ("wrap_up", "plan", "gate", "hint"))
+            return sum(1 for item in trace if item.get("stage") not in ("wrap_up", "plan", "gate", "hint", "recon"))
 
         for step in range(1, self.max_steps + 1):
             if cancelled and cancelled():
@@ -419,7 +505,7 @@ class InvestigationAgent:
             # at least one turn before the tool-token hard limit. Never reserve more than half the
             # tool budget, otherwise a deliberately tiny budget would start in wrap-up.
             turns_done = max(1, sum(1 for item in trace
-                                    if item.get("stage") not in ("plan", "gate", "wrap_up", "hint")))
+                                    if item.get("stage") not in ("plan", "gate", "wrap_up", "hint", "recon")))
             wrap_up_headroom = min(max(1_200, int(self.planner.tokens_used / turns_done * 1.5)),
                                    tool_token_limit // 2)
             if not wrap_up and (self.planner.tokens_used >= tool_token_limit - wrap_up_headroom
@@ -757,4 +843,5 @@ class InvestigationAgent:
                                     round(time.monotonic() - started, 3),
                                     self.planner.tokens_used + (self.reviewer.tokens_used if self.reviewer else 0),
                                     judgment=judgment, plan=plan, gate_triggers=gate_triggers,
-                                    tokens_cached=int(getattr(self.planner, "cached_tokens", 0) or 0))
+                                    tokens_cached=int(getattr(self.planner, "cached_tokens", 0) or 0),
+                                    recon=recon_note)

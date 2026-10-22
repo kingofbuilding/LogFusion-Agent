@@ -66,7 +66,7 @@ def run_suite(args) -> int:
     if rows:
         print("=== 轨迹对比 ===")
         for name, result, expected in rows:
-            actions = [t for t in result.trace if t.get("stage") not in ("plan", "gate", "wrap_up")]
+            actions = [t for t in result.trace if t.get("stage") not in ("plan", "gate", "wrap_up", "recon")]
             completed = "是" if result.status in ("completed", "completed_partial") else "否"
             print(f"- {name}：{len(actions)} 步，状态 {result.status}，出报告 {completed}，闸门 {result.gate_triggers} 次")
     return 0

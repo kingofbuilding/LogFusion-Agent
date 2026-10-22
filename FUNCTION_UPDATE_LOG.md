@@ -2963,3 +2963,35 @@
 ### 成本
 - 本轮验证合计约 46.8k token ≈ 0.12 元（含一次诊断调用 909）
 - `run_eval` 新增 `--estimate`（只估算不发请求）与 `--max-tokens`（覆盖预算），估价口径：输入 2 元/M、输出 8 元/M、输出占 10%、实际消耗取预算 0.8
+
+## 2026-10-22 架构调整：Recon → Plan → Act（先侦察再规划）
+
+### 问题
+原流程是「plan → 循环」，plan 只拿到 goal 和事件类型统计（`_data_digest`），**看不到任何具体证据**：
+哪个窗口融合分数高、哪些模板在爆发、哪个实体在集中失败。在这种输入下产出的假设必然是
+通用猜想（"是否存在集中失败""是否跨源关联"），而不是针对这批日志的判断。
+
+### 修改
+- `engine._recon()`：规划前执行一次**无模型调用、无工具副作用**的侦察，读 `store` 直接算三类信号：
+  1. 风险窗口（有检测器时）：`risk_score` + 起止 `event_id`
+  2. 实体聚合出的集中失败组：`src_ip/user@host × count`
+  3. 高频日志模板：把 raw 行去时间戳 / IP / pid / 数字后聚类，取 Top-5 + 条数 + 样例
+- `engine._recon_digest()`：把上述信号写成一段文本，拼进 `plan()` 的 digest。
+- **无副作用**：侦察不走 `tools.call`，不写 `evidence` / `observations`，避免触发完整性闸门
+  （闸门要求"已知的每个簇都要查后继"，而侦察出的簇还没被模型处理）。recon 只是规划上下文，
+  它提到的任何 ID 仍须用工具查过才能引用。
+- `InvestigationResult.recon` 新增字段保存侦察文本（不进 `trace`，`trace` 仍只记模型动作）。
+- `trace` / `actions_done` 的 stage 过滤保留，但侦察已不产生 trace 条目。
+- 模板归一化的正则放在 `EngineTemplates.PATTERNS`，只编译一次。
+
+### 验证（真实模型，2 MB 多源切片，auth_generic）
+- 侦察实际产出：`×373 type=LOGIN msg=audit(...)`、`×372 USER_ACCT`、`×372 CRED_ACQ`、
+  `×372 USER_START`、`×372 CRED_DISP`
+- 生成的假设直接对准这批数据：
+  - H1 audit 会话链：五类模板各约 372 条且数量高度对齐 → 验证会话建立-结束是否成对
+  - H2 来源 IP 集中：8 个 IP 覆盖 165 台主机 → 验证单 IP 短窗口内是否密集 LOGIN（横移/喷洒）
+  - H3 跨方言时间耦合：207 条 auth_success 是否紧邻同主机的 LOGIN / USER_START
+  - H4 时间戳偏差：仅 5,307/11,022 可解析
+- 对比无侦察版本（假设为通用的"集中失败 / 跨源关联"），假设从"猜想"变成"针对本批数据的判断"
+- 成本：24,351 token（缓存命中 13,440）≈ 0.063 元
+- `pytest`：125 passed

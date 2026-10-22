@@ -98,7 +98,7 @@ class RulePlanner:
 
     def choose(self, goal, trace, wrap_up: bool = False, final: bool = False):
         # Plan and wrap-up notices are annotations, not investigation actions.
-        actions = [t for t in trace if t.get("stage") not in ("plan", "wrap_up")]
+        actions = [t for t in trace if t.get("stage") not in ("plan", "wrap_up", "recon")]
         if wrap_up:
             # Stop exploring: consolidate what was already observed.
             if not any(t["tool"] == "build_timeline" for t in actions):
