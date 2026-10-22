@@ -255,13 +255,32 @@ class InvestigationTools:
         return {"hypothesis_id": hypothesis_id, "status": status, "note": note,
                 "notice": "假设状态是模型的判断声明，不是事实；仍需引用原始证据核对。"}
 
+    SECURITY_MARKERS = ("sshd", "failed password", "accepted password", "accepted publickey",
+                        "invalid user", "session opened", "sudo", "authentication failure",
+                        "user unknown", "prompt injection")
+
+    def _rag_query(self, query: str) -> tuple[str, bool]:
+        """The upstream UI retrieves with the raw log line, not a paraphrase.
+
+        Hash embeddings score paraphrases below the 0.4 candidate floor, so when the planner passes
+        a generic phrase and evidence already exists, query with the most recent observed raw line.
+        """
+        if any(marker in query.lower() for marker in self.SECURITY_MARKERS):
+            return query, False
+        if not self.evidence:
+            return query, False
+        latest = max(self.evidence.values(), key=lambda e: (e.get("timestamp") or "", e.get("line") or 0))
+        return str(latest.get("raw", ""))[:1000], True
+
     def retrieve_cases(self, query: str = "SSH failed password accepted sudo", top_k: int = 3) -> dict:
         if len(query) > 1000:
             raise ValueError("Query too long")
         if self.retriever is not None:
+            query, rebuilt = self._rag_query(query)
             hits = self.retriever(query, top_k)
             backend = "upstream_vector_rag"
         else:
+            rebuilt = False
             cases = [json.loads(line) for line in self.case_file.read_text(encoding="utf-8-sig").splitlines() if line.strip()]
             tokens = set(re.findall(r"[a-z0-9]+", query.lower()))
             ranked = []
@@ -283,6 +302,8 @@ class InvestigationTools:
             self.case_references.update({c["case_id"]: c for c in projected if c["case_id"]})
             notice = (f"案例仅供解释与参考：返回 {len(projected)} 条候选，其中 {usable} 条达到证据阈值，"
                       "其余为候选（candidate）；相似度不是概率，也不能证明本次攻击发生。")
+            if rebuilt:
+                notice += " 查询文本由已查证据的原始日志构造（释义查询在哈希嵌入下会低于候选下限）。"
         else:
             notice = "案例仅供解释与调查参考，不能证明本次攻击发生；相似度不是概率。"
         return {"backend": backend, "cases": projected, "notice": notice}

@@ -76,7 +76,7 @@ C0 的工具 schema 只声明 `integer`，`max_groups ≤ 10` 只写在代码里
 
 上游 RAG 的可用口径是**候选模式**：`retrieve(..., apply_threshold=False)`，按 raw_score 排序返回 Top-K，并标注 `evidence_usable`（是否同时过 0.65/0.7 阈值）。论文中 harrison Top-1 命中 0.667、santos 0.900，Top-3/5 均为 1.0。
 
-本次评测环境沿用同一索引，但 Agent 适配层最初用了默认严格阈值，导致 `retrieve_cases` 返回空；现已改为候选模式并回传 `raw_score` / `evidence_usable`。需要注意：索引是在哈希回退嵌入下构建的（256 维），短查询相似度常低于 0.4 的候选下限，因此**部分查询仍可能返回空**——这是嵌入方式与环境限制，不是 RAG 模块不可用。**D 组的差异来自检测器，不来自语义检索。**
+本次评测环境沿用同一索引，但 Agent 适配层最初用了默认严格阈值，导致 `retrieve_cases` 返回空；现已改为候选模式并回传 `raw_score` / `evidence_usable`。由于索引在哈希回退嵌入下构建（256 维），余弦分通常只有 0.05–0.13，即使 Top-K 排序里能排出相关案例，`evidence_usable` 也基本为 false；Agent 因此按“候选”展示并披露分数，而不是宣称命中。**D 组的差异来自检测器，不来自语义检索。**
 
 ### 3.4 检测器观察的收敛
 

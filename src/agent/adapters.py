@@ -58,6 +58,9 @@ def upstream_retriever():
         # The upstream UI retrieves in candidate mode and labels each hit with raw score and
         # evidence_usable; the strict 0.65/0.7 thresholds almost never pass with hash embeddings,
         # so using the default threshold here would silently turn RAG into an empty tool.
+        # The 0.4 UI floor also rejects paraphrases, so the agent takes the ranked top-k and lets the
+        # tool disclose the raw scores instead of dropping every candidate.
+        rag.ui_candidate_min_raw_score = 0.0
         hits = rag.retrieve(query, top_k=top_k, auto_build=False, apply_threshold=False)
         for hit in hits:
             hit.setdefault("evidence_usable", bool(hit.get("threshold_passed", False)))
