@@ -302,7 +302,7 @@ class InvestigationTools:
         projected = [{k: h.get(k, "") for k in ("case_id", "title", "content", "technique", "advice_cn", "score")}
                      for h in hits[:top_k]]
         self.case_references.update({c["case_id"]: c for c in projected if c["case_id"]})
-        if backend in ("upstream_vector_rag", "local_tfidf_cases"):
+        if backend != "lexical_case_search":
             projected = [{**case, "raw_score": round(float(h.get("raw_score", 0) or 0), 4),
                           "evidence_usable": bool(h.get("evidence_usable", False)),
                           "match_level": h.get("match_level", "high" if h.get("evidence_usable") else "candidate")}

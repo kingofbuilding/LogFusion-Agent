@@ -1,0 +1,165 @@
+{
+  "suite": "benchmarks\\cases",
+  "stamp": "20261022T034633Z",
+  "repeats": 1,
+  "git_sha": "e22fe86c2e4b79a6fdbfc8f258f889a9ac09ad43",
+  "budgets": {
+    "rule": {
+      "max_steps": 16,
+      "max_seconds": 60,
+      "max_tokens": 24000
+    },
+    "simulated": {
+      "max_steps": 16,
+      "max_seconds": 60,
+      "max_tokens": 24000
+    },
+    "llm": {
+      "max_steps": 16,
+      "max_seconds": 120,
+      "max_tokens": 100000
+    },
+    "upstream": {
+      "max_steps": 1,
+      "max_seconds": 1,
+      "max_tokens": 1
+    },
+    "agent+upstream": {
+      "max_steps": 16,
+      "max_seconds": 120,
+      "max_tokens": 100000
+    }
+  },
+  "groups": {
+    "upstream": {
+      "group": "upstream",
+      "repeats": 1,
+      "cases": [
+        {
+          "case_id": "ssh-001",
+          "category": "bruteforce_then_success",
+          "verdict_expected": "correlated_success",
+          "verdict_actual": "correlated_success",
+          "verdict_ok": true,
+          "evidence_recall": 1.0,
+          "evidence_precision": 0.16,
+          "link_recall": 1.0,
+          "false_links": [],
+          "judgment_decoy_citations": [],
+          "pair_violations": [],
+          "evidence_count": 50,
+          "tool_steps": 2,
+          "tool_errors": 0,
+          "tool_error_types": [],
+          "tokens": 0,
+          "elapsed": 1.859,
+          "status": "completed",
+          "stop_reason": "oneshot_finished",
+          "judgment_status": "not_requested",
+          "claims": 0,
+          "gate_triggers": 0,
+          "gate_terminal_refusals": 0,
+          "rationale_rate": 0.0,
+          "hypothesis_rate": null,
+          "attempt": 1
+        },
+        {
+          "case_id": "ssh-002",
+          "category": "bruteforce_then_success",
+          "verdict_expected": "correlated_success",
+          "verdict_actual": "correlated_success",
+          "verdict_ok": true,
+          "evidence_recall": 1.0,
+          "evidence_precision": 0.14,
+          "link_recall": 1.0,
+          "false_links": [],
+          "judgment_decoy_citations": [],
+          "pair_violations": [],
+          "evidence_count": 50,
+          "tool_steps": 2,
+          "tool_errors": 0,
+          "tool_error_types": [],
+          "tokens": 0,
+          "elapsed": 0.11,
+          "status": "completed",
+          "stop_reason": "oneshot_finished",
+          "judgment_status": "not_requested",
+          "claims": 0,
+          "gate_triggers": 0,
+          "gate_terminal_refusals": 0,
+          "rationale_rate": 0.0,
+          "hypothesis_rate": null,
+          "attempt": 1
+        },
+        {
+          "case_id": "ssh-003",
+          "category": "bruteforce_then_success",
+          "verdict_expected": "correlated_success",
+          "verdict_actual": "correlated_success",
+          "verdict_ok": true,
+          "evidence_recall": 1.0,
+          "evidence_precision": 0.16,
+          "link_recall": 1.0,
+          "false_links": [],
+          "judgment_decoy_citations": [],
+          "pair_violations": [],
+          "evidence_count": 50,
+          "tool_steps": 2,
+          "tool_errors": 0,
+          "tool_error_types": [],
+          "tokens": 0,
+          "elapsed": 0.11,
+          "status": "completed",
+          "stop_reason": "oneshot_finished",
+          "judgment_status": "not_requested",
+          "claims": 0,
+          "gate_triggers": 0,
+          "gate_terminal_refusals": 0,
+          "rationale_rate": 0.0,
+          "hypothesis_rate": null,
+          "attempt": 1
+        }
+      ],
+      "summary": {
+        "cases": 3,
+        "verdict_accuracy": 1.0,
+        "evidence_recall": 1.0,
+        "evidence_precision": 0.1533,
+        "link_recall": 1.0,
+        "mislink_cases": 0,
+        "judgment_mislink_cases": 0,
+        "pair_violations": 0,
+        "mean_tool_steps": 2.0,
+        "mean_tokens": 0.0,
+        "tool_error_rate": 0.0,
+        "tool_error_types": {},
+        "stop_reasons": {
+          "oneshot_finished": 3
+        },
+        "completed_rate": 1.0,
+        "partial_rate": 0.0,
+        "completion_rate": 1.0,
+        "mean_gate_triggers": 0.0,
+        "mean_gate_terminal_refusals": 0.0,
+        "rationale_rate": 0.0,
+        "hypothesis_rate": null,
+        "judgment_completed_rate": 0.0,
+        "by_category": {
+          "bruteforce_then_success": {
+            "cases": 3,
+            "verdict_accuracy": 1.0,
+            "evidence_recall": 1.0,
+            "evidence_precision": 0.1533,
+            "link_recall": 1.0,
+            "mislink_cases": 0,
+            "evidence_count": 50.0,
+            "mean_tool_steps": 2.0,
+            "mean_tokens": 0.0,
+            "completed_rate": 1.0,
+            "completion_rate": 1.0
+          }
+        }
+      }
+    }
+  }
+}

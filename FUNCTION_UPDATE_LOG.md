@@ -2822,3 +2822,28 @@
 
 ### Git 状态
 - 未提交
+
+## 2026-10-22 全流程自检与修复
+
+### 检查范围
+- `pytest`（108 个）、`--demo`（rule / simulated）、`--demo-suite`、`--with-detector` 单例、`--vector-rag` 单例、`--mode llm` 全链路（检测器 + RAG）、`run_eval --groups rule/upstream`、Streamlit 模块编译与导入、异常路径（缺失输入）。
+
+### 修复的问题
+- RAG 案例缺 `raw_score` / `match_level`：投影白名单只认 `upstream_vector_rag` 与 `local_tfidf_cases`，漏了 `local_minilm_cases` / `local_hybrid_cases`，已改为“非词法后端一律投影”。
+- 检测器不可用时没有披露：日志不足 50 条时 `detect_anomalies` 报错后仍继续，但报告未说明，已补限制“检测器不可用，结论仅基于规则信号与日志检索”。
+- trace 步号跳号/重复：收尾与完成阶段用 `len(trace)+1` 计算，遇到 plan/gate/wrap_up 记录会错位；改为 `max(step)+1`。
+- 评测步数口径失真：`tool_steps` 把 plan、闸门、收尾通知都算成工具步，导致 rule 组从 5.3 步涨到 9.3；改为只统计真实工具动作。
+
+### 结果
+- 标准集 rule 组：结论 1.00、召回 1.00、理由覆盖 1.00、假设结论率 1.00、平均 9.0 步。
+- 全链路（检测器 + MiniLM RAG）：completed_partial / gate_unresolved、86k tokens、证据 20 条、研判发布；案例带分数（0.597 / 0.498 / 0.494）。
+- demo-suite 三条轨迹均 completed 并出报告。
+
+### 仍存在的问题
+- 模型对 `rationale` 必填遵守度约 40%（schema 必填但服务端未强制），评测中已按覆盖率记录。
+- 闸门只在“申请结束”时检查；收尾阶段被拒即结束，而模型常在收尾前没查失败簇的后继登录，导致 gate_unresolved。
+- `gate_unresolved` 的报告措辞仍是“未正常完成”，可改为“收尾阶段被完整性闸门拦下”。
+- `outputs/investigations` 无清理机制。
+
+### Git 状态
+- 未提交

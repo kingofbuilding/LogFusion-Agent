@@ -346,6 +346,9 @@ class InvestigationAgent:
         gate_triggers = 0
         unresolved_gaps: list[str] = []
 
+        def next_step():
+            return max((item.get("step", 0) for item in trace), default=0) + 1
+
         def actions_done():
             return sum(1 for item in trace if item.get("stage") not in ("wrap_up", "plan", "gate"))
 
@@ -526,7 +529,7 @@ class InvestigationAgent:
                 gate_triggers += 1
                 if status == "completed":
                     status = "completed_partial"
-                notice = {"step": len(trace) + 1, "tool": "completeness_gate", "arguments": {},
+                notice = {"step": next_step(), "tool": "completeness_gate", "arguments": {},
                           "stage": "gate", "control": "CompletenessGate", "terminal": True,
                           "result": {"missing": unresolved_gaps, "terminal": True,
                                      "notice": "终局审计：调查在预算内结束，仍有未覆盖项；已写入报告限制。",
@@ -555,7 +558,7 @@ class InvestigationAgent:
             if status in ("completed", "completed_partial"):
                 stopped = budget_reason()
                 if not stopped and not any(t["tool"] == "retrieve_cases" and not t.get("error") for t in trace):
-                    entry = {"step": len(trace) + 1, "tool": "retrieve_cases",
+                    entry = {"step": next_step(), "tool": "retrieve_cases",
                              "arguments": {"query": "SSH brute force failed password accepted sudo", "top_k": 3},
                              "stage": "agent_completion"}
                     try:
@@ -577,7 +580,7 @@ class InvestigationAgent:
                             reason = stopped
                             judgment = {"status": "skipped", "reason": stopped}
                             break
-                        entry = {"step": len(trace) + 1, "tool": "synthesize_judgment",
+                        entry = {"step": next_step(), "tool": "synthesize_judgment",
                                  "arguments": {"attempt": attempt + 1}, "stage": "agent_completion"}
                         try:
                             judgment = self.reviewer.synthesize(
@@ -643,6 +646,8 @@ class InvestigationAgent:
             limitations.append(f"完整性闸门触发 {gate_triggers} 次：结束前被要求补齐未检查的覆盖项。")
         if unresolved_gaps:
             limitations.append("结束前仍未覆盖：" + "；".join(unresolved_gaps[:4]) + "。")
+        if any(t.get("tool") == "detect_anomalies" and t.get("error") for t in trace):
+            limitations.append("检测器不可用（日志条数不足或模型缺失），本次结论仅基于规则信号与日志检索。")
         if status != "completed":
             limitations.append("本次调查未正常完成，请结合停止原因检查预算或服务状态。")
         if self.reviewer:
