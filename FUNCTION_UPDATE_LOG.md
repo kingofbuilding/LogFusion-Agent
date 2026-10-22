@@ -2776,3 +2776,25 @@
 
 ### Git 状态
 - 未提交
+
+## 2026-10-22 检索鲁棒性与可复现评估
+
+### 修改内容
+- 查询归一化 `normalize_query`：去除时间戳、IP、端口、sshd PID、纯数字，降低日志噪声对词面匹配的影响（TF-IDF 分数略升、Top-1 不变）。
+- 鲁棒性：TF-IDF/MiniLM 检索加 LRU 式查询缓存；索引或模型损坏时逐级降级（hybrid → tfidf → minilm → 上游哈希），`retrieve_cases` 捕获检索异常并返回“检索不可用”，不再中断调查。
+- 新增 `benchmarks/rag_queries.json`（13 条标注查询）与 `scripts/evaluate_case_retrieval.py`，输出 Top-1/Top-3 与日志式/改写分项，结果写入 `benchmarks/results/rag_retrieval_eval.json`。
+- 新增 3 个测试（归一化、检索异常隔离、混合检索排序），共 107 个测试。
+
+### 结果说明
+- 13 条查询 Top-1：TF-IDF 0.77、MiniLM 0.69、Hybrid **0.85**；Top-3 均为 0.92。
+- 分项：日志式 Top-1，TF-IDF 与 Hybrid 均 1.00、MiniLM 0.75；改写 Top-1，MiniLM 与 Hybrid 0.60、TF-IDF 0.40。
+- 该评估为 agent 侧小样本 sanity check，不是论文的样本级命中率协议；论文数字仍以句向量环境为准。
+
+### 输出文件
+- `src/agent/rag_index.py`、`src/agent/adapters.py`、`src/agent/tools.py`
+- `benchmarks/rag_queries.json`、`scripts/evaluate_case_retrieval.py`、`benchmarks/results/rag_retrieval_eval.json`
+- `tests/test_rag_index.py`
+- `README.md`、`docs/EVAL_REPORT.md`、`reports/resume_project_logfusion_agent.md`
+
+### Git 状态
+- 未提交

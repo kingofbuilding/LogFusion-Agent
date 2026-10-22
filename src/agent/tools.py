@@ -280,7 +280,12 @@ class InvestigationTools:
                 query, rebuilt = self._rag_query(query)
             else:
                 rebuilt = False
-            hits = self.retriever(query, top_k)
+            try:
+                hits = self.retriever(query, top_k)
+            except Exception as exc:
+                # Retrieval is explanatory only; a broken index must not abort the investigation.
+                return {"backend": getattr(self.retriever, "backend", "unknown"), "cases": [],
+                        "notice": f"案例检索不可用（{type(exc).__name__}），不影响证据调查与结论。"}
             backend = getattr(self.retriever, "backend", "upstream_vector_rag")
         else:
             rebuilt = False

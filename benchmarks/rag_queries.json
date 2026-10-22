@@ -1,0 +1,15 @@
+[
+  {"query": "Failed password for invalid user admin from 203.0.113.9 port 5555 ssh2", "kind": "log", "expected": ["CASE-SEC-001", "CASE-SEC-015A"]},
+  {"query": "Accepted password for root from 198.51.100.7 port 2200 ssh2", "kind": "log", "expected": ["CASE-SEC-013"]},
+  {"query": "sudo: alice : TTY=pts/1 ; USER=root ; COMMAND=/usr/bin/id", "kind": "log", "expected": ["CASE-SEC-005", "CASE-SEC-008"]},
+  {"query": "AH01630: client denied by server configuration: /var/www/html/admin", "kind": "log", "expected": ["CASE-SEC-009", "AUTO-0011"]},
+  {"query": "SSH brute force failed password then accepted login", "kind": "log", "expected": ["CASE-SEC-001"]},
+  {"query": "WPScan scanning admin paths and plugins", "kind": "log", "expected": ["CASE-SEC-010", "CASE-SEC-016"]},
+  {"query": "Invalid user test1 from 192.0.2.5", "kind": "log", "expected": ["CASE-SEC-015A", "CASE-SEC-001"]},
+  {"query": "Accepted publickey for deploy from 203.0.113.4", "kind": "log", "expected": ["CASE-SEC-013A", "CASE-SEC-014"]},
+  {"query": "an attacker guessed many passwords to break into an account", "kind": "paraphrase", "expected": ["CASE-SEC-001", "CASE-SEC-012", "CASE-SEC-017"]},
+  {"query": "someone logged in as root from an unexpected place", "kind": "paraphrase", "expected": ["CASE-SEC-013", "CASE-SEC-006"]},
+  {"query": "a user escalated to administrator rights with a privileged command", "kind": "paraphrase", "expected": ["CASE-SEC-005", "CASE-SEC-008"]},
+  {"query": "the web server refused requests to hidden directories", "kind": "paraphrase", "expected": ["CASE-SEC-009", "CASE-SEC-019", "AUTO-0011"]},
+  {"query": "credentials were stuffed across many accounts from one host", "kind": "paraphrase", "expected": ["CASE-SEC-017", "CASE-SEC-012", "CASE-SEC-001"]}
+]

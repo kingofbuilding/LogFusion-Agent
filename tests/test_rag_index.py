@@ -70,6 +70,32 @@ def test_hybrid_retriever_if_both_indexes_exist():
     assert "tfidf_score" in exact[0] and "minilm_score" in exact[0]
 
 
+def test_normalize_query_strips_volatile_log_noise():
+    from src.agent.rag_index import normalize_query
+
+    raw = "sshd[12240]: Failed password for alice from 192.0.2.245 port 59791 ssh2"
+    assert normalize_query(raw) == "sshd: failed password for alice from ip port ssh2"
+    assert normalize_query("2026-01-15T10:00:00Z login") == "login"
+
+
+def test_retrieve_cases_survives_a_broken_retriever():
+    from src.agent.events import EventStore
+    from src.agent.tools import InvestigationTools
+
+    class Broken:
+        backend = "broken_cases"
+
+        def __call__(self, query, top_k):
+            raise RuntimeError("index corrupted")
+
+    store = EventStore.from_bytes(
+        b'{"timestamp":"2026-01-15T10:00:00Z","host":"web-01","message":"sshd[1]: Failed password for a from 1.2.3.4 port 1 ssh2"}\n',
+        "t.jsonl")
+    result = InvestigationTools(store, retriever=Broken()).call("retrieve_cases", {"query": "ssh"})
+    assert result["cases"] == []
+    assert "不可用" in result["notice"]
+
+
 def test_minilm_index_if_present():
     import json
 

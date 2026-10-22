@@ -84,13 +84,13 @@ C0 的工具 schema 只声明 `integer`，`max_groups ≤ 10` 只写在代码里
 | `AH01630: client denied ...` | AUTO-0011 限制资源探测（0.349） | CASE-SEC-009 受限 Web 探测（0.525）✓ |
 | `SSH brute force failed password then accepted login` | CASE-SEC-001（0.399） | CASE-SEC-013 root 登录（0.633）✗ |
 
-结论：**TF-IDF 在这批 67 条短案例上更准（日志式查询 8/8，MiniLM 6/8）**。但 MiniLM 在改写查询上更强（3/5 vs 2/5），因此实现 **RRF 混合检索**（两路各取 Top-10，按排名融合，不依赖分数量纲）：
+结论：TF-IDF 在日志式查询上更准，MiniLM 在改写查询上更强，因此实现 **RRF 混合检索**（两路各取 Top-10，按排名融合，不依赖分数量纲），并对查询做归一化（去掉时间、IP、端口、PID、纯数字）。`scripts/evaluate_case_retrieval.py` 在 13 条标注查询（8 条日志式 + 5 条改写）上的结果：
 
-| 检索器 | 日志式 Top-1 | 改写 Top-1 | 合计 |
-|---|---:|---:|---:|
-| TF-IDF | 8/8 | 2/5 | 10/13 |
-| MiniLM | 6/8 | 3/5 | 9/13 |
-| **Hybrid（RRF）** | **8/8** | **3/5** | **11/13** |
+| 检索器 | Top-1 | Top-3 | 日志式 Top-1 | 改写 Top-1 |
+|---|---:|---:|---:|---:|
+| TF-IDF | 0.77 | 0.92 | 1.00 | 0.40 |
+| MiniLM | 0.69 | 0.77 | 0.75 | 0.60 |
+| **Hybrid（RRF）** | **0.85** | **0.92** | **1.00** | **0.60** |
 
 默认使用 `local_hybrid_cases`，可用 `AGENT_RAG_BACKEND=tfidf|minilm|hash` 切换。TF-IDF 分数与句向量不同量纲，因此用 `match_level` 表达强度（TF-IDF strong ≥0.35 / medium ≥0.2；MiniLM strong ≥0.55 / medium ≥0.4），并同时回传 `tfidf_score` 与 `minilm_score`。**D 组的差异仍来自检测器，不来自检索。**
 

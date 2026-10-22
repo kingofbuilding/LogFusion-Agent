@@ -65,7 +65,11 @@ def hybrid_case_retriever():
     """TF-IDF + MiniLM fused by reciprocal rank: exact log terms plus paraphrase coverage."""
     from .rag_index import HybridCaseRetriever
 
-    return HybridCaseRetriever(tfidf_case_retriever(), minilm_case_retriever())
+    try:
+        return HybridCaseRetriever(tfidf_case_retriever(), minilm_case_retriever())
+    except Exception:
+        # The dense backend is optional; never let it disable retrieval entirely.
+        return tfidf_case_retriever()
 
 
 def tfidf_case_retriever():
@@ -92,18 +96,22 @@ def upstream_retriever():
     preferred = os.getenv("AGENT_RAG_BACKEND", "").strip().lower()
     minilm_ready = (ROOT / "data/vectors/rag_attack_cases_minilm.npz").exists()
     tfidf_ready = (ROOT / "data/vectors/rag_attack_cases_tfidf.npz").exists()
-    if preferred == "minilm" and minilm_ready:
-        return minilm_case_retriever()
-    if preferred == "tfidf" and tfidf_ready:
-        return tfidf_case_retriever()
     if preferred == "hash":
         tfidf_ready = minilm_ready = False
-    if tfidf_ready and minilm_ready:
-        return hybrid_case_retriever()
-    if tfidf_ready:
-        return tfidf_case_retriever()
-    if minilm_ready:
-        return minilm_case_retriever()
+    try:
+        if preferred == "minilm" and minilm_ready:
+            return minilm_case_retriever()
+        if preferred == "tfidf" and tfidf_ready:
+            return tfidf_case_retriever()
+        if tfidf_ready and minilm_ready:
+            return hybrid_case_retriever()
+        if tfidf_ready:
+            return tfidf_case_retriever()
+        if minilm_ready:
+            return minilm_case_retriever()
+    except Exception:
+        # A broken local index must fall through to the upstream hash index, not crash the run.
+        pass
     rag = AttackCaseRAG(Config())
     if not rag.load_index_if_exists():
         raise FileNotFoundError("未找到原项目的 RAG 索引。先运行 python main.py --build-rag --rag-force")

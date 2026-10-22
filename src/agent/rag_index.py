@@ -7,6 +7,7 @@ TF-IDF (still vector retrieval with cosine similarity). Everything is offline an
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import numpy as np
@@ -17,6 +18,17 @@ MEDIUM_MATCH = 0.20
 # MiniLM cosine runs on a different scale than TF-IDF.
 MINILM_STRONG = 0.55
 MINILM_MEDIUM = 0.40
+
+
+def normalize_query(text: str) -> str:
+    """Strip volatile log noise so the same template matches regardless of IP, port, pid or time."""
+    cleaned = str(text or "").strip().lower()
+    cleaned = re.sub(r"\d{4}-\d{2}-\d{2}[t ]\d{2}:\d{2}:\d{2}(?:\.\d+)?z?", " ", cleaned)
+    cleaned = re.sub(r"\b\d{1,3}(?:\.\d{1,3}){3}\b", " ip ", cleaned)
+    cleaned = re.sub(r"sshd\[\d+\]", "sshd", cleaned)
+    cleaned = re.sub(r"\bport \d+", "port", cleaned)
+    cleaned = re.sub(r"\b\d+\b", " ", cleaned)
+    return re.sub(r"\s+", " ", cleaned).strip()
 
 
 def case_text(case: dict) -> str:
@@ -53,11 +65,15 @@ class TfidfCaseRetriever:
         self.vectors = payload["vectors"]
         self.cases = payload["payloads"].tolist()
         self.vectorizer = joblib.load(vectorizer_path)
+        self._cache: dict[tuple[str, int], list[dict]] = {}
 
     def __call__(self, query: str, top_k: int) -> list[dict]:
         from sklearn.preprocessing import normalize
 
-        encoded = normalize(self.vectorizer.transform([str(query)])).toarray().astype(np.float32)
+        cache_key = (str(query), top_k)
+        if cache_key in self._cache:
+            return self._cache[cache_key]
+        encoded = normalize(self.vectorizer.transform([normalize_query(query)])).toarray().astype(np.float32)
         sims = (self.vectors @ encoded.T).ravel()
         hits = []
         for index in np.argsort(-sims)[:top_k]:
@@ -66,6 +82,7 @@ class TfidfCaseRetriever:
                          "evidence_usable": score >= STRONG_MATCH,
                          "match_level": ("strong" if score >= STRONG_MATCH
                                          else "medium" if score >= MEDIUM_MATCH else "weak")})
+        self._cache[cache_key] = hits
         return hits
 
 
@@ -124,8 +141,12 @@ class MiniLMRetriever:
         self.vectors = payload["vectors"]
         self.cases = payload["payloads"].tolist()
         self.encoder = MiniLMOnnxEncoder(model_dir)
+        self._cache: dict[tuple[str, int], list[dict]] = {}
 
     def __call__(self, query: str, top_k: int) -> list[dict]:
+        cache_key = (str(query), top_k)
+        if cache_key in self._cache:
+            return self._cache[cache_key]
         encoded = self.encoder.encode([query])
         sims = (self.vectors @ encoded.T).ravel()
         hits = []
@@ -135,6 +156,7 @@ class MiniLMRetriever:
                          "evidence_usable": score >= MINILM_STRONG,
                          "match_level": ("strong" if score >= MINILM_STRONG
                                          else "medium" if score >= MINILM_MEDIUM else "weak")})
+        self._cache[cache_key] = hits
         return hits
 
 
