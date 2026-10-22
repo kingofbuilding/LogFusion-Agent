@@ -1,0 +1,176 @@
+{
+  "suite": "benchmarks\\cases_hard",
+  "stamp": "20261022T003148Z",
+  "repeats": 1,
+  "git_sha": "54b79490ff9c4ee337a7b50254a2c4b77495431c",
+  "budgets": {
+    "rule": {
+      "max_steps": 16,
+      "max_seconds": 60,
+      "max_tokens": 24000
+    },
+    "simulated": {
+      "max_steps": 16,
+      "max_seconds": 60,
+      "max_tokens": 24000
+    },
+    "llm": {
+      "max_steps": 16,
+      "max_seconds": 120,
+      "max_tokens": 100000
+    },
+    "upstream": {
+      "max_steps": 1,
+      "max_seconds": 1,
+      "max_tokens": 1
+    },
+    "agent+upstream": {
+      "max_steps": 16,
+      "max_seconds": 120,
+      "max_tokens": 100000
+    }
+  },
+  "groups": {
+    "llm": {
+      "group": "llm",
+      "repeats": 1,
+      "cases": [
+        {
+          "case_id": "hard-001",
+          "category": "distributed_spray",
+          "verdict_expected": "correlated_success",
+          "verdict_actual": "correlated_success",
+          "verdict_ok": true,
+          "evidence_recall": 1.0,
+          "evidence_precision": 0.4468,
+          "link_recall": null,
+          "false_links": [],
+          "judgment_decoy_citations": [],
+          "pair_violations": [],
+          "evidence_count": 47,
+          "tool_steps": 12,
+          "tool_errors": 0,
+          "tool_error_types": [],
+          "tokens": 87423,
+          "elapsed": 13.11,
+          "status": "limited",
+          "stop_reason": "repeated_tool_call",
+          "judgment_status": "skipped",
+          "claims": 0,
+          "attempt": 1
+        },
+        {
+          "case_id": "hard-005",
+          "category": "low_and_slow",
+          "verdict_expected": "correlated_success",
+          "verdict_actual": "correlated_success",
+          "verdict_ok": true,
+          "evidence_recall": 1.0,
+          "evidence_precision": 0.3824,
+          "link_recall": null,
+          "false_links": [],
+          "judgment_decoy_citations": [],
+          "pair_violations": [],
+          "evidence_count": 34,
+          "tool_steps": 12,
+          "tool_errors": 1,
+          "tool_error_types": [
+            "JudgmentValidationError"
+          ],
+          "tokens": 100285,
+          "elapsed": 31.0,
+          "status": "limited",
+          "stop_reason": "token_budget",
+          "judgment_status": "discarded",
+          "claims": 0,
+          "attempt": 1
+        },
+        {
+          "case_id": "hard-009",
+          "category": "many_accounts_one_ip",
+          "verdict_expected": "correlated_success",
+          "verdict_actual": "correlated_success",
+          "verdict_ok": true,
+          "evidence_recall": 1.0,
+          "evidence_precision": 0.381,
+          "link_recall": null,
+          "false_links": [],
+          "judgment_decoy_citations": [],
+          "pair_violations": [],
+          "evidence_count": 42,
+          "tool_steps": 13,
+          "tool_errors": 0,
+          "tool_error_types": [],
+          "tokens": 92618,
+          "elapsed": 20.766,
+          "status": "completed",
+          "stop_reason": "planner_finished",
+          "judgment_status": "completed",
+          "claims": 8,
+          "attempt": 1
+        }
+      ],
+      "summary": {
+        "cases": 3,
+        "verdict_accuracy": 1.0,
+        "evidence_recall": 1.0,
+        "evidence_precision": 0.4034,
+        "link_recall": null,
+        "mislink_cases": 0,
+        "judgment_mislink_cases": 0,
+        "pair_violations": 0,
+        "mean_tool_steps": 12.3333,
+        "mean_tokens": 93442.0,
+        "tool_error_rate": 0.3333,
+        "tool_error_types": {
+          "JudgmentValidationError": 1
+        },
+        "stop_reasons": {
+          "planner_finished": 1,
+          "repeated_tool_call": 1,
+          "token_budget": 1
+        },
+        "completed_rate": 0.3333,
+        "judgment_completed_rate": 0.3333,
+        "by_category": {
+          "distributed_spray": {
+            "cases": 1,
+            "verdict_accuracy": 1.0,
+            "evidence_recall": 1.0,
+            "evidence_precision": 0.4468,
+            "link_recall": null,
+            "mislink_cases": 0,
+            "evidence_count": 47.0,
+            "mean_tool_steps": 12.0,
+            "mean_tokens": 87423.0,
+            "completed_rate": 0.0
+          },
+          "low_and_slow": {
+            "cases": 1,
+            "verdict_accuracy": 1.0,
+            "evidence_recall": 1.0,
+            "evidence_precision": 0.3824,
+            "link_recall": null,
+            "mislink_cases": 0,
+            "evidence_count": 34.0,
+            "mean_tool_steps": 12.0,
+            "mean_tokens": 100285.0,
+            "completed_rate": 0.0
+          },
+          "many_accounts_one_ip": {
+            "cases": 1,
+            "verdict_accuracy": 1.0,
+            "evidence_recall": 1.0,
+            "evidence_precision": 0.381,
+            "link_recall": null,
+            "mislink_cases": 0,
+            "evidence_count": 42.0,
+            "mean_tool_steps": 13.0,
+            "mean_tokens": 92618.0,
+            "completed_rate": 1.0
+          }
+        }
+      }
+    }
+  }
+}

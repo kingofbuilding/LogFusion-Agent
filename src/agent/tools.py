@@ -88,6 +88,16 @@ class InvestigationTools:
         self.evidence: dict[str, dict] = {}
         self.case_references: dict[str, dict] = {}
         self.observations: list[dict] = []
+        # Event IDs already returned to the planner in this investigation; repeated searches only
+        # report new rows, which is where most of the budget inflation came from.
+        self.seen: set[str] = set()
+
+    def reset(self):
+        """Per-run state is cleared by the engine before every investigation."""
+        self.evidence.clear()
+        self.case_references.clear()
+        self.observations.clear()
+        self.seen.clear()
 
     def _records(self, events, limit=50):
         result = [e.to_dict() for e in list(events)[:limit]]
@@ -133,9 +143,15 @@ class InvestigationTools:
                 "events": self._records(selected, top_windows), "coverage": self.store.coverage()}
 
 
-    def aggregate_events(self, window_minutes: int = 5, min_failures: int = 5, max_groups: int = 3) -> dict:
+    def aggregate_events(self, window_minutes: int = 5, min_failures: int = 5, max_groups: int = 3,
+                         group_by: str = "entity", include_raw: bool = False) -> dict:
+        """Group failures. group_by=entity keeps the 5/5 playbook; user/ip/host aggregate across sources."""
         if not 1 <= window_minutes <= 60 or not 2 <= min_failures <= 100:
             raise ValueError("window_minutes must be 1..60; min_failures must be 2..100")
+        if group_by not in ("entity", "user", "ip", "host"):
+            raise ToolArgumentError("group_by must be one of entity, user, ip, host.")
+        if group_by != "entity":
+            return self._aggregate_by(group_by, max_groups)
         groups = failure_clusters(self.store.events, window_minutes, min_failures)
         # Bound response and citations even for very large failure bursts.
         selected = groups[:max_groups]
@@ -149,8 +165,37 @@ class InvestigationTools:
         self.observations.append({"tool": "aggregate_events", **result})
         return result
 
+    def _aggregate_by(self, group_by: str, max_groups: int) -> dict:
+        """Cross-source summary so spray/stuffing is one call instead of a 20-row scan."""
+        field = {"user": "user", "ip": "src_ip", "host": "host"}[group_by]
+        buckets = defaultdict(list)
+        for event in self.store.events:
+            key = getattr(event, field, "")
+            if event.event_type == "auth_failure" and key and event.timestamp:
+                buckets[key].append(event)
+        ordered = sorted(buckets.items(), key=lambda kv: (-len(kv[1]), kv[0]))[:max_groups]
+        groups = []
+        for key, rows in ordered:
+            rows.sort(key=lambda e: e.timestamp)
+            selected = rows[:100]
+            self._records(selected, 100)
+            groups.append({field: key, "count": len(rows),
+                           "distinct_src_ips": len({e.src_ip for e in rows if e.src_ip}),
+                           "distinct_users": len({e.user for e in rows if e.user}),
+                           "distinct_hosts": len({e.host for e in rows if e.host}),
+                           "first": rows[0].timestamp, "last": rows[-1].timestamp,
+                           "event_ids": [e.event_id for e in selected],
+                           "evidence_truncated": len(rows) > 100})
+        result = {"group_by": group_by, "groups": groups, "total_groups": len(buckets),
+                  "truncated": len(buckets) > max_groups,
+                  "notice": "跨来源汇总失败记录：distinct_src_ips 高说明同一账号被多个来源尝试，"
+                            "distinct_users 高说明同一来源在撞多个账号。"}
+        self.observations.append({"tool": "aggregate_events", **result})
+        return result
+
     def search_logs(self, src_ip: str = "", user: str = "", host: str = "", event_type: str = "",
-                    start: str = "", end: str = "", limit: int = 50) -> dict:
+                    start: str = "", end: str = "", limit: int = 50, include_raw: bool = False,
+                    dedupe: bool = True) -> dict:
         begin, finish = parse_time(start) if start else None, parse_time(end) if end else None
         if (start and not begin) or (end and not finish) or (begin and finish and begin > finish):
             raise ValueError("Invalid explicit-year ISO time range")
@@ -166,8 +211,23 @@ class InvestigationTools:
                 continue
             matches.append(e)
         matches.sort(key=lambda e: (not bool(e.timestamp), e.timestamp, e.line))
-        return {"total": len(matches), "truncated": len(matches) > limit,
-                "events": self._records(matches, limit)}
+        total = len(matches)
+        already_seen = 0
+        if dedupe:
+            fresh = [e for e in matches if e.event_id not in self.seen]
+            already_seen = total - len(fresh)
+            matches = fresh
+        records = self._records(matches, limit)
+        self.seen.update(record["event_id"] for record in records)
+        rows = records if include_raw else [
+            {key: record[key] for key in ("event_id", "timestamp", "src_ip", "user", "host", "event_type", "line")}
+            for record in records]
+        result = {"total": total, "returned": len(rows), "already_seen": already_seen,
+                  "truncated": len(matches) > limit, "events": rows}
+        if not include_raw:
+            result["notice"] = "紧凑投影：仅返回定位字段；原文请用 get_event_context 或 include_raw=true 获取。"
+        self.observations.append({"tool": "search_logs", "total": total, "returned": len(rows)})
+        return result
 
     def get_event_context(self, event_id: str, before_minutes: int = 5, after_minutes: int = 15,
                           limit: int = 50) -> dict:
@@ -183,7 +243,8 @@ class InvestigationTools:
             return {"events": [], "notice": "缺少时间、主机或账号，无法可靠关联上下文。"}
         return self.search_logs(host=event.host, user=event.user,
                                 start=(time - timedelta(minutes=before_minutes)).isoformat(),
-                                end=(time + timedelta(minutes=after_minutes)).isoformat(), limit=limit)
+                                end=(time + timedelta(minutes=after_minutes)).isoformat(),
+                                limit=limit, include_raw=True, dedupe=False)
 
     def retrieve_cases(self, query: str = "SSH failed password accepted sudo", top_k: int = 3) -> dict:
         if len(query) > 1000:
@@ -250,11 +311,14 @@ def _schema(name, description, properties, required=()):
 TOOL_SCHEMAS = {s["function"]["name"]: s for s in [
     _schema("detect_anomalies", "Return the top-N risk windows from the three-view detector with span, score and dominant view. Fetch window events with search_logs.",
             {"top_windows": "integer"}),
-    _schema("aggregate_events", "Group SSH failures in a bounded time window by IP/user/host; start here to investigate brute force.",
-            {"window_minutes": "integer", "min_failures": "integer", "max_groups": "integer"}),
-    _schema("search_logs", "Search full logs, including low-risk successes. Exact filters; ISO times.",
+    _schema("aggregate_events", "Group SSH failures. group_by=entity applies the 5-in-5-minutes rule; "
+            "group_by=user/ip/host summarises across sources, so one call shows spray or stuffing.",
+            {"window_minutes": "integer", "min_failures": "integer", "max_groups": "integer",
+             "group_by": "string"}),
+    _schema("search_logs", "Search full logs, including low-risk successes. Compact projection by default; "
+            "set include_raw=true only when the original text is needed. Repeated hits are summarised as already_seen.",
             {"src_ip": "string", "user": "string", "host": "string", "event_type": "string",
-             "start": "string", "end": "string", "limit": "integer"}),
+             "start": "string", "end": "string", "limit": "integer", "include_raw": "boolean"}),
     _schema("get_event_context", "Read same-host, same-user context around an observed event. Does not prove session attribution.",
             {"event_id": "string", "before_minutes": "integer", "after_minutes": "integer", "limit": "integer"}, ["event_id"]),
     _schema("retrieve_cases", "Retrieve reference cases, never factual evidence of this incident.", {"query": "string", "top_k": "integer"}),

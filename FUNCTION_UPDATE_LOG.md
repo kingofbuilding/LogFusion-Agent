@@ -2584,3 +2584,29 @@
 
 ### Git 状态
 - 结果文件与文档待提交
+
+## 2026-10-22 结论层补规则 + Agent 收尾降级
+
+### 修改内容
+- 结论层新增三类证据规则：同账号 10 分钟内被 ≥8 个来源 IP 尝试（分布式喷洒）、同来源 10 分钟内对 ≥8 个账号尝试（撞库）、同实体 30 分钟内 ≥10 次且任意 5 分钟 <5 次（低速爆破）；并为其成功登录建立关联。跨主机成功登录按设计仍不关联。
+- 失效集生成器同步更新期望 verdict（三类为 correlated_success，跨主机为 no_correlated_success），标准集 42 条无新增误报。
+- 工具层：`search_logs` 默认紧凑投影（仅定位字段）并做已见去重，重复命中只返回新事件；`aggregate_events` 增加 `group_by=user/ip/host` 跨来源汇总；新增 `reset()` 清理每轮状态。
+- Agent 收尾：预留 ≥2 步与 ≥1/3 token 给案例检索和综合研判；工具预算用尽改为 `evidence_budget` 收束；重复调用回灌提示后继续；连续工具错误降级收束；研判被拒只标注未发布，不再把整次调查判为失败。
+- 新增 11 个测试（共 85 个），覆盖三类规则、跨主机不关联、紧凑投影、去重、跨源聚合、收尾降级。
+
+### 输出文件
+- `src/agent/engine.py`（规则 + 收尾 + 降级）
+- `src/agent/tools.py`（紧凑投影、去重、group_by、reset）
+- `benchmarks/generate_hard_cases.py`（期望 verdict）
+- `tests/test_pattern_rules.py`
+- `docs/ENGINEERING_ISSUES.md`（新增 1.6、2.7）
+- `docs/AGENT_DESIGN.md`、`README.md`（Agent 循环与收尾）
+- `docs/EVAL_REPORT.md`（5.5 流程完成性冒烟）
+
+### 结果说明
+- 失效集 3 条冒烟：完成率 1.00（1 次 evidence_budget、1 次 planner_finished、1 次 judgment_rejected 但仍出报告），平均 11 步、78655 tokens。
+- 结论层补规则后，失效集“查全了也判不出”的问题消除；B 组仍因取证路径受限保持 0 召回，盲区成立。
+- 未做全量重复实验，数字只作流程可用性冒烟，不作为效果结论。
+
+### Git 状态
+- 未提交

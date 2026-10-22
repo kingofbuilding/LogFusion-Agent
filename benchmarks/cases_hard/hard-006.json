@@ -4,7 +4,7 @@
   "log_file": "hard-006.jsonl",
   "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
   "expected": {
-    "verdict": "insufficient_evidence",
+    "verdict": "correlated_success",
     "must_find_event_ids": [
       "E-d78f1a94529392a9",
       "E-8015b10db4cc2f28",
@@ -26,5 +26,5 @@
   },
   "incident_present": true,
   "design": "同一实体每 10 分钟错 4 次、连续三个窗口后成功；任一 5 分钟窗口内最多 4 次。",
-  "note": "规则结论层无法表达此类事件；判分只看关键证据召回，不看 verdict。"
+  "note": "结论层对喷洒/撞库/低速有对应规则；跨主机成功登录按设计不关联。"
 }

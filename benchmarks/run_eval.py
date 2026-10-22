@@ -64,7 +64,8 @@ def derived_verdict(findings) -> str:
     """The conclusion layer is rule-based in every group; groups differ only in evidence gathered."""
     if any(f.kind == "success_after_failures" for f in findings):
         return "correlated_success"
-    if any(f.kind == "suspected_bruteforce" for f in findings):
+    if any(f.kind in ("suspected_bruteforce", "suspected_distributed_spray",
+                      "suspected_account_stuffing", "suspected_low_and_slow") for f in findings):
         return "no_correlated_success"
     return "insufficient_evidence"
 

@@ -1,0 +1,102 @@
+{
+  "suite": "benchmarks\\cases",
+  "stamp": "20261022T003435Z",
+  "repeats": 1,
+  "git_sha": "54b79490ff9c4ee337a7b50254a2c4b77495431c",
+  "budgets": {
+    "rule": {
+      "max_steps": 16,
+      "max_seconds": 60,
+      "max_tokens": 24000
+    },
+    "simulated": {
+      "max_steps": 16,
+      "max_seconds": 60,
+      "max_tokens": 24000
+    },
+    "llm": {
+      "max_steps": 16,
+      "max_seconds": 120,
+      "max_tokens": 100000
+    },
+    "upstream": {
+      "max_steps": 1,
+      "max_seconds": 1,
+      "max_tokens": 1
+    },
+    "agent+upstream": {
+      "max_steps": 16,
+      "max_seconds": 120,
+      "max_tokens": 100000
+    }
+  },
+  "groups": {
+    "llm": {
+      "group": "llm",
+      "repeats": 1,
+      "cases": [
+        {
+          "case_id": "ssh-001",
+          "category": "bruteforce_then_success",
+          "verdict_expected": "correlated_success",
+          "verdict_actual": "correlated_success",
+          "verdict_ok": true,
+          "evidence_recall": 1.0,
+          "evidence_precision": 0.1739,
+          "link_recall": 1.0,
+          "false_links": [],
+          "judgment_decoy_citations": [],
+          "pair_violations": [],
+          "evidence_count": 46,
+          "tool_steps": 14,
+          "tool_errors": 1,
+          "tool_error_types": [
+            "ToolArgumentError"
+          ],
+          "tokens": 72304,
+          "elapsed": 23.594,
+          "status": "completed",
+          "stop_reason": "evidence_budget",
+          "judgment_status": "completed",
+          "claims": 8,
+          "attempt": 1
+        }
+      ],
+      "summary": {
+        "cases": 1,
+        "verdict_accuracy": 1.0,
+        "evidence_recall": 1.0,
+        "evidence_precision": 0.1739,
+        "link_recall": 1.0,
+        "mislink_cases": 0,
+        "judgment_mislink_cases": 0,
+        "pair_violations": 0,
+        "mean_tool_steps": 14.0,
+        "mean_tokens": 72304.0,
+        "tool_error_rate": 1.0,
+        "tool_error_types": {
+          "ToolArgumentError": 1
+        },
+        "stop_reasons": {
+          "evidence_budget": 1
+        },
+        "completed_rate": 1.0,
+        "judgment_completed_rate": 1.0,
+        "by_category": {
+          "bruteforce_then_success": {
+            "cases": 1,
+            "verdict_accuracy": 1.0,
+            "evidence_recall": 1.0,
+            "evidence_precision": 0.1739,
+            "link_recall": 1.0,
+            "mislink_cases": 0,
+            "evidence_count": 46.0,
+            "mean_tool_steps": 14.0,
+            "mean_tokens": 72304.0,
+            "completed_rate": 1.0
+          }
+        }
+      }
+    }
+  }
+}

@@ -11,8 +11,10 @@ cases keep the same logging format and label discipline but are built so that no
     spray_then_other_host    distributed spray against one host, success on another host
 
 Consequences:
-- The rule conclusion layer still reports ``insufficient_evidence`` for every case; that is the
-  point. Verdict accuracy is therefore uninformative here and the metric is **key evidence recall**.
+- The rule conclusion layer has spray / stuffing / low-and-slow rules, so the expected verdict is
+  ``correlated_success`` except for the cross-host case, which is deliberately not linked.
+- The fixed playbook still cannot reach these verdicts: it only aggregates the 5-in-5-minutes entity
+  cluster, so it never observes the spray pattern in the first place.
 - The generator asserts that ``failure_clusters`` returns no group for each case, which is exactly
   the blind spot being tested.
 
@@ -46,6 +48,13 @@ _DESIGN = {
     "many_accounts_one_ip": "同一 IP 在 2 分钟内对 15 个账号各失败 1 次后其中一个账号成功登录，属于撞库形态。",
     "spray_then_other_host": "分布式喷洒发生在 web-01，成功登录落在 db-01，跨主机且无实体达到阈值。",
 }
+
+# The conclusion layer gained spray / stuffing / low-and-slow rules, so the expected verdict is no
+# longer always insufficient_evidence. Cross-host success is deliberately NOT linked.
+EXPECTED_VERDICT = {"distributed_spray": "correlated_success",
+                    "low_and_slow": "correlated_success",
+                    "many_accounts_one_ip": "correlated_success",
+                    "spray_then_other_host": "no_correlated_success"}
 
 
 def _distributed_spray(rng, base):
@@ -106,11 +115,11 @@ def _build_case(case_id: str, category: str, seed: int, index: int):
 
     must_find = [eid for tag in tags for eid in ids[tag]]
     meta = {"case_id": case_id, "category": category, "log_file": f"{case_id}.jsonl", "goal": GOAL,
-            "expected": {"verdict": "insufficient_evidence", "must_find_event_ids": must_find,
+            "expected": {"verdict": EXPECTED_VERDICT[category], "must_find_event_ids": must_find,
                          "must_link_event_ids": [], "must_not_link_event_ids": [], "must_not_pair": []},
             "incident_present": True,
             "design": _DESIGN[category],
-            "note": "规则结论层无法表达此类事件；判分只看关键证据召回，不看 verdict。"}
+            "note": "结论层对喷洒/撞库/低速有对应规则；跨主机成功登录按设计不关联。"}
     return log_text, json.dumps(meta, ensure_ascii=False, indent=2) + "\n", meta
 
 
@@ -128,7 +137,7 @@ def generate_all(out_dir: Path = CASES_DIR, seed: int = DEFAULT_SEED) -> dict:
         cases.append(meta)
     manifest = {"suite": "logfusion-agent-hard-cases", "version": 1, "seed": seed, "goal": GOAL,
                 "total": len(cases), "counts": counts, "generator": "benchmarks/generate_hard_cases.py",
-                "note": "规则剧本结构性失效的用例；verdict 恒为 insufficient_evidence，指标为关键证据召回"}
+                "note": "规则剧本结构性失效的用例；结论层已补喷洒/撞库/低速规则，指标同时看结论正确率与证据召回"}
     (out_dir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
                                            encoding="utf-8", newline="\n")
     return manifest

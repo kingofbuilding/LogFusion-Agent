@@ -11,5 +11,5 @@
     "spray_then_other_host": 3
   },
   "generator": "benchmarks/generate_hard_cases.py",
-  "note": "规则剧本结构性失效的用例；verdict 恒为 insufficient_evidence，指标为关键证据召回"
+  "note": "规则剧本结构性失效的用例；结论层已补喷洒/撞库/低速规则，指标同时看结论正确率与证据召回"
 }

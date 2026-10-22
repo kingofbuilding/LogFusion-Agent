@@ -104,28 +104,52 @@ def test_invalid_output_is_repaired_once_with_safe_feedback():
 
 def test_repeated_invalid_output_is_not_published_and_rules_remain():
     result = InvestigationAgent(demo_store(), reviewer=reviewer_for(FakeCompletions(invalid_count=10))).run("调查")
-    assert result.status == "error" and result.stop_reason == "judgment_rejected"
+    # The investigation still finishes; only the model's synthesis is withheld.
+    assert result.status == "completed" and result.stop_reason == "judgment_rejected"
     assert result.judgment["status"] == "rejected" and "content" not in result.judgment
     assert result.findings and result.evidence
+    assert any("未发布" in note for note in result.limitations)
 
 
 def test_model_failure_does_not_leak_provider_exception_or_hide_rules():
     result = InvestigationAgent(demo_store(), reviewer=reviewer_for(FakeCompletions(
         exception=RuntimeError("Authorization: sk-private-secret")))).run("调查")
-    assert result.judgment["status"] == "failed" and result.status == "error"
+    assert result.judgment["status"] == "failed" and result.status == "completed"
     assert result.findings and result.evidence
     assert "sk-private-secret" not in json.dumps(result.to_dict())
 
 
 def test_final_stages_share_tool_and_token_budgets():
+    # New contract: the tool loop stops early to keep a reserved budget, then the agent still
+    # retrieves cases and synthesises, so the investigation ends with a report.
     result = InvestigationAgent(demo_store(), reviewer=SimulatedJudgment(), max_steps=6).run("调查")
-    assert result.status == "limited" and result.stop_reason == "max_steps"
-    assert result.judgment["status"] == "skipped"
-    assert not any(t["tool"] == "synthesize_judgment" for t in result.trace)
+    assert result.status == "completed" and result.stop_reason == "evidence_budget"
+    assert result.judgment["status"] == "completed"
+    assert any(t["tool"] == "synthesize_judgment" for t in result.trace)
+    # A budget too small even for the reserved completion stage still degrades honestly.
     result = InvestigationAgent(demo_store(), reviewer=reviewer_for(FakeCompletions(usage=100)), max_tokens=50).run("调查")
     assert result.status == "limited" and result.stop_reason == "token_budget"
     assert result.judgment["status"] == "discarded" and "content" not in result.judgment
-    assert result.tokens_used == 100
+    assert result.tokens_used >= 100
+
+
+def test_agent_wraps_up_with_partial_evidence_when_tool_budget_runs_out():
+    class Greedy:
+        mode = "test"
+
+        def __init__(self):
+            self.tokens_used = 0
+
+        def choose(self, goal, trace):
+            self.tokens_used += 30_000
+            return "search_logs", {"limit": 10 + len(trace)}
+
+    result = InvestigationAgent(demo_store(), planner=Greedy(), reviewer=SimulatedJudgment(),
+                                max_tokens=100_000).run("调查")
+    assert result.status == "completed" and result.stop_reason == "evidence_budget"
+    assert result.judgment["status"] == "completed"
+    assert result.evidence, "partial evidence must be preserved"
+    assert any("提前收束" in note for note in result.limitations)
 
 
 def test_agent_completion_retrieves_cases_when_planner_finishes_without_rag():

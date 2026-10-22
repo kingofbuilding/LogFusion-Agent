@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import time
+from collections import defaultdict
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -96,6 +97,107 @@ class InvestigationResult:
         return target
 
 
+def _window(rows, minutes, key):
+    """Densest bounded window: return (slice, number of distinct ``key`` values inside it)."""
+    rows = sorted(rows, key=lambda e: e.timestamp)
+    best, best_count = [], 0
+    for i in range(len(rows)):
+        seen = set()
+        for j in range(i, len(rows)):
+            if parse_time(rows[j].timestamp) - parse_time(rows[i].timestamp) > timedelta(minutes=minutes):
+                break
+            seen.add(key(rows[j]))
+            if len(seen) > best_count:
+                best, best_count = rows[i:j + 1], len(seen)
+    return best, best_count
+
+
+def _max_window_count(rows, minutes):
+    rows = sorted(rows, key=lambda e: e.timestamp)
+    best, left = 0, 0
+    for right, event in enumerate(rows):
+        while parse_time(event.timestamp) - parse_time(rows[left].timestamp) > timedelta(minutes=minutes):
+            left += 1
+        best = max(best, right - left + 1)
+    return best
+
+
+def _pattern_findings(events, findings, cited):
+    """Patterns the 5-in-5-minutes entity rule cannot express: spray, stuffing, low-and-slow."""
+    failures = [e for e in events if e.event_type == "auth_failure" and e.timestamp and e.src_ip and e.user and e.host]
+    successes = [e for e in events if e.event_type == "auth_success" and e.timestamp]
+
+    by_account = defaultdict(list)
+    for event in failures:
+        by_account[(event.user, event.host)].append(event)
+    for (user, host), rows in by_account.items():
+        window, distinct_ips = _window(rows, 10, lambda e: e.src_ip)
+        if distinct_ips < 8:
+            continue
+        ids = [e.event_id for e in window]
+        findings.append(Finding(
+            "suspected_distributed_spray",
+            f"账号 {user} 在 {host} 上 10 分钟内被 {distinct_ips} 个不同来源 IP 尝试登录，疑似分布式喷洒。",
+            ids, "跨来源聚合推断；多个合法客户端同时使用错误密码也可能产生类似形态"))
+        end = parse_time(window[-1].timestamp)
+        for success in [e for e in successes if e.user == user and e.host == host
+                        and end < parse_time(e.timestamp) <= end + timedelta(minutes=15)][:3]:
+            if success.event_id in cited:
+                continue
+            cited.add(success.event_id)
+            findings.append(Finding(
+                "success_after_failures",
+                f"账号 {user} 在 {host} 上的分布式失败窗口结束后 15 分钟内出现成功登录。",
+                [*ids, success.event_id], "同账号、同主机的时间关联；无法确认成功登录与哪一次失败尝试相关"))
+
+    by_source = defaultdict(list)
+    for event in failures:
+        by_source[(event.src_ip, event.host)].append(event)
+    for (src_ip, host), rows in by_source.items():
+        window, distinct_users = _window(rows, 10, lambda e: e.user)
+        if distinct_users < 8:
+            continue
+        ids = [e.event_id for e in window]
+        users = sorted({e.user for e in window})
+        findings.append(Finding(
+            "suspected_account_stuffing",
+            f"来源 {src_ip} 在 {host} 上 10 分钟内对 {distinct_users} 个不同账号尝试登录，疑似撞库。",
+            ids, "跨账号聚合推断；也可能是一台共享主机的多个合法用户同时输错密码"))
+        end = parse_time(window[-1].timestamp)
+        for success in [e for e in successes if e.src_ip == src_ip and e.host == host and e.user in users
+                        and end < parse_time(e.timestamp) <= end + timedelta(minutes=15)][:3]:
+            if success.event_id in cited:
+                continue
+            cited.add(success.event_id)
+            findings.append(Finding(
+                "success_after_failures",
+                f"来源 {src_ip} 的撞库窗口结束后 15 分钟内，其中一个被尝试账号在 {host} 上登录成功。",
+                [*ids, success.event_id], "同来源、同主机的时间关联；登录成功不等于凭据来自撞库"))
+
+    by_entity = defaultdict(list)
+    for event in failures:
+        by_entity[(event.src_ip, event.user, event.host)].append(event)
+    for (src_ip, user, host), rows in by_entity.items():
+        window, count = _window(rows, 30, lambda e: e.line)
+        if count < 10 or _max_window_count(rows, 5) >= 5:
+            continue
+        ids = [e.event_id for e in window]
+        findings.append(Finding(
+            "suspected_low_and_slow",
+            f"来源 {src_ip} 对 {host} 上账号 {user} 在 30 分钟内累计 {count} 次失败，任意 5 分钟窗口均不足 5 次，疑似低速爆破。",
+            ids, "长窗口聚合推断；自动化任务使用过期凭据也可能产生类似形态"))
+        end = parse_time(window[-1].timestamp)
+        for success in [e for e in successes if (e.src_ip, e.user, e.host) == (src_ip, user, host)
+                        and end < parse_time(e.timestamp) <= end + timedelta(minutes=15)][:3]:
+            if success.event_id in cited:
+                continue
+            cited.add(success.event_id)
+            findings.append(Finding(
+                "success_after_failures",
+                f"来源 {src_ip} 对账号 {user} 的低速失败窗口结束后 15 分钟内出现同实体成功登录。",
+                [*ids, success.event_id], "同实体、长时间窗的时间关联；尚未确认凭据是否泄漏"))
+
+
 def grounded_findings(tools: InvestigationTools) -> list[Finding]:
     """Conclusions are derived from observed evidence; the planner cannot invent them."""
     events = [tools.store.by_id[eid] for eid in tools.evidence]
@@ -125,6 +227,7 @@ def grounded_findings(tools: InvestigationTools) -> list[Finding]:
                 findings.append(Finding("post_login_activity", f"该成功登录后 15 分钟内，同账号、同主机出现特权命令或账户变更记录。",
                                         [success.event_id, *[e.event_id for e in later[:20]]],
                                         "上下文关联；缺少会话 ID 时不能确认由同一登录会话执行，也不直接证明恶意提权"))
+    _pattern_findings(events, findings, cited)
     if not findings:
         findings.append(Finding("insufficient_evidence", "已查看证据尚不足以建立 SSH 集中失败与后续登录的关联链。", [],
                                 "证据不足；不能据此认定日志正常或不存在入侵"))
@@ -148,21 +251,35 @@ class InvestigationAgent:
         if not goal.strip() or len(goal) > 2000:
             raise ValueError("调查目标须为 1..2000 字符")
         # Per-run evidence and cost state; avoid evidence leaking between investigations.
-        self.tools.evidence.clear()
-        self.tools.case_references.clear()
-        self.tools.observations.clear()
+        if hasattr(self.tools, "reset"):
+            self.tools.reset()
+        else:  # custom tools in tests
+            self.tools.evidence.clear()
+            self.tools.case_references.clear()
+            self.tools.observations.clear()
         self.planner.tokens_used = 0
         if self.reviewer:
             self.reviewer.tokens_used = 0
         trace, seen = [], set()
         started = time.monotonic()
         status, reason = "limited", "max_steps"
+        # Reserve budget for the completion stages (case retrieval + synthesis) so an investigation
+        # always ends with a report instead of dying as soon as the tool loop runs out of budget.
+        reserve_tokens = min(30_000, self.max_tokens // 3)
+        tool_token_limit = self.max_tokens - reserve_tokens
+        reserve_steps = 2 if self.max_steps >= 6 else 0
+        tool_step_limit = self.max_steps - reserve_steps
+        repeated_calls = 0
         for step in range(1, self.max_steps + 1):
             if cancelled and cancelled():
                 status, reason = "cancelled", "user_cancelled"
                 break
             if time.monotonic() - started >= self.max_seconds:
                 reason = "time_budget"
+                break
+            if self.planner.tokens_used >= tool_token_limit or len(trace) >= tool_step_limit:
+                # Stop gathering, keep the reserved budget, and let the agent wrap up on what it has.
+                status, reason = "completed", "evidence_budget"
                 break
             if self.planner.tokens_used >= self.max_tokens:
                 reason = "token_budget"
@@ -183,8 +300,20 @@ class InvestigationAgent:
                     break
                 signature = json.dumps([name, arguments], sort_keys=True, ensure_ascii=False)
                 if signature in seen:
-                    reason = "repeated_tool_call"
-                    break
+                    # Do not abort the investigation for a repeated call: tell the planner what went
+                    # wrong and let it choose again, then wrap up if it keeps looping.
+                    repeated_calls += 1
+                    hint = {"step": step, "tool": name, "arguments": arguments, "error": "RepeatedCall",
+                            "result": {"error": "This exact tool call already ran; its result is in the "
+                                                "conversation. Choose a different tool or finish_investigation.",
+                                       "type": "RepeatedCall"}}
+                    trace.append(hint)
+                    if on_step:
+                        on_step(hint)
+                    if repeated_calls >= 2:
+                        status, reason = "completed", "evidence_budget"
+                        break
+                    continue
                 seen.add(signature)
             except Exception as exc:
                 # Do not persist SDK exceptions, which may contain headers or credentials.
@@ -202,7 +331,8 @@ class InvestigationAgent:
             if on_step:
                 on_step(entry)
             if sum(bool(t.get("error")) for t in trace) >= 3:
-                status, reason = "error", "tool_error_limit"
+                # Repeated tool failures should degrade to a partial report, not kill the run.
+                status, reason = "completed", "evidence_budget"
                 break
         findings = grounded_findings(self.tools)
         judgment = {"status": "not_requested"}
@@ -282,14 +412,16 @@ class InvestigationAgent:
                         if judgment["status"] != "rejected":
                             break
                     if judgment["status"] in ("rejected", "failed"):
-                        status, reason = "error", "judgment_" + judgment["status"]
+                        # The investigation itself completed; only the model's synthesis was withheld.
+                        # Keeping the run "completed" lets the report publish rules and evidence.
+                        status, reason = "completed", "judgment_" + judgment["status"]
         coverage = self.store.coverage()
         coverage["input_sha256"] = hashlib.sha256(json.dumps([e.to_dict() for e in self.store.events],
                                                               sort_keys=True, ensure_ascii=False).encode()).hexdigest()
-        limitations = ["第一版仅对 SSH 集中认证失败、后续成功登录与账户上下文生成结构化结论；其他调查目标尚不保证覆盖。",
+        limitations = ["第一版仅对 SSH 集中认证失败、后续成功登录、账户上下文，以及分布式喷洒/撞库/低速爆破的聚合形态生成结构化结论；其他调查目标尚不保证覆盖。",
                        "调查范围仅为当前上传日志，缺少的日志或未查询的记录不能当作不存在。",
                        "成功登录、sudo 和账户变更均可能是合法行为；确认入侵仍需授权记录、会话或审计证据。",
-                       "关联默认要求同 IP、同账号、同主机；失败窗口 5 分钟至少 5 次，后续登录窗口 15 分钟。",
+                       "关联默认要求同 IP、同账号、同主机；失败窗口 5 分钟至少 5 次，后续登录窗口 15 分钟；跨主机成功登录不关联。",
                        "同一实体仅检查最密集失败窗口，单次最多报告 10 组；不能视为穷尽调查。",
                        "无时区时间按 UTC 处理；缺失年份或时间的日志不参与时间关联。",
                        "LLM 模式会把调查目标和工具返回的部分日志发送至所配置的模型服务。"]
@@ -299,12 +431,16 @@ class InvestigationAgent:
             limitations.append("部分工具结果受数量限制发生截断；报告仅基于实际返回的证据。")
         if not any(f.kind == "success_after_failures" for f in findings):
             limitations.append("当前已查看证据未建立失败后成功登录链，不能排除其他时间、账号或主机上的入侵。")
+        if reason == "evidence_budget":
+            limitations.append("工具阶段在预留预算内提前收束，研判仅基于已查证据；未覆盖的日志不能视为不存在。")
         if status != "completed":
             limitations.append("本次调查未正常完成，请结合停止原因检查预算或服务状态。")
         if self.reviewer:
             limitations.append("LLM 综合研判为辅助意见；引用检查验证结构与引用 ID，不保证文字与证据的语义一致性。")
             if judgment.get("preview", {}).get("events_truncated") or judgment.get("preview", {}).get("raw_truncated"):
                 limitations.append("综合研判使用截断的证据预览；完整已查证据见时间线及 JSON。")
+            if judgment.get("status") in ("rejected", "failed", "discarded"):
+                limitations.append(f"本次综合研判未发布（{judgment['status']}），报告只保留规则发现与已查证据。")
         return InvestigationResult("INV-" + uuid4().hex[:12], goal, self.planner.mode, status, reason,
                                     coverage, findings, list(self.tools.evidence.values()),
                                     list(self.tools.case_references.values()), trace, limitations,

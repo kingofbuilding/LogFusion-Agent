@@ -4,7 +4,7 @@
   "log_file": "hard-012.jsonl",
   "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
   "expected": {
-    "verdict": "insufficient_evidence",
+    "verdict": "no_correlated_success",
     "must_find_event_ids": [
       "E-33b79b5bb4ac106f",
       "E-353e2c931a1717ae",
@@ -34,5 +34,5 @@
   },
   "incident_present": true,
   "design": "分布式喷洒发生在 web-01，成功登录落在 db-01，跨主机且无实体达到阈值。",
-  "note": "规则结论层无法表达此类事件；判分只看关键证据召回，不看 verdict。"
+  "note": "结论层对喷洒/撞库/低速有对应规则；跨主机成功登录按设计不关联。"
 }

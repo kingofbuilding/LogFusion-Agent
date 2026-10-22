@@ -4,7 +4,7 @@
   "log_file": "hard-002.jsonl",
   "goal": "调查是否存在 SSH 暴力破解、后续成功登录及可疑账户活动",
   "expected": {
-    "verdict": "insufficient_evidence",
+    "verdict": "correlated_success",
     "must_find_event_ids": [
       "E-b984466266382b9f",
       "E-5ae9a6569cf257b2",
@@ -34,5 +34,5 @@
   },
   "incident_present": true,
   "design": "20 个不同 IP 各失败 1 次后同一账号成功登录；任一 (IP,账号,主机) 都达不到 5 次阈值。",
-  "note": "规则结论层无法表达此类事件；判分只看关键证据召回，不看 verdict。"
+  "note": "结论层对喷洒/撞库/低速有对应规则；跨主机成功登录按设计不关联。"
 }
