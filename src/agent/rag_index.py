@@ -160,14 +160,16 @@ class MiniLMRetriever:
         return hits
 
 
-def reciprocal_rank_fusion(hit_lists, k: int = 10) -> list[dict]:
+def reciprocal_rank_fusion(hit_lists, k: int = 10, weights=None) -> list[dict]:
     """Fuse ranked lists without assuming comparable score scales."""
+    if weights is None:
+        weights = [1.0] * len(hit_lists)
     scores: dict[str, float] = {}
     meta: dict[str, dict] = {}
-    for hits in hit_lists:
+    for weight, hits in zip(weights, hit_lists):
         for rank, hit in enumerate(hits, start=1):
             case_id = hit["case_id"]
-            scores[case_id] = scores.get(case_id, 0.0) + 1.0 / (k + rank)
+            scores[case_id] = scores.get(case_id, 0.0) + float(weight) / (k + rank)
             meta.setdefault(case_id, hit)
     if not scores:
         return []
@@ -177,18 +179,23 @@ def reciprocal_rank_fusion(hit_lists, k: int = 10) -> list[dict]:
 
 
 class HybridCaseRetriever:
-    """TF-IDF for exact log terms plus MiniLM for paraphrase, fused by reciprocal rank."""
+    """TF-IDF for exact log terms plus MiniLM for paraphrase, fused by weighted reciprocal rank.
+
+    The default weights (1:6) follow the labelled-template evaluation: equal weights let the much
+    weaker lexical ranking drag correct dense hits down.
+    """
 
     backend = "local_hybrid_cases"
 
-    def __init__(self, tfidf: TfidfCaseRetriever, minilm: MiniLMRetriever, pool: int = 10):
-        self.tfidf, self.minilm, self.pool = tfidf, minilm, pool
+    def __init__(self, tfidf: TfidfCaseRetriever, minilm: MiniLMRetriever, pool: int = 10,
+                 weights=(1.0, 6.0)):
+        self.tfidf, self.minilm, self.pool, self.weights = tfidf, minilm, pool, weights
 
     def __call__(self, query: str, top_k: int) -> list[dict]:
         lexical = self.tfidf(query, self.pool)
         semantic = self.minilm(query, self.pool)
         by_id = {hit["case_id"]: hit for hit in lexical + semantic}
-        fused = reciprocal_rank_fusion([lexical, semantic])[:top_k]
+        fused = reciprocal_rank_fusion([lexical, semantic], weights=self.weights)[:top_k]
         hits = []
         for item in fused:
             lexical_hit = next((hit for hit in lexical if hit["case_id"] == item["case_id"]), {})

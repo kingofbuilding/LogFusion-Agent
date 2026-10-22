@@ -2798,3 +2798,27 @@
 
 ### Git 状态
 - 未提交
+
+## 2026-10-22 标注模板级检索评估（104 条）
+
+### 修改内容
+- 从前身工程的 AIT-LDS v2 解析数据与标签导出 104 条“异常模板 → 期望 attack_type”样本（harrison 27 / santos 51 / fox 26），写入 `benchmarks/labeled_templates.json`。
+- 新增 `scripts/evaluate_rag_on_labeled.py`：按上游脚本口径计算 type@1/3/5 与 group@1/3/5，覆盖哈希、TF-IDF、MiniLM、混合四种后端。
+- 权重扫描发现等权 RRF 会被较弱的 TF-IDF 拖累（type@1 0.538），1:6 加权后与 MiniLM 持平；默认后端改为 MiniLM，混合保留 `AGENT_RAG_BACKEND=hybrid`。
+- 新增加权 RRF 测试，共 108 个测试。
+
+### 结果说明
+- 104 条标注模板 type@1：哈希 0.798、TF-IDF 0.567、MiniLM **0.894**、混合 0.894；type@3：0.923 / 0.769 / 0.971 / 0.971。
+- group@1 全为 1.0，因为三个子集的异常模板几乎都属于 security_attack，该指标无区分度，以 attack_type 为准。
+- 13 条手工查询作为辅助：日志式 TF-IDF/混合 1.00、MiniLM 0.75；改写 MiniLM/混合 0.60、TF-IDF 0.40。
+
+### 输出文件
+- `benchmarks/labeled_templates.json`
+- `scripts/evaluate_rag_on_labeled.py`
+- `benchmarks/results/rag_labeled_eval.json`
+- `src/agent/rag_index.py`（加权 RRF）、`src/agent/adapters.py`（默认 MiniLM）
+- `tests/test_rag_index.py`
+- `README.md`、`docs/EVAL_REPORT.md`、`reports/resume_project_logfusion_agent.md`
+
+### Git 状态
+- 未提交

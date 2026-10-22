@@ -99,16 +99,17 @@ def upstream_retriever():
     if preferred == "hash":
         tfidf_ready = minilm_ready = False
     try:
-        if preferred == "minilm" and minilm_ready:
-            return minilm_case_retriever()
         if preferred == "tfidf" and tfidf_ready:
             return tfidf_case_retriever()
-        if tfidf_ready and minilm_ready:
+        if preferred == "hybrid" and tfidf_ready and minilm_ready:
             return hybrid_case_retriever()
-        if tfidf_ready:
-            return tfidf_case_retriever()
+        if preferred == "minilm" and minilm_ready:
+            return minilm_case_retriever()
+        # Default: dense retrieval wins on the labelled-template evaluation; lexical is the fallback.
         if minilm_ready:
             return minilm_case_retriever()
+        if tfidf_ready:
+            return tfidf_case_retriever()
     except Exception:
         # A broken local index must fall through to the upstream hash index, not crash the run.
         pass

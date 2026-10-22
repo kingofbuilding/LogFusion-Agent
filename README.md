@@ -124,7 +124,7 @@ python scripts/rebuild_rag_index.py            # TF-IDF（默认），67 条案�
 python scripts/rebuild_rag_index.py --backend minilm --model-dir /path/to/all-MiniLM-L6-v2
 ```
 
-同一批 13 条标注查询（8 条日志式 + 5 条改写）：Top-1 为 TF-IDF 0.77、MiniLM 0.69、RRF 混合 **0.85**；Top-3 均为 0.92。因此默认走 `local_hybrid_cases`（TF-IDF 负责精确术语、MiniLM 负责改写），可用 `AGENT_RAG_BACKEND=tfidf|minilm|hash` 切换。返回体包含 `raw_score`、`tfidf_score`、`minilm_score` 与 `match_level`（TF-IDF：strong ≥0.35 / medium ≥0.2；MiniLM：≥0.55 / ≥0.4），案例始终只作解释参考，不参与结论；索引损坏或模型缺失会自动降级到下一后端，不影响调查。
+在 104 条标注异常模板上（AIT-LDS v2，按 attack_type 命中）：哈希索引 type@1 0.798、TF-IDF 0.567、MiniLM **0.894**、1:6 加权混合 0.894；type@3 分别为 0.923 / 0.769 / 0.971 / 0.971。因此默认走 `local_minilm_cases`，可用 `AGENT_RAG_BACKEND=hybrid|tfidf|hash` 切换。返回体包含 `raw_score`、`match_level`（MiniLM：strong ≥0.55 / medium ≥0.4；TF-IDF：≥0.35 / ≥0.2），案例始终只作解释参考，不参与结论；索引损坏或模型缺失会自动降级到下一后端，不影响调查。
 
 原检测器的窗口分数映射到末行事件 ID。各视图仍遵循上游代理分数与 hash 回退逻辑；融合模型存在不代表所有视图模型已训练加载。
 

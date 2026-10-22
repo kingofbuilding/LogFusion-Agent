@@ -72,27 +72,24 @@
 
 C0 的工具 schema 只声明 `integer`，`max_groups ≤ 10` 只写在代码里，模型只能试错；修复后 schema 带 `minimum/maximum`，越界错误以可读文本回灌（`retry_guidance`）。C1 的 21 次运行工具报错率 0.10，C0 为 1.00。C1 同时把步数预算从 12 提到 16，因此提升是“schema + 预算”的合并效果。
 
-### 3.3 检索索引：哈希、TF-IDF 与 MiniLM 三种路线
+### 3.3 检索索引：哈希 / TF-IDF / MiniLM 与混合
 
-上游 RAG 的可用口径是**候选模式**，原索引以哈希回退嵌入构建（256 维），短查询余弦常只有 0.05–0.15，检索会退化为空。环境无法访问 HuggingFace，但本机在 VS Code Continue 扩展中找到一份 **MiniLM ONNX（384 维）**，并装了兼容的 onnxruntime 1.19.2，因此三种索引都实测过：
+上游 RAG 的可用口径是候选模式，原索引是 256 维哈希嵌入。评测环境无法访问 HuggingFace，但本机在 VS Code Continue 扩展里找到 **MiniLM ONNX（384 维）**，装兼容的 onnxruntime 1.19.2 后可用；另用同一批 67 条案例重建了 TF-IDF 索引。
 
-| 查询 | TF-IDF Top-1 | MiniLM Top-1 |
-|---|---|---|
-| `Failed password for invalid user admin ...` | CASE-SEC-001 SSH brute force（0.323） | CASE-SEC-006 SSH 成功登录（0.549）✗ |
-| `Accepted password for root ...` | CASE-SEC-013 root 登录（0.400） | CASE-SEC-013（0.615）✓ |
-| `sudo: alice ... COMMAND=/usr/bin/id` | CASE-SEC-005 提权（0.188） | CASE-SEC-008 特权审计（0.409）≈ |
-| `AH01630: client denied ...` | AUTO-0011 限制资源探测（0.349） | CASE-SEC-009 受限 Web 探测（0.525）✓ |
-| `SSH brute force failed password then accepted login` | CASE-SEC-001（0.399） | CASE-SEC-013 root 登录（0.633）✗ |
+**主评估（104 条标注异常模板）**：从 AIT-LDS v2 的 harrison/santos/fox 中导出“异常模板 → 期望 attack_type”样本（`benchmarks/labeled_templates.json`），命中定义为 Top-K 中存在同 attack_type 案例（与上游脚本口径一致）：
 
-结论：TF-IDF 在日志式查询上更准，MiniLM 在改写查询上更强，因此实现 **RRF 混合检索**（两路各取 Top-10，按排名融合，不依赖分数量纲），并对查询做归一化（去掉时间、IP、端口、PID、纯数字）。`scripts/evaluate_case_retrieval.py` 在 13 条标注查询（8 条日志式 + 5 条改写）上的结果：
+| 检索器 | type@1 | type@3 | group@1 |
+|---|---:|---:|---:|
+| 哈希（原索引） | 0.798 | 0.923 | 1.000 |
+| TF-IDF | 0.567 | 0.769 | 1.000 |
+| **MiniLM（默认）** | **0.894** | **0.971** | 1.000 |
+| Hybrid（1:6 RRF） | 0.894 | 0.971 | 1.000 |
 
-| 检索器 | Top-1 | Top-3 | 日志式 Top-1 | 改写 Top-1 |
-|---|---:|---:|---:|---:|
-| TF-IDF | 0.77 | 0.92 | 1.00 | 0.40 |
-| MiniLM | 0.69 | 0.77 | 0.75 | 0.60 |
-| **Hybrid（RRF）** | **0.85** | **0.92** | **1.00** | **0.60** |
+`case_group` 全为 1.0 是因为三个子集的异常模板几乎都属于 `security_attack`，该指标不具区分度，以 attack_type 为准。
 
-默认使用 `local_hybrid_cases`，可用 `AGENT_RAG_BACKEND=tfidf|minilm|hash` 切换。TF-IDF 分数与句向量不同量纲，因此用 `match_level` 表达强度（TF-IDF strong ≥0.35 / medium ≥0.2；MiniLM strong ≥0.55 / medium ≥0.4），并同时回传 `tfidf_score` 与 `minilm_score`。**D 组的差异仍来自检测器，不来自检索。**
+**辅助评估（13 条手工查询）**：日志式查询 TF-IDF 与混合均为 1.00，MiniLM 0.75；改写查询 MiniLM 与混合 0.60、TF-IDF 0.40。说明 MiniLM 在模板/自然语言上更强，TF-IDF 的优势只在精确词面匹配。
+
+因此默认后端为 `local_minilm_cases`；`AGENT_RAG_BACKEND=hybrid|tfidf|hash` 可切换，混合采用 1:6 加权 RRF（等权会被较弱的词法排序拖累：type@1 仅 0.538）。分数口径：MiniLM strong ≥0.55 / medium ≥0.4；TF-IDF strong ≥0.35 / medium ≥0.2。**D 组的差异仍来自检测器，不来自检索。**
 
 ### 3.4 检测器观察的收敛
 

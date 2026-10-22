@@ -1,0 +1,3861 @@
+{
+  "samples": 104,
+  "backends": {
+    "hash": {
+      "summary": {
+        "backend": "hash",
+        "samples": 104,
+        "attack_type_hit1": 0.7981,
+        "attack_type_hit3": 0.9231,
+        "attack_type_hit5": 0.9712,
+        "group_hit1": 1.0,
+        "group_hit3": 1.0,
+        "group_hit5": 1.0,
+        "by_dataset": {
+          "fox": {
+            "attack_type_hit1": 0.7692,
+            "attack_type_hit3": 0.9231
+          },
+          "harrison": {
+            "attack_type_hit1": 0.7778,
+            "attack_type_hit3": 0.9259
+          },
+          "santos": {
+            "attack_type_hit1": 0.8235,
+            "attack_type_hit3": 0.9216
+          }
+        }
+      },
+      "rows": [
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        }
+      ]
+    },
+    "tfidf": {
+      "summary": {
+        "backend": "tfidf",
+        "samples": 104,
+        "attack_type_hit1": 0.5673,
+        "attack_type_hit3": 0.7692,
+        "attack_type_hit5": 0.8846,
+        "group_hit1": 1.0,
+        "group_hit3": 1.0,
+        "group_hit5": 1.0,
+        "by_dataset": {
+          "fox": {
+            "attack_type_hit1": 0.4231,
+            "attack_type_hit3": 0.7308
+          },
+          "harrison": {
+            "attack_type_hit1": 0.5556,
+            "attack_type_hit3": 0.7407
+          },
+          "santos": {
+            "attack_type_hit1": 0.6471,
+            "attack_type_hit3": 0.8039
+          }
+        }
+      },
+      "rows": [
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 0,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        }
+      ]
+    },
+    "minilm": {
+      "summary": {
+        "backend": "minilm",
+        "samples": 104,
+        "attack_type_hit1": 0.8942,
+        "attack_type_hit3": 0.9712,
+        "attack_type_hit5": 1.0,
+        "group_hit1": 1.0,
+        "group_hit3": 1.0,
+        "group_hit5": 1.0,
+        "by_dataset": {
+          "fox": {
+            "attack_type_hit1": 0.9615,
+            "attack_type_hit3": 1.0
+          },
+          "harrison": {
+            "attack_type_hit1": 1.0,
+            "attack_type_hit3": 1.0
+          },
+          "santos": {
+            "attack_type_hit1": 0.8039,
+            "attack_type_hit3": 0.9412
+          }
+        }
+      },
+      "rows": [
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        }
+      ]
+    },
+    "hybrid": {
+      "summary": {
+        "backend": "hybrid",
+        "samples": 104,
+        "attack_type_hit1": 0.8942,
+        "attack_type_hit3": 0.9712,
+        "attack_type_hit5": 1.0,
+        "group_hit1": 1.0,
+        "group_hit3": 1.0,
+        "group_hit5": 1.0,
+        "by_dataset": {
+          "fox": {
+            "attack_type_hit1": 0.9615,
+            "attack_type_hit3": 1.0
+          },
+          "harrison": {
+            "attack_type_hit1": 1.0,
+            "attack_type_hit3": 1.0
+          },
+          "santos": {
+            "attack_type_hit1": 0.8039,
+            "attack_type_hit3": 0.9412
+          }
+        }
+      },
+      "rows": [
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "harrison",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 0,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "santos",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 0,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        },
+        {
+          "dataset": "fox",
+          "attack_type_hit1": 1,
+          "attack_type_hit3": 1,
+          "attack_type_hit5": 1,
+          "group_hit1": 1,
+          "group_hit3": 1,
+          "group_hit5": 1
+        }
+      ]
+    }
+  }
+}

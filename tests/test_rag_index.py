@@ -50,6 +50,15 @@ def test_reciprocal_rank_fusion_prefers_consensus():
     assert fused[0]["raw_score"] == 1.0
 
 
+def test_weighted_fusion_lets_the_stronger_list_win():
+    from src.agent.rag_index import reciprocal_rank_fusion
+
+    lexical = [{"case_id": "a"}, {"case_id": "b"}]
+    semantic = [{"case_id": "b"}, {"case_id": "c"}]
+    assert [hit["case_id"] for hit in reciprocal_rank_fusion([lexical, semantic], weights=[1, 6])] == ["b", "c", "a"]
+    assert [hit["case_id"] for hit in reciprocal_rank_fusion([lexical, semantic], weights=[6, 1])] == ["b", "a", "c"]
+
+
 def test_hybrid_retriever_if_both_indexes_exist():
     import json
 

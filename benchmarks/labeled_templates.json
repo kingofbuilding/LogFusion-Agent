@@ -1,0 +1,938 @@
+[
+ {
+  "dataset": "harrison",
+  "source_file": "gather/intranet_server/logs/audit/audit.log",
+  "template": "type=<NODEID> msg=audit(<HEXID>.<NUM>:<NUM>): pid=<NUM> uid=<NUM> <*> <*> <*> <*> <*> hostname=? addr=? <*> res=success'",
+  "count": 20,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <IP>:<NUM> <*> <*> <*>",
+  "count": 12,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Feb <NUM> <NUM>:<NUM>:<NUM> <NODEID> <*> <*> session opened for user <*> by (uid=<NUM>)",
+  "count": 5,
+  "case_group": "security_attack",
+  "attack_type": "Credential Access",
+  "title": "Suspicious successful login session"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Feb <NUM> <NUM>:<NUM>:<NUM> <NODEID> <*> <*> session <*> <*> user <*>",
+  "count": 4,
+  "case_group": "security_attack",
+  "attack_type": "Credential Access",
+  "title": "Authentication chain anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/intranet_server/logs/audit/audit.log",
+  "template": "type=<NODEID> msg=audit(<HEXID>.<NUM>:<NUM>): pid=<NUM> uid=<NUM> auid=<HEXID> ses=<HEXID> msg='cwd=\"/var/www/intranet.mannsmith.harrison.com/<NODEID>/uploads/<NUM>/<NUM>\" cmd=<HEXID> terminal=pts/<NUM> res=success'",
+  "count": 3,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/internal_share/logs/audit/audit.log",
+  "template": "type=<NODEID> msg=audit(<HEXID>.<NUM>:<NUM>): pid=<NUM> uid=<NUM> <*> <*> <*> <*> <*> hostname=? addr=? <*> res=success'",
+  "count": 2,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> <*> Data Channel: Using <NUM> bit message hash 'SHA1' for HMAC authentication",
+  "count": 2,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> <*> Data Channel: Cipher '<NODEID>' initialized with <NUM> bit key",
+  "count": 2,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> <NODEID>: pool returned IPv4=<IP>, IPv6=(Not enabled)",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> MULTI: Learn: <IP> -> <*>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> MULTI: primary virtual IP for <*> <IP>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> PUSH: Received control message: '<NODEID>'",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <IP>:<NUM> <*> Peer Connection Initiated with [<NODEID>]<IP>:<NUM>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <IP>:<NUM> TLS: Initial packet from [<NODEID>]<IP>:<NUM>, sid=<HEXID> <HEXID>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> Control Channel: TLSv1.<NUM>, cipher TLSv1.<NUM> <NODEID>, peer certificate: <NUM> bit RSA, signature: <NODEID>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> VERIFY OK: depth=<NUM>, <*>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Client Authentication",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> Validating certificate extended key usage",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> VERIFY OK: depth=<NUM>, C=AT, ST=Vienna, L=Vienna, O=Some Organisation GmbH, CN=OpenVPN CA, emailAddress=admin@organisation.cyberrange.at",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Feb <NUM> <NUM>:<NUM>:<NUM> <NODEID> sudo: jward : TTY=pts/<NUM> ; PWD=/var/www/intranet.mannsmith.harrison.com/<NODEID>/uploads/<NUM>/<NUM> ; USER=root ; COMMAND=/bin/ls <*> <*>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Feb <NUM> <NUM>:<NUM>:<NUM> <NODEID> sudo: jward : TTY=pts/<NUM> ; PWD=/var/www/intranet.mannsmith.harrison.com/<NODEID>/uploads/<NUM>/<NUM> ; USER=root ; COMMAND=/bin/ls -laR /root/",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Feb <NUM> <NUM>:<NUM>:<NUM> <NODEID> sudo: jward : TTY=pts/<NUM> ; PWD=/var/www/intranet.mannsmith.harrison.com/<NODEID>/uploads/<NUM>/<NUM> ; USER=root ; COMMAND=/bin/cat /etc/shadow",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Feb <NUM> <NUM>:<NUM>:<NUM> <NODEID> sudo: jward : TTY=pts/<NUM> ; PWD=/var/www/intranet.mannsmith.harrison.com/<NODEID>/uploads/<NUM>/<NUM> ; USER=root ; COMMAND=list",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Feb <NUM> <NUM>:<NUM>:<NUM> <NODEID> su[<NUM>]: + /dev/pts/<NUM> <NODEID>:jward",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Credential Access",
+  "title": "Authentication chain anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Feb <NUM> <NUM>:<NUM>:<NUM> <NODEID> su[<NUM>]: Successful su for jward by <NODEID>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Credential Access",
+  "title": "Authentication chain anomaly"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/intranet_server/logs/audit/audit.log",
+  "template": "type=LOGIN msg=audit(<HEXID>.<NUM>:<NUM>): pid=<NUM> uid=<NUM> <NODEID>=<HEXID> auid=<NUM> tty=(none) <NODEID>=<HEXID> ses=<NUM> res=<NUM>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "harrison",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> SENT CONTROL <*> '<NODEID>,<NODEID> def1,<NODEID>,route <IP>,topology net30,ping <NUM>,<NODEID> <NUM>,ifconfig <IP> <IP>,<NODEID> <NUM>,cipher <NODEID>' (status=<NUM>)",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-access.log",
+  "template": "<IP> - - [<NUM>/Jan/<NUM>:<NUM>:<NUM>:<NUM> +<NUM>] \"GET <*> HTTP/<NUM>.<NUM>\" <NUM> <NUM> \"-\" \"Mozilla/<NUM>.<NUM> (compatible; MSIE <NUM>.<NUM>; Windows NT <NUM>.<NUM>)\"",
+  "count": 4461,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Abnormal web access"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-access.log",
+  "template": "<IP> - - [<NUM>/Jan/<NUM>:<NUM>:<NUM>:<NUM> +<NUM>] <*> <*> HTTP/<NUM>.<NUM>\" <NUM> <NUM> \"https://intranet.smith.santos.com\" \"WPScan v3.<NUM>.<NUM> (https://wpscan.com/<NODEID>)\"",
+  "count": 3282,
+  "case_group": "security_attack",
+  "attack_type": "Discovery",
+  "title": "WPScan web scan"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-access.log",
+  "template": "<IP> - - [<NUM>/Jan/<NUM>:<NUM>:<NUM>:<NUM> +<NUM>] <*> <*> HTTP/<NUM>.<NUM>\" <NUM> <NUM> \"-\" <*>",
+  "count": 33,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Abnormal web access"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/audit/audit.log",
+  "template": "type=<NODEID> msg=audit(<HEXID>.<NUM>:<NUM>): pid=<NUM> uid=<NUM> <*> <*> <*> <*> <*> hostname=? addr=? <*> res=success'",
+  "count": 16,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] [php7:error] [pid <NUM>] [client <IP>:<NUM>] script <*> not found or unable to stat, referer: https://intranet.smith.santos.com",
+  "count": 12,
+  "case_group": "security_attack",
+  "attack_type": "Discovery",
+  "title": "Web path and script probing"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <IP>:<NUM> <*> <*> <*>",
+  "count": 12,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] [negotiation:error] [pid <NUM>] [client <IP>:<NUM>] AH00687: Negotiation: discovered file(s) matching request: <*> (None could be negotiated).",
+  "count": 11,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Content negotiation probing"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-access.log",
+  "template": "<IP> - - [<NUM>/Jan/<NUM>:<NUM>:<NUM>:<NUM> +<NUM>] \"GET / HTTP/<NUM>.<NUM>\" <NUM> <NUM> \"-\" \"-\"",
+  "count": 6,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Abnormal web access"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] [<NODEID>:error] [pid <NUM>] [client <IP>:<NUM>] AH01630: client denied by server configuration: <*>",
+  "count": 6,
+  "case_group": "security_attack",
+  "attack_type": "Discovery",
+  "title": "Restricted resource probing"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-access.log",
+  "template": "<IP> - - [<NUM>/Jan/<NUM>:<NUM>:<NUM>:<NUM> +<NUM>] <*> <*> HTTP/<NUM>.<NUM>\" <NUM> <NUM> \"-\" \"Mozilla/<NUM>.<NUM> (compatible; Nmap Scripting Engine; https://nmap.org/book/nse.html)\"",
+  "count": 5,
+  "case_group": "security_attack",
+  "attack_type": "Discovery",
+  "title": "Nmap scripted probe"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> <*> <*> session opened for user <*> by (uid=<NUM>)",
+  "count": 4,
+  "case_group": "security_attack",
+  "attack_type": "Credential Access",
+  "title": "Suspicious successful login session"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> <*> <*> session <*> <*> user <*>",
+  "count": 3,
+  "case_group": "security_attack",
+  "attack_type": "Credential Access",
+  "title": "Authentication chain anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] [php7:error] [pid <NUM>] [client <IP>:<NUM>] script <*> not found or unable to stat",
+  "count": 3,
+  "case_group": "security_attack",
+  "attack_type": "Discovery",
+  "title": "Web path and script probing"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/audit/audit.log",
+  "template": "type=<NODEID> msg=audit(<HEXID>.<NUM>:<NUM>): pid=<NUM> uid=<NUM> auid=<HEXID> ses=<HEXID> msg='cwd=\"/var/www/intranet.smith.santos.com/<NODEID>/uploads/<NUM>/<NUM>\" cmd=<HEXID> terminal=pts/<NUM> res=success'",
+  "count": 2,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> <*> Data Channel: Cipher '<NODEID>' initialized with <NUM> bit key",
+  "count": 2,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/internal_share/logs/audit/audit.log",
+  "template": "type=<NODEID> msg=audit(<HEXID>.<NUM>:<NUM>): pid=<NUM> uid=<NUM> <*> <*> <*> <*> <*> hostname=? addr=? <*> res=success'",
+  "count": 2,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-access.log",
+  "template": "<IP> - - [<NUM>/Jan/<NUM>:<NUM>:<NUM>:<NUM> +<NUM>] \"GET / HTTP/<NUM>.<NUM>\" <NUM> <NUM> \"https://intranet.smith.santos.com\" \"WPScan v3.<NUM>.<NUM> (https://wpscan.com/<NODEID>)\"",
+  "count": 2,
+  "case_group": "security_attack",
+  "attack_type": "Discovery",
+  "title": "WPScan web scan"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> <*> Data Channel: Using <NUM> bit message hash 'SHA1' for HMAC authentication",
+  "count": 2,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <IP>:<NUM> TLS: Initial packet from [<NODEID>]<IP>:<NUM>, sid=<HEXID> <HEXID>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <IP>:<NUM> <*> Peer Connection Initiated with [<NODEID>]<IP>:<NUM>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> <NODEID>: pool returned IPv4=<IP>, IPv6=(Not enabled)",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> MULTI: Learn: <IP> -> <*>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> MULTI: primary virtual IP for <*> <IP>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> PUSH: Received control message: '<NODEID>'",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> Control Channel: TLSv1.<NUM>, cipher TLSv1.<NUM> <NODEID>, peer certificate: <NUM> bit RSA, signature: <NODEID>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> VERIFY OK: depth=<NUM>, <*>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Client Authentication",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> Validating certificate extended key usage",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> VERIFY OK: depth=<NUM>, C=AT, ST=Vienna, L=Vienna, O=Some Organisation GmbH, CN=OpenVPN CA, emailAddress=admin@organisation.cyberrange.at",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] [php7:error] [pid <NUM>] [client <IP>:<NUM>] script '/var/www/intranet.smith.santos.com/searchreplacedb2.php' not found or unable to stat, referer: https://intranet.smith.santos.com",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Discovery",
+  "title": "Web path and script probing"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> sudo: gmorgan : TTY=pts/<NUM> ; PWD=/var/www/intranet.smith.santos.com/<NODEID>/uploads/<NUM>/<NUM> ; USER=root ; COMMAND=list",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> su[<NUM>]: + /dev/pts/<NUM> <NODEID>:gmorgan",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Credential Access",
+  "title": "Authentication chain anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> su[<NUM>]: Successful su for gmorgan by <NODEID>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Credential Access",
+  "title": "Authentication chain anomaly"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/audit/audit.log",
+  "template": "type=LOGIN msg=audit(<HEXID>.<NUM>:<NUM>): pid=<NUM> uid=<NUM> <NODEID>=<HEXID> auid=<NUM> tty=(none) <NODEID>=<HEXID> ses=<NUM> res=<NUM>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] [php7:error] [pid <NUM>] [client <IP>:<NUM>] script '/var/www/intranet.smith.santos.com/<NODEID> - Copy.php' not found or unable to stat, referer: https://intranet.smith.santos.com",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Discovery",
+  "title": "Web path and script probing"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] [negotiation:error] [pid <NUM>] [client <IP>:<NUM>] AH00687: Negotiation: discovered file(s) matching request: <*> (None could be negotiated)., referer: https://intranet.smith.santos.com",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Content negotiation probing"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] [negotiation:error] [pid <NUM>] [client <IP>:<NUM>] AH00687: Negotiation: discovered file(s) matching request: /var/www/intranet.smith.santos.com/<NODEID>/themes/go/functions (None could be negotiated)., referer: https://intranet.smith.santos.com",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Content negotiation probing"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] [php7:error] [pid <NUM>] [client <IP>:<NUM>] PHP Fatal error: Uncaught Error: Call to undefined function <NODEID>() in /var/www/intranet.smith.santos.com/<NODEID>/themes/go/index.php:<NUM>\\nStack trace:\\n#<NUM> {main}\\n thrown in /var/www/intranet.smith.santos.com/<NODEID>/themes/go/index.php on line <NUM>, referer: https://intranet.smith.santos.com",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Abnormal web error trigger"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] [autoindex:error] [pid <NUM>] [client <IP>:<NUM>] AH01276: Cannot serve directory /var/www/intranet.smith.santos.com/<NODEID>/uploads/: No matching DirectoryIndex (index.html,index.cgi,index.pl,index.php,index.xhtml,index.htm) found, and <NODEID> directory index forbidden by Options directive, referer: https://intranet.smith.santos.com",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Abnormal web error trigger"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] [negotiation:error] [pid <NUM>] [client <IP>:<NUM>] AH00687: Negotiation: discovered file(s) matching request: /var/www/intranet.smith.santos.com/index (None could be negotiated).",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Content negotiation probing"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> sudo: gmorgan : TTY=pts/<NUM> ; PWD=/var/www/intranet.smith.santos.com/<NODEID>/uploads/<NUM>/<NUM> ; USER=root ; COMMAND=/bin/ls -laR /root/",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] <*> [pid <NUM>] [client <IP>:<NUM>] <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Abnormal web error trigger"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] [php7:error] [pid <NUM>] [client <IP>:<NUM>] script '/var/www/intranet.smith.santos.com/admin.php' not found or unable to stat",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Discovery",
+  "title": "Web path and script probing"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-error.log",
+  "template": "[Mon Jan <NUM> <NUM>:<NUM>:<NUM>.<NUM> <NUM>] [<NODEID>:error] [pid <NUM>] [client <IP>:<NUM>] AH01630: client denied by server configuration: /var/www/intranet.smith.santos.com/.hta",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Discovery",
+  "title": "Restricted resource probing"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-access.log",
+  "template": "<IP> - - [<NUM>/Jan/<NUM>:<NUM>:<NUM>:<NUM> +<NUM>] <*> / HTTP/<NUM>.<NUM>\" <NUM> <NUM> \"https://intranet.smith.santos.com\" \"WPScan v3.<NUM>.<NUM> (https://wpscan.com/<NODEID>)\"",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Discovery",
+  "title": "WPScan web scan"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-access.log",
+  "template": "<IP> - - [<NUM>/Jan/<NUM>:<NUM>:<NUM>:<NUM> +<NUM>] \"GET /randomfile1 HTTP/<NUM>.<NUM>\" <NUM> <NUM> \"-\" \"Mozilla/<NUM>.<NUM> (compatible; MSIE <NUM>.<NUM>; Windows NT <NUM>.<NUM>)\"",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Abnormal web access"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-access.log",
+  "template": "<IP> - - [<NUM>/Jan/<NUM>:<NUM>:<NUM>:<NUM> +<NUM>] \"GET /nmaplowercheck1642418506 HTTP/<NUM>.<NUM>\" <NUM> <NUM> \"-\" \"Mozilla/<NUM>.<NUM> (compatible; Nmap Scripting Engine; https://nmap.org/book/nse.html)\"",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Discovery",
+  "title": "Nmap scripted probe"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-access.log",
+  "template": "<IP> - - [<NUM>/Jan/<NUM>:<NUM>:<NUM>:<NUM> +<NUM>] \"GET <*> HTTP/<NUM>.<NUM>\" <NUM> <NUM> \"-\" <*>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Abnormal web access"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/apache2/intranet.smith.santos.com-access.log",
+  "template": "<IP> - - [<NUM>/Jan/<NUM>:<NUM>:<NUM>:<NUM> +<NUM>] \"GET / HTTP/<NUM>.<NUM>\" <NUM> <NUM> \"-\" <*>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Abnormal web access"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> sudo: gmorgan : TTY=pts/<NUM> ; PWD=/var/www/intranet.smith.santos.com/<NODEID>/uploads/<NUM>/<NUM> ; USER=root ; COMMAND=/bin/cat /etc/shadow",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "santos",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> SENT CONTROL <*> '<NODEID>,<NODEID> def1,<NODEID>,route <IP>,topology net30,ping <NUM>,<NODEID> <NUM>,ifconfig <IP> <IP>,<NODEID> <NUM>,cipher <NODEID>' (status=<NUM>)",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/intranet_server/logs/audit/audit.log",
+  "template": "type=<NODEID> msg=audit(<HEXID>.<NUM>:<NUM>): pid=<NUM> uid=<NUM> <*> <*> <*> <*> <*> hostname=? addr=? <*> res=success'",
+  "count": 16,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <IP>:<NUM> <*> <*> <*>",
+  "count": 12,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> <*> <*> session opened for user <*> by (uid=<NUM>)",
+  "count": 4,
+  "case_group": "security_attack",
+  "attack_type": "Credential Access",
+  "title": "Suspicious successful login session"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> <*> <*> session <*> <*> user <*>",
+  "count": 3,
+  "case_group": "security_attack",
+  "attack_type": "Credential Access",
+  "title": "Authentication chain anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> <*> Data Channel: Cipher '<NODEID>' initialized with <NUM> bit key",
+  "count": 2,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> <*> Data Channel: Using <NUM> bit message hash 'SHA1' for HMAC authentication",
+  "count": 2,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/intranet_server/logs/audit/audit.log",
+  "template": "type=<NODEID> msg=audit(<HEXID>.<NUM>:<NUM>): pid=<NUM> uid=<NUM> <*> <*> <*> cmd=<HEXID> terminal=pts/<NUM> res=success'",
+  "count": 2,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/internal_share/logs/audit/audit.log",
+  "template": "type=<NODEID> msg=audit(<HEXID>.<NUM>:<NUM>): pid=<NUM> uid=<NUM> <*> <*> <*> <*> <*> hostname=? addr=? <*> res=success'",
+  "count": 2,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> PUSH: Received control message: '<NODEID>'",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> MULTI: primary virtual IP for <*> <IP>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> MULTI: Learn: <IP> -> <*>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> <NODEID>: pool returned IPv4=<IP>, IPv6=(Not enabled)",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <IP>:<NUM> <*> Peer Connection Initiated with [<NODEID>]<IP>:<NUM>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <IP>:<NUM> TLS: Initial packet from [<NODEID>]<IP>:<NUM>, sid=<HEXID> <HEXID>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> Control Channel: TLSv1.<NUM>, cipher TLSv1.<NUM> <NODEID>, peer certificate: <NUM> bit RSA, signature: <NODEID>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> VERIFY OK: depth=<NUM>, <*>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Client Authentication",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> Validating certificate extended key usage",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> VERIFY OK: depth=<NUM>, C=AT, ST=Vienna, L=Vienna, O=Some Organisation GmbH, CN=OpenVPN CA, emailAddress=admin@organisation.cyberrange.at",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> sudo: phopkins : TTY=pts/<NUM> ; PWD=/var/www/intranet.price.fox.org/<NODEID>/uploads/<NUM>/<NUM> ; USER=root ; COMMAND=/bin/cat /etc/shadow",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> sudo: phopkins : TTY=pts/<NUM> ; PWD=/var/www/intranet.price.fox.org/<NODEID>/uploads/<NUM>/<NUM> ; USER=root ; COMMAND=/bin/ls -laR /root/",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> sudo: phopkins : TTY=pts/<NUM> ; PWD=/var/www/intranet.price.fox.org/<NODEID>/uploads/<NUM>/<NUM> ; USER=root ; COMMAND=list",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> su[<NUM>]: Successful su for phopkins by <NODEID>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Credential Access",
+  "title": "Authentication chain anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/intranet_server/logs/auth.log",
+  "template": "Jan <NUM> <NUM>:<NUM>:<NUM> <NODEID> <*> <*> <*> <*>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Credential Access",
+  "title": "Authentication chain anomaly"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/intranet_server/logs/audit/audit.log",
+  "template": "type=LOGIN msg=audit(<HEXID>.<NUM>:<NUM>): pid=<NUM> uid=<NUM> <NODEID>=<HEXID> auid=<NUM> tty=(none) <NODEID>=<HEXID> ses=<NUM> res=<NUM>",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Privilege Escalation",
+  "title": "Linux privilege escalation audit"
+ },
+ {
+  "dataset": "fox",
+  "source_file": "gather/vpn/logs/openvpn.log",
+  "template": "<TIMESTAMP> <*> SENT CONTROL <*> '<NODEID>,<NODEID> def1,<NODEID>,route <IP>,topology net30,ping <NUM>,<NODEID> <NUM>,ifconfig <IP> <IP>,<NODEID> <NUM>,cipher <NODEID>' (status=<NUM>)",
+  "count": 1,
+  "case_group": "security_attack",
+  "attack_type": "Initial Access",
+  "title": "Remote access anomaly"
+ }
+]
