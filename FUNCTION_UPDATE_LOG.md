@@ -2610,3 +2610,27 @@
 
 ### Git 状态
 - 未提交
+
+## 2026-10-22 收尾模式与完成率验收
+
+### 修改内容
+- Agent 预算改为三段：工具阶段（2/3 token、max_steps-2 步）、收尾模式（token 75% 或只差 2 步时触发）、收尾阶段（保留 ≥2 步与 ≥1/3 token）。
+- 收尾模式下追加“停止探索”系统指令，工具只剩 build_timeline / retrieve_cases / finish_investigation；越权调用返回提示，连续 2 次才收束。
+- 状态拆分 completed / completed_partial；规划器异常、连续工具错误、研判被拒都降级为 completed_partial，报告仍产出。
+- 研判校验失败时在重试提示里给出具体未知 ID，便于模型自我修复。
+- 评测新增 completion_rate（含部分完成）与 partial_rate，并在汇总表分列。
+- 修复结果文件名冲突：同秒启动的两次评测会互相覆盖，文件名加入数据集名。
+
+### 输出文件
+- `src/agent/engine.py`、`src/agent/planner.py`、`src/agent/judgment.py`
+- `benchmarks/run_eval.py`
+- `benchmarks/results/eval_cases_llm_20261022T005608Z.json`（标准集 42 次）
+- `README.md`、`docs/ENGINEERING_ISSUES.md`、`docs/EVAL_REPORT.md`
+
+### 结果说明
+- 标准集 42 次：完成率 0.95（完全完成 0.52、部分完成 0.43），停止原因以 evidence_budget 13、planner_finished 22 为主；token_budget 仅 1 次、tool_error_limit 0 次、repeated_tool_call 0 次。
+- 失效集 12 次：完成率 0.92（完全完成 0.08、部分完成 0.83），evidence_budget 4、judgment_rejected 6、planner_finished 1、time_budget 1。
+- 失效集“完全完成”偏低，说明预算与取证方式仍偏紧；这是下一步加“假设/理由”和“完整性闸门”的理由。
+
+### Git 状态
+- 未提交

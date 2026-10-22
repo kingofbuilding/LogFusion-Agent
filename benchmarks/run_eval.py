@@ -322,7 +322,8 @@ def main() -> int:
         data = run_group(group, metas, args.repeats, cases_dir=cases_dir)
         payload["groups"][group] = data
         print(markdown_table(group, data["summary"]))
-    target = args.out / f"eval_{'_'.join(groups)}_{stamp}.json"
+    # Include the suite name: two runs started in the same second used to overwrite each other.
+    target = args.out / f"eval_{cases_dir.name}_{'_'.join(groups)}_{stamp}.json"
     target.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"结果已写入 {target}")
     return 0
