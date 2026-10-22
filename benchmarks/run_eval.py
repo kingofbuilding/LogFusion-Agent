@@ -208,13 +208,15 @@ def _upstream_tools(shared: dict):
     return shared["detector"], shared["retriever"]
 
 
-def _build_agent(group: str, store: EventStore, shared: dict):
+def _build_agent(group: str, store: EventStore, shared: dict, token_override: int = 0):
     from src.agent.demo import SimulatedJudgment
     from src.agent.judgment import LLMJudgment
     from src.agent.planner import LLMPlanner
     from src.agent.tools import InvestigationTools
 
-    budget = PER_GROUP_BUDGET[group]
+    budget = dict(PER_GROUP_BUDGET[group])
+    if token_override:
+        budget["max_tokens"] = token_override
     if group in ("agent+upstream", "upstream"):
         detector, retriever = _upstream_tools(shared)
         tools = InvestigationTools(store, detector=detector, retriever=retriever)
@@ -252,7 +254,8 @@ def _exception_row(meta: dict, exc: Exception) -> dict:
             "gate_triggers": 0, "rationale_rate": None, "hypothesis_rate": None}
 
 
-def run_group(group: str, cases: list[dict], repeats: int, progress=print, cases_dir: Path = CASES_DIR) -> dict:
+def run_group(group: str, cases: list[dict], repeats: int, progress=print, cases_dir: Path = CASES_DIR,
+              token_override: int = 0) -> dict:
     shared: dict = {}
     rows = []
     streak = 0
@@ -263,7 +266,7 @@ def run_group(group: str, cases: list[dict], repeats: int, progress=print, cases
             # Fresh tools/agent per attempt: the engine resets per-run state, and rebuilding also
             # guarantees no evidence dictionary is shared between cases.
             try:
-                agent = _build_agent(group, store, shared)
+                agent = _build_agent(group, store, shared, token_override)
                 result = _run_once(agent, meta["goal"])
             except Exception as exc:  # provider outage must not silently become a "wrong verdict"
                 rows.append(_exception_row(meta, exc))
@@ -331,6 +334,10 @@ def main() -> int:
     parser.add_argument("--groups", default="rule")
     parser.add_argument("--repeats", type=int, default=1, help="每条用例重复次数（LLM 建议 3）")
     parser.add_argument("--limit", type=int, default=0, help="只跑前 N 条用例（0 为全部）")
+    parser.add_argument("--max-tokens", type=int, default=0,
+                        help="覆盖该组的 token 预算（0 为默认；真实调用前先用 --estimate 估价）")
+    parser.add_argument("--estimate", action="store_true",
+                        help="只估算 token 与费用，不发出任何请求")
     parser.add_argument("--case-ids", default="", help="逗号分隔的用例 ID")
     parser.add_argument("--out", type=Path, default=RESULTS_DIR)
     parser.add_argument("--cases-dir", type=Path, default=CASES_DIR,
@@ -360,6 +367,24 @@ def main() -> int:
         return 2
 
     print(f"用例 {len(metas)} 条；分组 {groups}；重复 {args.repeats} 次；代码 {git_sha()[:12]}；预算 {PER_GROUP_BUDGET}")
+
+    if args.estimate:
+        # Cost estimate only; no request is made. The 0.8 factor is the observed ratio between
+        # spent tokens and the configured budget on recorded LLM runs (models usually wrap up early).
+        rate = 2.6 / 1e6          # input 2 CNY/M * 0.9 + output 8 CNY/M * 0.1
+        total = 0.0
+        for group in groups:
+            budget = dict(PER_GROUP_BUDGET[group])
+            if args.max_tokens:
+                budget["max_tokens"] = args.max_tokens
+            cap = budget["max_tokens"]
+            per_case = cap * 0.8 if group in ("llm", "agent+upstream") else 0.0
+            tok = len(metas) * args.repeats * per_case
+            total += tok
+            print(f"  {group:15s} 预算 {cap:>7,}/条 → {tok/1e6:5.2f}M token ≈ {tok*rate:5.2f} 元")
+        print(f"  合计约 {total/1e6:.2f}M token ≈ {total*rate:.2f} 元"
+              f"（按输入 2 元/M、输出 8 元/M、输出占 10% 估算；前缀命中缓存时更低）")
+        return 0
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     args.out.mkdir(parents=True, exist_ok=True)
     payload = {"suite": str(cases_dir.relative_to(ROOT)) if cases_dir.is_relative_to(ROOT) else str(cases_dir),
@@ -367,7 +392,8 @@ def main() -> int:
                "git_sha": git_sha(), "budgets": PER_GROUP_BUDGET, "groups": {}}
     for group in groups:
         print(f"\n== 组 {group} ==")
-        data = run_group(group, metas, args.repeats, cases_dir=cases_dir)
+        data = run_group(group, metas, args.repeats, cases_dir=cases_dir,
+                         token_override=args.max_tokens)
         payload["groups"][group] = data
         print(markdown_table(group, data["summary"]))
         if data.get("aborted"):

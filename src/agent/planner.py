@@ -216,14 +216,19 @@ class LLMPlanner:
             messages=[{"role": "system", "content": plan_prompt(self.profile, digest)},
                       {"role": "user", "content": goal}],
             tools=[PLAN_SCHEMA], tool_choice={"type": "function", "function": {"name": "submit_plan"}},
-            temperature=0, max_tokens=400, **self.request_options)
+            temperature=0, max_tokens=900, **self.request_options)
         if response.usage is None:
             raise ValueError("Provider did not return token usage; cannot enforce token budget")
         self._account(response.usage)
         calls = response.choices[0].message.tool_calls or []
         if not calls or calls[0].function.name != "submit_plan":
             return []
-        payload = json.loads(calls[0].function.arguments)
+        try:
+            payload = json.loads(calls[0].function.arguments)
+        except json.JSONDecodeError:
+            # A truncated tool-call payload must not abort the run, but it must not pass silently
+            # either: planning is optional by design, so degrade and let the loop proceed.
+            return []
         return [str(item.get("statement", "")) for item in payload.get("hypotheses", [])][:4]
 
     def choose(self, goal, trace, wrap_up: bool = False, final: bool = False):
