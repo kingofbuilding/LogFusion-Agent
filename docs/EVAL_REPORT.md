@@ -306,7 +306,7 @@ python -m benchmarks.run_eval --cases-dir benchmarks/cases_hard --groups rule,ll
 3. 若要让检测器真正产生增量，需要恢复语义视图（MiniLM + 重训或重标定），否则窗口粒度决定了它只能提供粗线索。
 4. 结论层扩展：为“喷洒/低速/撞库”增加可表达的 verdict，否则这些场景只能看召回。
 
-## 6. 当前代码回归（2026-10-23，HEAD bb59521 + 相关性闸门，130k 同口径）
+## 10. 当前代码回归（2026-10-23，HEAD bb59521 + 相关性闸门，130k 同口径）
 
 动机：3.2 节的 43%→95% 测于旧代码（c9816eb），之后并入 plan 提示词修复、截断修复、Recon 阶段、案例清洗与引用语义闸门，需确认数字仍成立。
 
@@ -314,7 +314,7 @@ python -m benchmarks.run_eval --cases-dir benchmarks/cases_hard --groups rule,ll
 
 **结论：43%→95% 在当前代码上成立（不低于 95%）**；闸门 0.7 次/次与历史一致；判断拒绝始终降级为"只发规则发现"。
 
-## 7. 真实日志切片运行性验证（2026-10-23，3 段 × ~3,675 行）
+## 11. 真实日志切片运行性验证（2026-10-23，3 段 × ~3,675 行）
 
 AIT-LDS harrison 四源混合日志均分为 3 段（openvpn / auth / audit / dnsmasq），`auth_generic` 方言 LLM 模式各跑一次（60k 预算）：
 
