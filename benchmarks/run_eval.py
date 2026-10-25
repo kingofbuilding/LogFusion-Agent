@@ -112,10 +112,11 @@ def score_case(meta: dict, result) -> dict:
         # Probe-level precision: how much of what the agent looked at is actually labelled.
         # Coarse window evidence scores low here even when recall is 1.0.
         "evidence_precision": round(len(hits) / len(observed), 4) if must_find and observed else None,
-        "link_recall": recall(expected["must_link_event_ids"], linked),
-        "false_links": sorted(set(expected["must_not_link_event_ids"]) & cited),
-        "judgment_decoy_citations": sorted(set(expected["must_not_link_event_ids"]) & judgment_ids),
-        "pair_violations": [pair for pair in expected["must_not_pair"]
+        "link_recall": recall(expected.get("must_link_event_ids") or [], linked),
+        # Real-log cases only declare evidence and verdict; missing keys mean "not applicable".
+        "false_links": sorted(set(expected.get("must_not_link_event_ids") or []) & cited),
+        "judgment_decoy_citations": sorted(set(expected.get("must_not_link_event_ids") or []) & judgment_ids),
+        "pair_violations": [pair for pair in expected.get("must_not_pair") or []
                             if any(set(pair) <= set(f.evidence_ids) for f in result.findings
                                    if f.kind == "success_after_failures")],
         "evidence_count": len(observed),
@@ -352,7 +353,7 @@ def main() -> int:
         parser.error("--repeats 至少为 1")
 
     cases_dir = args.cases_dir
-    case_glob = "hard-*.json" if cases_dir.name == "cases_hard" else "ssh-*.json"
+    case_glob = {"cases_hard": "hard-*.json", "cases_real": "real-*.json"}.get(cases_dir.name, "ssh-*.json")
     metas = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(cases_dir.glob(case_glob))]
     if not metas:
         print(f"未找到用例：{cases_dir}；请先运行 python -m benchmarks.generate_cases 或 generate_hard_cases")
