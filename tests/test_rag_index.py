@@ -1,11 +1,19 @@
 from __future__ import annotations
 
-import numpy as np
+import pytest
 
-from src.agent.rag_index import TfidfCaseRetriever, build_tfidf_index, load_cases
 from src.agent.tools import ROOT
 
 CASES = ROOT / "data/rag/attack_cases.jsonl"
+
+# The index tests need numpy/sklearn/joblib. CI installs only requirements-dev.txt (pytest) to keep
+# the standard-library Agent core test rather than the optional retrieval stack, so skip cleanly
+# instead of failing collection.
+pytest.importorskip("numpy", reason="index tests need numpy")
+pytest.importorskip("sklearn", reason="index tests need scikit-learn")
+pytest.importorskip("joblib", reason="index tests need joblib")
+
+from src.agent.rag_index import TfidfCaseRetriever, build_tfidf_index, load_cases  # noqa: E402
 
 
 def _retriever(directory) -> TfidfCaseRetriever:
@@ -26,6 +34,8 @@ def test_rebuilt_index_ranks_the_matching_case(tmp_path):
 
 
 def test_index_is_deterministic(tmp_path):
+    import numpy as np
+
     cases = load_cases(CASES)
     build_tfidf_index(cases, tmp_path / "a")
     build_tfidf_index(cases, tmp_path / "b")
@@ -62,10 +72,10 @@ def test_weighted_fusion_lets_the_stronger_list_win():
 def test_hybrid_retriever_if_both_indexes_exist():
     import json
 
-    import pytest
-
     from src.agent.rag_index import HybridCaseRetriever, MiniLMRetriever, TfidfCaseRetriever
 
+    pytest.importorskip("onnxruntime", reason="MiniLM retrieval needs onnxruntime")
+    pytest.importorskip("tokenizers", reason="MiniLM retrieval needs tokenizers")
     tfidf_path = ROOT / "data/vectors/rag_attack_cases_tfidf.npz"
     minilm_path = ROOT / "data/vectors/rag_attack_cases_minilm.npz"
     if not (tfidf_path.exists() and minilm_path.exists()):
@@ -108,8 +118,8 @@ def test_retrieve_cases_survives_a_broken_retriever():
 def test_minilm_index_if_present():
     import json
 
-    import pytest
-
+    pytest.importorskip("onnxruntime", reason="MiniLM retrieval needs onnxruntime")
+    pytest.importorskip("tokenizers", reason="MiniLM retrieval needs tokenizers")
     index_path = ROOT / "data/vectors/rag_attack_cases_minilm.npz"
     meta_path = ROOT / "data/vectors/rag_attack_cases_minilm.json"
     if not (index_path.exists() and meta_path.exists()):
