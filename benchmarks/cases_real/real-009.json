@@ -1,0 +1,52 @@
+{
+  "case_id": "real-009",
+  "category": "vpn_access",
+  "dataset": "fox",
+  "source_log": "vpn/logs/openvpn.log",
+  "log_file": "real-009.jsonl",
+  "goal": "调查这批真实日志中是否存在入侵活动，并指出具体证据",
+  "expected": {
+    "incident_present": true,
+    "must_find_event_ids": [
+      "E-9718658fe5d3b989",
+      "E-ef40aeb9a8dee2c6",
+      "E-d23964c442aa7a97",
+      "E-bec1f8a1d5e25e81",
+      "E-7ff80e76cd5a7128",
+      "E-c38a23e5d9796c2e",
+      "E-ec1b15a8c5b0ed23",
+      "E-f0c699c39705a35a",
+      "E-c28c5fae1a8e12de",
+      "E-a5bf57c27b4a5892",
+      "E-80de2ced045fb48c",
+      "E-8978d279934e72a1",
+      "E-289bb11fb7917504",
+      "E-467e1ea9650aa8ce",
+      "E-136eb3999ebe087a",
+      "E-0782d8d168001b1c",
+      "E-8bd6f8422d6ebe54",
+      "E-62245d32a43f2b26",
+      "E-e0d1f62790dc18ce",
+      "E-5398a500727a965d",
+      "E-5b084c5051469937",
+      "E-a2fe47348824437d",
+      "E-d8f30b1aaaa03ac3",
+      "E-457e227d251adb45",
+      "E-8f886a561d6977fe",
+      "E-3a2255cfdb4489e8",
+      "E-0d94162a1b49fc4a",
+      "E-a7add20a07a1cb1a"
+    ],
+    "verdict": "suspicious"
+  },
+  "line_range": [
+    4894,
+    5161
+  ],
+  "labelled_lines": 28,
+  "attack_tags": {
+    "attacker_vpn": 28,
+    "foothold": 28
+  },
+  "note": "真实 AIT-LDS 测试床日志切片；标签来自官方逐行标注，期望证据由标注推导。"
+}

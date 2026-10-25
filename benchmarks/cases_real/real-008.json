@@ -1,0 +1,45 @@
+{
+  "case_id": "real-008",
+  "category": "privilege_escalation",
+  "dataset": "fox",
+  "source_log": "intranet_server/logs/audit/audit.log",
+  "log_file": "real-008.jsonl",
+  "goal": "调查这批真实日志中是否存在入侵活动，并指出具体证据",
+  "expected": {
+    "incident_present": true,
+    "must_find_event_ids": [
+      "E-b710eeda1535a013",
+      "E-8b550aafda3a276b",
+      "E-7dfb5bbea108bb87",
+      "E-347946db00f10031",
+      "E-30df802b1af5fe7a",
+      "E-7f79bb7f8da926f8",
+      "E-0bbf34949aa703af",
+      "E-da1c857a312da0fa",
+      "E-da4f10a6ded71194",
+      "E-b8dcd451a43e2ac2",
+      "E-c46cab93d416054b",
+      "E-bccaeeee9bc31e37",
+      "E-69d8a9eac04b068b",
+      "E-c9f032fd014945f1",
+      "E-344c0a866e4eedd6",
+      "E-83cb703ac40e58b2",
+      "E-629814c79a8238d0",
+      "E-526b8f6e904c9a97",
+      "E-8612d072ad377f58"
+    ],
+    "verdict": "suspicious"
+  },
+  "line_range": [
+    1959,
+    2217
+  ],
+  "labelled_lines": 19,
+  "attack_tags": {
+    "attacker_change_user": 9,
+    "escalate": 19,
+    "escalated_command": 10,
+    "escalated_sudo_command": 10
+  },
+  "note": "真实 AIT-LDS 测试床日志切片；标签来自官方逐行标注，期望证据由标注推导。"
+}

@@ -1,0 +1,17 @@
+{
+  "suite": "logfusion-agent-real-ait-lds",
+  "version": 1,
+  "generated_at": "2026-10-23T16:47:57.289551+00:00",
+  "total": 9,
+  "counts": {
+    "privilege_escalation": 6,
+    "vpn_access": 3
+  },
+  "datasets": [
+    "fox",
+    "harrison",
+    "santos"
+  ],
+  "generator": "benchmarks/build_real_cases.py",
+  "note": "真实日志切片 + 官方行级标注；无合成内容。期望证据 = 标注行的 event_id。"
+}

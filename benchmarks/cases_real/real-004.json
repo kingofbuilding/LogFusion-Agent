@@ -1,0 +1,39 @@
+{
+  "case_id": "real-004",
+  "category": "privilege_escalation",
+  "dataset": "santos",
+  "source_log": "intranet_server/logs/auth.log",
+  "log_file": "real-004.jsonl",
+  "goal": "调查这批真实日志中是否存在入侵活动，并指出具体证据",
+  "expected": {
+    "incident_present": true,
+    "must_find_event_ids": [
+      "E-b12942fed8c67978",
+      "E-0a4697899c0b7aa3",
+      "E-b6da7b6b98aefc2f",
+      "E-b7e21995f8851a8b",
+      "E-cc7fffccb220bd1f",
+      "E-9b85ad892c0f00da",
+      "E-3bd234bd84c8e1b2",
+      "E-5cde7c520d61d6d8",
+      "E-bd10eebbe5d6593b",
+      "E-88cbba0bd7fb7e87",
+      "E-fa6194f39727333c",
+      "E-66d564cab9d67117"
+    ],
+    "verdict": "suspicious"
+  },
+  "line_range": [
+    65,
+    270
+  ],
+  "labelled_lines": 12,
+  "attack_tags": {
+    "attacker_change_user": 5,
+    "escalate": 12,
+    "escalated_command": 8,
+    "escalated_sudo_command": 8,
+    "escalated_sudo_session": 6
+  },
+  "note": "真实 AIT-LDS 测试床日志切片；标签来自官方逐行标注，期望证据由标注推导。"
+}

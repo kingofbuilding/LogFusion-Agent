@@ -1,0 +1,39 @@
+{
+  "case_id": "real-007",
+  "category": "privilege_escalation",
+  "dataset": "fox",
+  "source_log": "intranet_server/logs/auth.log",
+  "log_file": "real-007.jsonl",
+  "goal": "调查这批真实日志中是否存在入侵活动，并指出具体证据",
+  "expected": {
+    "incident_present": true,
+    "must_find_event_ids": [
+      "E-6b62e6a600f184e3",
+      "E-4ba135c0335e7152",
+      "E-b058861b8186f7e3",
+      "E-2d6861efaca0bb0a",
+      "E-0df76398d6493613",
+      "E-27b115c254ce1eca",
+      "E-04605b1a592d2ba9",
+      "E-a68d3e5d91faf5ca",
+      "E-645219053df2b51d",
+      "E-b42a654f856fb7fc",
+      "E-d51dc8dde5404414",
+      "E-dfac7269c29ac16e"
+    ],
+    "verdict": "suspicious"
+  },
+  "line_range": [
+    229,
+    480
+  ],
+  "labelled_lines": 12,
+  "attack_tags": {
+    "attacker_change_user": 5,
+    "escalate": 12,
+    "escalated_command": 8,
+    "escalated_sudo_command": 8,
+    "escalated_sudo_session": 6
+  },
+  "note": "真实 AIT-LDS 测试床日志切片；标签来自官方逐行标注，期望证据由标注推导。"
+}

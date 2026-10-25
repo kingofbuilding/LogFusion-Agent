@@ -1,0 +1,52 @@
+{
+  "case_id": "real-006",
+  "category": "vpn_access",
+  "dataset": "santos",
+  "source_log": "vpn/logs/openvpn.log",
+  "log_file": "real-006.jsonl",
+  "goal": "调查这批真实日志中是否存在入侵活动，并指出具体证据",
+  "expected": {
+    "incident_present": true,
+    "must_find_event_ids": [
+      "E-fd1aac1353c1d68f",
+      "E-4a68820d227dcee7",
+      "E-de4b9cd1b013c30c",
+      "E-bc370d59a2203004",
+      "E-c831d38b10302827",
+      "E-2a9e2b6436c17e9d",
+      "E-46746dc72d4bcefc",
+      "E-edd174ce2d3bb184",
+      "E-7b1200633811083f",
+      "E-c5be799e5a4a2f85",
+      "E-92d54962c669520a",
+      "E-8d0db232f12c3630",
+      "E-397db94bdab1855b",
+      "E-d5feaebc7944ecb8",
+      "E-e6249518974fbe7e",
+      "E-f3c0fb77a2db7ddc",
+      "E-5c56fc28855aebe7",
+      "E-303366e9f4ad721f",
+      "E-fe30ca144357ca71",
+      "E-26694a2c14363100",
+      "E-1438c87b22e1529d",
+      "E-1aaa2337c8966028",
+      "E-95d1c0bca3db60dc",
+      "E-6d2ca0d71c57d877",
+      "E-dcd6dfd069c54fb1",
+      "E-1ac987a89098caa4",
+      "E-d8632ab44cd1ab1a",
+      "E-a08f954c18afbeea"
+    ],
+    "verdict": "suspicious"
+  },
+  "line_range": [
+    4665,
+    4932
+  ],
+  "labelled_lines": 28,
+  "attack_tags": {
+    "attacker_vpn": 28,
+    "foothold": 28
+  },
+  "note": "真实 AIT-LDS 测试床日志切片；标签来自官方逐行标注，期望证据由标注推导。"
+}

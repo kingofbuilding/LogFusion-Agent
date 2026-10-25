@@ -1,0 +1,50 @@
+{
+  "case_id": "real-002",
+  "category": "privilege_escalation",
+  "dataset": "harrison",
+  "source_log": "intranet_server/logs/audit/audit.log",
+  "log_file": "real-002.jsonl",
+  "goal": "调查这批真实日志中是否存在入侵活动，并指出具体证据",
+  "expected": {
+    "incident_present": true,
+    "must_find_event_ids": [
+      "E-59c48fe0f4473765",
+      "E-53ff835667ffd240",
+      "E-a2bd47135f9fc0f9",
+      "E-ca93df0b89f95edc",
+      "E-0a84c5cf687ecb36",
+      "E-9d8376ad63104140",
+      "E-f336e6c4e32f39e1",
+      "E-4beef03d57c2ac41",
+      "E-a203121d48509ade",
+      "E-2739213ab67592a7",
+      "E-e9032eaafc751e56",
+      "E-712c63864533df94",
+      "E-063d550a9274ad1c",
+      "E-e4db2e86384d0537",
+      "E-5911b36fe8d8dd54",
+      "E-69896a30b2c3f6ce",
+      "E-28bea75bda2f74d7",
+      "E-99c750b957988fc8",
+      "E-64fe91c4b882d318",
+      "E-368d1166307acc56",
+      "E-a97b30a68f3a20ab",
+      "E-bf8d181574f63b13",
+      "E-748a642aca6e0b24",
+      "E-9ac10437ef8e33f6"
+    ],
+    "verdict": "suspicious"
+  },
+  "line_range": [
+    2335,
+    2598
+  ],
+  "labelled_lines": 24,
+  "attack_tags": {
+    "attacker_change_user": 9,
+    "escalate": 24,
+    "escalated_command": 15,
+    "escalated_sudo_command": 15
+  },
+  "note": "真实 AIT-LDS 测试床日志切片；标签来自官方逐行标注，期望证据由标注推导。"
+}

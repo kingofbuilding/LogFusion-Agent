@@ -1,0 +1,45 @@
+{
+  "case_id": "real-005",
+  "category": "privilege_escalation",
+  "dataset": "santos",
+  "source_log": "intranet_server/logs/audit/audit.log",
+  "log_file": "real-005.jsonl",
+  "goal": "调查这批真实日志中是否存在入侵活动，并指出具体证据",
+  "expected": {
+    "incident_present": true,
+    "must_find_event_ids": [
+      "E-941548e96ab87ee9",
+      "E-f2d7847fbac1692d",
+      "E-7be359d355ab41f8",
+      "E-f071213219007da9",
+      "E-b5f7cd34ce4e8a7e",
+      "E-8864e185a6028757",
+      "E-720ffadfa3a72df5",
+      "E-04f14a72a483995d",
+      "E-39452767a14ced64",
+      "E-4b6e966ff769eeb0",
+      "E-54c772e041a46107",
+      "E-da9357e5e3486898",
+      "E-f50310638816cbeb",
+      "E-791a5f590c6da466",
+      "E-e78e1e175119acbb",
+      "E-b85eea8fa08f14c9",
+      "E-1c419622d3668e3f",
+      "E-e956922527104f3c",
+      "E-3d06f8eea3984d11"
+    ],
+    "verdict": "suspicious"
+  },
+  "line_range": [
+    1849,
+    2107
+  ],
+  "labelled_lines": 19,
+  "attack_tags": {
+    "attacker_change_user": 9,
+    "escalate": 19,
+    "escalated_command": 10,
+    "escalated_sudo_command": 10
+  },
+  "note": "真实 AIT-LDS 测试床日志切片；标签来自官方逐行标注，期望证据由标注推导。"
+}

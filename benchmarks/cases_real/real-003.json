@@ -1,0 +1,52 @@
+{
+  "case_id": "real-003",
+  "category": "vpn_access",
+  "dataset": "harrison",
+  "source_log": "vpn/logs/openvpn.log",
+  "log_file": "real-003.jsonl",
+  "goal": "调查这批真实日志中是否存在入侵活动，并指出具体证据",
+  "expected": {
+    "incident_present": true,
+    "must_find_event_ids": [
+      "E-f7a49c873f60c001",
+      "E-c022f3f31b817632",
+      "E-aa4d80e66dc62280",
+      "E-d6f6e90929228239",
+      "E-688cf67fed547303",
+      "E-bb5a735537738cad",
+      "E-ba43e639b00e89d9",
+      "E-3a14a2660ae37560",
+      "E-18910db7d0c174d1",
+      "E-b72459657e165f85",
+      "E-af64fca7d1ce6ea8",
+      "E-b99616ba625c7007",
+      "E-dbd814836a3965a7",
+      "E-eec5014ef3a3532c",
+      "E-ebf7d97ed9164941",
+      "E-2fedc1898d0ddff8",
+      "E-30683e1531ae573a",
+      "E-3f30039a73fcc948",
+      "E-d225f7cba021cda3",
+      "E-12512de7498b3184",
+      "E-0e9af5690ecb0c37",
+      "E-87e6bb1ade50bf1e",
+      "E-a284616deb44881f",
+      "E-a270aa0b77ec977d",
+      "E-8497f9115b7d3ed2",
+      "E-e935678da9ee6901",
+      "E-4aae5e202aff059c",
+      "E-ecae576d8499ef4e"
+    ],
+    "verdict": "suspicious"
+  },
+  "line_range": [
+    8908,
+    9175
+  ],
+  "labelled_lines": 28,
+  "attack_tags": {
+    "attacker_vpn": 28,
+    "foothold": 28
+  },
+  "note": "真实 AIT-LDS 测试床日志切片；标签来自官方逐行标注，期望证据由标注推导。"
+}

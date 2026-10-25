@@ -40,7 +40,22 @@
 
 这类用例中规则结论层只能输出 `insufficient_evidence`，**verdict 正确率没有信息量**；有效指标是关键证据召回。
 
-### 2.3 标签纪律
+### 2.3 真实日志集（AIT-LDS）
+
+`benchmarks/cases_real/`，由 `python -m benchmarks.build_real_cases` 从 AIT-LDS v2.1 测试床日志切段生成，共 9 条。
+
+| 类别 | 数量 | 形态 |
+|---|---:|---|
+| `privilege_escalation` | 6 | `www-data` 经 `su` 切换账号后连续 `sudo` 提权（auth.log / audit.log） |
+| `vpn_access` | 3 | 攻击者 VPN 接入与会话建立（openvpn.log） |
+
+每条用例是一个攻击活动的**连续切片**（前后各保留 120 行正常流量），`expected.must_find_event_ids` 由官方**逐行标注**推导，而非人工编写。
+
+**数据来源与许可**：AIT-LDS（AIT Log Data Set）v2.1，由奥地利 AIT Austrian Institute of Technology 发布，用于日志异常检测研究，其发布页面提供数据集与官方逐行标签。本仓库只包含**围绕已标注攻击活动的少量连续切片**（共 9 段、约 420 KB），用于复现 Agent 在真实日志形态下的运行性验证；切片保留原始主机名与账号字段（测试床为模拟环境），不包含任何生产日志。若需完整数据，请从 AIT-LDS 官方渠道获取，并遵守其发布条款。原始切分脚本见 `benchmarks/build_real_cases.py`，其中 `RAW_ROOT` 指向本地数据集副本。
+
+**已知限制**：该集无事件级"结论正确性"标注（只有"哪些行被标注为攻击"），因此只能测**关键证据召回**，不能测 verdict 正确率；切片内含 `su`/`sudo` 提权链，而当前结论层只实现了"认证失败簇"规则，规则组在该集上召回为 **0.00**（这是覆盖缺口，不是实现错误）。
+
+### 2.4 标签纪律
 
 标签只写入 `<case>.json`，工具只能读到 `<case>.jsonl`；测试断言日志行只有 `timestamp/host/message` 三个字段。生成器写盘后用与 Agent 相同的 `failure_clusters` 反解自检，保证标注可达。场景源地址使用文档保留段，噪声统一 `192.0.2.0/24`。
 

@@ -1,0 +1,206 @@
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 16:17:01 intranet-server CRON[16658]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 16:39:01 intranet-server CRON[16666]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 16:39:01 intranet-server CRON[16666]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 17:09:01 intranet-server CRON[16741]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 17:09:01 intranet-server CRON[16741]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 17:17:01 intranet-server CRON[16812]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 17:17:01 intranet-server CRON[16812]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 17:39:01 intranet-server CRON[16819]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 17:39:01 intranet-server CRON[16819]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 18:09:01 intranet-server CRON[16893]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 18:09:01 intranet-server CRON[16893]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 18:17:01 intranet-server CRON[16963]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 18:17:01 intranet-server CRON[16963]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 18:39:01 intranet-server CRON[16971]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 18:39:01 intranet-server CRON[16971]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 19:09:01 intranet-server CRON[17059]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 19:09:01 intranet-server CRON[17059]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 19:17:01 intranet-server CRON[17128]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 19:17:01 intranet-server CRON[17128]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 19:39:01 intranet-server CRON[17144]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 19:39:01 intranet-server CRON[17144]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 20:09:01 intranet-server CRON[17223]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 20:09:01 intranet-server CRON[17223]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 20:17:01 intranet-server CRON[17298]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 20:17:01 intranet-server CRON[17298]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 20:39:01 intranet-server CRON[17307]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 20:39:01 intranet-server CRON[17307]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 21:09:01 intranet-server CRON[17377]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 21:09:01 intranet-server CRON[17377]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 21:17:01 intranet-server CRON[17449]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 21:17:01 intranet-server CRON[17449]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 21:39:01 intranet-server CRON[17457]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 21:39:01 intranet-server CRON[17457]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 22:09:01 intranet-server CRON[17526]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 22:09:01 intranet-server CRON[17526]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 22:17:01 intranet-server CRON[17597]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 22:17:01 intranet-server CRON[17597]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 22:39:01 intranet-server CRON[17605]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 22:39:01 intranet-server CRON[17605]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 23:09:01 intranet-server CRON[17681]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 23:09:01 intranet-server CRON[17681]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 23:17:01 intranet-server CRON[17755]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 23:17:01 intranet-server CRON[17755]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 23:39:01 intranet-server CRON[17760]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 16 23:39:01 intranet-server CRON[17760]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 00:09:01 intranet-server CRON[17842]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 00:09:01 intranet-server CRON[17842]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 00:17:01 intranet-server CRON[17911]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 00:17:01 intranet-server CRON[17911]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 00:39:01 intranet-server CRON[17916]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 00:39:01 intranet-server CRON[17916]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 01:09:02 intranet-server CRON[17991]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 01:09:02 intranet-server CRON[17991]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 01:17:02 intranet-server CRON[18065]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 01:17:02 intranet-server CRON[18065]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 01:39:01 intranet-server CRON[18571]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 01:39:01 intranet-server CRON[18571]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 02:09:01 intranet-server CRON[18651]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 02:09:01 intranet-server CRON[18651]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 02:17:01 intranet-server CRON[18724]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 02:17:01 intranet-server CRON[18724]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 02:39:01 intranet-server CRON[18729]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 02:39:01 intranet-server CRON[18729]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 03:09:01 intranet-server CRON[18801]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 03:09:01 intranet-server CRON[18801]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 03:17:01 intranet-server CRON[18907]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 03:17:01 intranet-server CRON[18907]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 03:39:01 intranet-server CRON[18921]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 03:39:01 intranet-server CRON[18921]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 04:09:01 intranet-server CRON[18990]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 04:09:01 intranet-server CRON[18990]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 04:17:01 intranet-server CRON[19070]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 04:17:01 intranet-server CRON[19070]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 04:39:01 intranet-server CRON[19076]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 04:39:01 intranet-server CRON[19076]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 05:09:01 intranet-server CRON[19153]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 05:09:01 intranet-server CRON[19153]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 05:17:01 intranet-server CRON[19222]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 05:17:01 intranet-server CRON[19222]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 05:39:01 intranet-server CRON[19229]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 05:39:01 intranet-server CRON[19229]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 06:09:01 intranet-server CRON[19310]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 06:09:01 intranet-server CRON[19310]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 06:17:01 intranet-server CRON[19381]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 06:17:01 intranet-server CRON[19381]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 06:25:02 intranet-server CRON[19386]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 06:25:11 intranet-server CRON[19386]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 06:39:01 intranet-server CRON[19525]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 06:39:01 intranet-server CRON[19525]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 07:09:01 intranet-server CRON[19693]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 07:09:01 intranet-server CRON[19693]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 07:17:01 intranet-server CRON[19765]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 07:17:01 intranet-server CRON[19765]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 07:39:01 intranet-server CRON[19772]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 07:39:01 intranet-server CRON[19772]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 08:09:01 intranet-server CRON[19846]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 08:09:01 intranet-server CRON[19846]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 08:17:01 intranet-server CRON[19925]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 08:17:01 intranet-server CRON[19925]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 08:39:01 intranet-server CRON[19941]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 08:39:01 intranet-server CRON[19941]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 09:09:01 intranet-server CRON[20014]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 09:09:01 intranet-server CRON[20014]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 09:17:01 intranet-server CRON[20086]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 09:17:01 intranet-server CRON[20086]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 09:39:01 intranet-server CRON[20092]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 09:39:01 intranet-server CRON[20092]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 10:09:01 intranet-server CRON[20247]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 10:09:01 intranet-server CRON[20247]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 10:17:01 intranet-server CRON[20316]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 10:17:01 intranet-server CRON[20316]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 10:39:01 intranet-server CRON[20323]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 10:39:01 intranet-server CRON[20323]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:09:01 intranet-server CRON[20466]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:09:01 intranet-server CRON[20466]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:17:01 intranet-server CRON[20542]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:17:01 intranet-server CRON[20542]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:21:32 intranet-server sshd[20550]: Did not receive identification string from 172.21.128.119 port 45976"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:39:01 intranet-server CRON[20653]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:39:01 intranet-server CRON[20653]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:58:17 intranet-server su[20749]: Successful su for gmorgan by www-data"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:58:17 intranet-server su[20749]: + /dev/pts/1 www-data:gmorgan"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:58:17 intranet-server su[20749]: pam_unix(su:session): session opened for user gmorgan by (uid=33)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:58:17 intranet-server systemd-logind[987]: New session c1 of user gmorgan."}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:58:17 intranet-server systemd: pam_unix(systemd-user:session): session opened for user gmorgan by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:58:27 intranet-server sudo:  gmorgan : TTY=pts/1 ; PWD=/var/www/intranet.smith.santos.com/wp-content/uploads/2022/01 ; USER=root ; COMMAND=list"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:58:29 intranet-server sudo:  gmorgan : TTY=pts/1 ; PWD=/var/www/intranet.smith.santos.com/wp-content/uploads/2022/01 ; USER=root ; COMMAND=/bin/cat /etc/shadow"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:58:29 intranet-server sudo: pam_unix(sudo:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:58:29 intranet-server sudo: pam_unix(sudo:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:58:54 intranet-server sudo:  gmorgan : TTY=pts/1 ; PWD=/var/www/intranet.smith.santos.com/wp-content/uploads/2022/01 ; USER=root ; COMMAND=/bin/ls -laR /root/"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:58:54 intranet-server sudo: pam_unix(sudo:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 11:58:54 intranet-server sudo: pam_unix(sudo:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 12:09:01 intranet-server CRON[20793]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 12:09:01 intranet-server CRON[20793]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 12:17:02 intranet-server CRON[20868]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 12:17:02 intranet-server CRON[20868]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 12:39:02 intranet-server CRON[20875]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 12:39:02 intranet-server CRON[20875]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 13:09:01 intranet-server CRON[20950]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 13:09:01 intranet-server CRON[20950]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 13:17:01 intranet-server CRON[21028]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 13:17:01 intranet-server CRON[21028]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 13:39:01 intranet-server CRON[21033]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 13:39:01 intranet-server CRON[21033]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 14:09:01 intranet-server CRON[21109]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 14:09:01 intranet-server CRON[21109]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 14:17:01 intranet-server CRON[21181]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 14:17:01 intranet-server CRON[21181]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 14:39:01 intranet-server CRON[21187]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 14:39:01 intranet-server CRON[21187]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 15:08:01 intranet-server CRON[21267]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 15:08:01 intranet-server CRON[21267]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 15:09:01 intranet-server CRON[21270]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 15:09:01 intranet-server CRON[21270]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 15:17:01 intranet-server CRON[21342]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 15:17:01 intranet-server CRON[21342]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 15:39:01 intranet-server CRON[21349]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 15:39:01 intranet-server CRON[21349]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 16:09:01 intranet-server CRON[21469]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 16:09:01 intranet-server CRON[21469]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 16:17:01 intranet-server CRON[21547]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 16:17:01 intranet-server CRON[21547]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 16:39:01 intranet-server CRON[21556]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 16:39:01 intranet-server CRON[21556]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 17:09:01 intranet-server CRON[21632]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 17:09:01 intranet-server CRON[21632]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 17:17:01 intranet-server CRON[21710]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 17:17:01 intranet-server CRON[21710]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 17:39:01 intranet-server CRON[21774]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 17:39:01 intranet-server CRON[21774]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 18:09:01 intranet-server CRON[21880]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 18:09:01 intranet-server CRON[21880]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 18:17:01 intranet-server CRON[21953]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 18:17:01 intranet-server CRON[21953]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 18:39:01 intranet-server CRON[21961]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 18:39:01 intranet-server CRON[21961]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 19:09:01 intranet-server CRON[22036]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 19:09:01 intranet-server CRON[22036]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 19:17:01 intranet-server CRON[22110]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 19:17:01 intranet-server CRON[22110]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 19:39:01 intranet-server CRON[22116]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 19:39:01 intranet-server CRON[22116]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 20:09:01 intranet-server CRON[22282]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 20:09:01 intranet-server CRON[22282]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 20:17:01 intranet-server CRON[22361]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 20:17:01 intranet-server CRON[22361]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 20:39:01 intranet-server CRON[22367]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 20:39:01 intranet-server CRON[22367]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 21:09:02 intranet-server CRON[22438]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 21:09:02 intranet-server CRON[22438]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 21:17:01 intranet-server CRON[22510]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 21:17:01 intranet-server CRON[22510]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 21:39:01 intranet-server CRON[22516]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 21:39:01 intranet-server CRON[22516]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 22:09:01 intranet-server CRON[22591]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 22:09:01 intranet-server CRON[22591]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 22:17:01 intranet-server CRON[22661]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 22:17:01 intranet-server CRON[22661]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 22:39:01 intranet-server CRON[22665]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 22:39:02 intranet-server CRON[22665]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 23:09:01 intranet-server CRON[22741]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 23:09:01 intranet-server CRON[22741]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 23:17:01 intranet-server CRON[22810]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 23:17:01 intranet-server CRON[22810]: pam_unix(cron:session): session closed for user root"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 23:39:01 intranet-server CRON[22816]: pam_unix(cron:session): session opened for user root by (uid=0)"}
+{"timestamp": "", "host": "intranet_server", "message": "Jan 17 23:39:01 intranet-server CRON[22816]: pam_unix(cron:session): session closed for user root"}

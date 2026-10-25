@@ -1,0 +1,42 @@
+{
+  "case_id": "real-001",
+  "category": "privilege_escalation",
+  "dataset": "harrison",
+  "source_log": "intranet_server/logs/auth.log",
+  "log_file": "real-001.jsonl",
+  "goal": "调查这批真实日志中是否存在入侵活动，并指出具体证据",
+  "expected": {
+    "incident_present": true,
+    "must_find_event_ids": [
+      "E-ef6772eba3cf6c53",
+      "E-456356ef28642ab3",
+      "E-055f74c0a04fcd77",
+      "E-35bd7a862d3d5616",
+      "E-864a68e6dd480dba",
+      "E-286039ec5514ff15",
+      "E-07a491dbb7027c24",
+      "E-522348abe900654a",
+      "E-4b2e7cbdc9dca110",
+      "E-3fcc67ea4c18cf52",
+      "E-d4034477c0a460bb",
+      "E-95dda64c07db13b9",
+      "E-ab06c0ab54675c01",
+      "E-c06667d4592eddd0",
+      "E-c49fdaa214dac067"
+    ],
+    "verdict": "suspicious"
+  },
+  "line_range": [
+    193,
+    421
+  ],
+  "labelled_lines": 15,
+  "attack_tags": {
+    "attacker_change_user": 5,
+    "escalate": 15,
+    "escalated_command": 11,
+    "escalated_sudo_command": 11,
+    "escalated_sudo_session": 9
+  },
+  "note": "真实 AIT-LDS 测试床日志切片；标签来自官方逐行标注，期望证据由标注推导。"
+}

@@ -1,0 +1,268 @@
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:21:06 jfoster/172.28.192.70:37201 Incoming Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:21:06 jfoster/172.28.192.70:37201 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 4096 bit RSA, signature: RSA-SHA256"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 TLS: Initial packet from [AF_INET]172.28.193.59:46169, sid=fd9ba306 7019a937"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 VERIFY OK: depth=1, C=AT, ST=Vienna, L=Vienna, O=Some Organisation GmbH, CN=OpenVPN CA, emailAddress=admin@organisation.cyberrange.at"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 VERIFY KU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 Validating certificate extended key usage"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Client Authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 VERIFY EKU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 VERIFY OK: depth=0, CN=jmoreno"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 peer info: IV_VER=2.4.4"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 peer info: IV_PLAT=linux"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 peer info: IV_PROTO=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 peer info: IV_NCP=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 peer info: IV_LZ4=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 peer info: IV_LZ4v2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 peer info: IV_LZO=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 peer info: IV_COMP_STUB=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 peer info: IV_COMP_STUBv2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 peer info: IV_TCPNL=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 4096 bit RSA, signature: RSA-SHA256"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 172.28.193.59:46169 [jmoreno] Peer Connection Initiated with [AF_INET]172.28.193.59:46169"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 jmoreno/172.28.193.59:46169 MULTI_sva: pool returned IPv4=10.9.0.14, IPv6=(Not enabled)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 jmoreno/172.28.193.59:46169 MULTI: Learn: 10.9.0.14 -> jmoreno/172.28.193.59:46169"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 jmoreno/172.28.193.59:46169 MULTI: primary virtual IP for jmoreno/172.28.193.59:46169: 10.9.0.14"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 jmoreno/172.28.193.59:46169 Outgoing Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 jmoreno/172.28.193.59:46169 Outgoing Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 jmoreno/172.28.193.59:46169 Incoming Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:16 jmoreno/172.28.193.59:46169 Incoming Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:17 jmoreno/172.28.193.59:46169 PUSH: Received control message: 'PUSH_REQUEST'"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:23:17 jmoreno/172.28.193.59:46169 SENT CONTROL [jmoreno]: 'PUSH_REPLY,redirect-gateway def1,block-outside-dns,route 10.9.0.1,topology net30,ping 10,ping-restart 120,ifconfig 10.9.0.14 10.9.0.13,peer-id 2,cipher AES-256-CBC' (status=1)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:27:00 jmoreno/172.28.193.59:58450 [jmoreno] Inactivity timeout (--ping-restart), restarting"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:27:00 jmoreno/172.28.193.59:58450 SIGUSR1[soft,ping-restart] received, client-instance restarting"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 TLS: Initial packet from [AF_INET]172.28.193.59:46113, sid=87cdcbd6 022380e9"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 VERIFY OK: depth=1, C=AT, ST=Vienna, L=Vienna, O=Some Organisation GmbH, CN=OpenVPN CA, emailAddress=admin@organisation.cyberrange.at"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 VERIFY KU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 Validating certificate extended key usage"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Client Authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 VERIFY EKU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 VERIFY OK: depth=0, CN=jmoreno"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 peer info: IV_VER=2.4.4"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 peer info: IV_PLAT=linux"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 peer info: IV_PROTO=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 peer info: IV_NCP=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 peer info: IV_LZ4=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 peer info: IV_LZ4v2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 peer info: IV_LZO=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 peer info: IV_COMP_STUB=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 peer info: IV_COMP_STUBv2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 peer info: IV_TCPNL=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 4096 bit RSA, signature: RSA-SHA256"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 172.28.193.59:46113 [jmoreno] Peer Connection Initiated with [AF_INET]172.28.193.59:46113"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 jmoreno/172.28.193.59:46113 MULTI_sva: pool returned IPv4=10.9.0.6, IPv6=(Not enabled)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 jmoreno/172.28.193.59:46113 MULTI: Learn: 10.9.0.6 -> jmoreno/172.28.193.59:46113"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 jmoreno/172.28.193.59:46113 MULTI: primary virtual IP for jmoreno/172.28.193.59:46113: 10.9.0.6"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 jmoreno/172.28.193.59:46113 Outgoing Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 jmoreno/172.28.193.59:46113 Outgoing Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 jmoreno/172.28.193.59:46113 Incoming Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:55 jmoreno/172.28.193.59:46113 Incoming Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:56 jmoreno/172.28.193.59:46113 PUSH: Received control message: 'PUSH_REQUEST'"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:30:56 jmoreno/172.28.193.59:46113 SENT CONTROL [jmoreno]: 'PUSH_REPLY,redirect-gateway def1,block-outside-dns,route 10.9.0.1,topology net30,ping 10,ping-restart 120,ifconfig 10.9.0.6 10.9.0.5,peer-id 0,cipher AES-256-CBC' (status=1)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:34:43 jmoreno/172.28.193.59:46169 [jmoreno] Inactivity timeout (--ping-restart), restarting"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:34:43 jmoreno/172.28.193.59:46169 SIGUSR1[soft,ping-restart] received, client-instance restarting"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 TLS: Initial packet from [AF_INET]172.28.193.59:56610, sid=35d8659d f246a8c6"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 VERIFY OK: depth=1, C=AT, ST=Vienna, L=Vienna, O=Some Organisation GmbH, CN=OpenVPN CA, emailAddress=admin@organisation.cyberrange.at"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 VERIFY KU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 Validating certificate extended key usage"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Client Authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 VERIFY EKU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 VERIFY OK: depth=0, CN=jmoreno"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 peer info: IV_VER=2.4.4"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 peer info: IV_PLAT=linux"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 peer info: IV_PROTO=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 peer info: IV_NCP=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 peer info: IV_LZ4=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 peer info: IV_LZ4v2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 peer info: IV_LZO=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 peer info: IV_COMP_STUB=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 peer info: IV_COMP_STUBv2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 peer info: IV_TCPNL=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 4096 bit RSA, signature: RSA-SHA256"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 172.28.193.59:56610 [jmoreno] Peer Connection Initiated with [AF_INET]172.28.193.59:56610"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 jmoreno/172.28.193.59:56610 MULTI_sva: pool returned IPv4=10.9.0.14, IPv6=(Not enabled)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 jmoreno/172.28.193.59:56610 MULTI: Learn: 10.9.0.14 -> jmoreno/172.28.193.59:56610"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 jmoreno/172.28.193.59:56610 MULTI: primary virtual IP for jmoreno/172.28.193.59:56610: 10.9.0.14"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 jmoreno/172.28.193.59:56610 Outgoing Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 jmoreno/172.28.193.59:56610 Outgoing Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 jmoreno/172.28.193.59:56610 Incoming Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:58 jmoreno/172.28.193.59:56610 Incoming Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:59 jmoreno/172.28.193.59:56610 PUSH: Received control message: 'PUSH_REQUEST'"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:39:59 jmoreno/172.28.193.59:56610 SENT CONTROL [jmoreno]: 'PUSH_REPLY,redirect-gateway def1,block-outside-dns,route 10.9.0.1,topology net30,ping 10,ping-restart 120,ifconfig 10.9.0.14 10.9.0.13,peer-id 2,cipher AES-256-CBC' (status=1)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:43:45 jmoreno/172.28.193.59:46113 [jmoreno] Inactivity timeout (--ping-restart), restarting"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 06:43:45 jmoreno/172.28.193.59:46113 SIGUSR1[soft,ping-restart] received, client-instance restarting"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 TLS: Initial packet from [AF_INET]172.28.192.61:50620, sid=74ea7f39 137cf6fa"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 VERIFY OK: depth=1, C=AT, ST=Vienna, L=Vienna, O=Some Organisation GmbH, CN=OpenVPN CA, emailAddress=admin@organisation.cyberrange.at"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 VERIFY KU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 Validating certificate extended key usage"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Client Authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 VERIFY EKU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 VERIFY OK: depth=0, CN=jgreen"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 peer info: IV_VER=2.4.4"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 peer info: IV_PLAT=linux"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 peer info: IV_PROTO=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 peer info: IV_NCP=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 peer info: IV_LZ4=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 peer info: IV_LZ4v2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 peer info: IV_LZO=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 peer info: IV_COMP_STUB=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 peer info: IV_COMP_STUBv2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 peer info: IV_TCPNL=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 4096 bit RSA, signature: RSA-SHA256"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 172.28.192.61:50620 [jgreen] Peer Connection Initiated with [AF_INET]172.28.192.61:50620"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 jgreen/172.28.192.61:50620 MULTI_sva: pool returned IPv4=10.9.0.6, IPv6=(Not enabled)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 jgreen/172.28.192.61:50620 MULTI: Learn: 10.9.0.6 -> jgreen/172.28.192.61:50620"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 jgreen/172.28.192.61:50620 MULTI: primary virtual IP for jgreen/172.28.192.61:50620: 10.9.0.6"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 jgreen/172.28.192.61:50620 Outgoing Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 jgreen/172.28.192.61:50620 Outgoing Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 jgreen/172.28.192.61:50620 Incoming Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:08 jgreen/172.28.192.61:50620 Incoming Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:09 jgreen/172.28.192.61:50620 PUSH: Received control message: 'PUSH_REQUEST'"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:06:09 jgreen/172.28.192.61:50620 SENT CONTROL [jgreen]: 'PUSH_REPLY,redirect-gateway def1,block-outside-dns,route 10.9.0.1,topology net30,ping 10,ping-restart 120,ifconfig 10.9.0.6 10.9.0.5,peer-id 0,cipher AES-256-CBC' (status=1)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 TLS: Initial packet from [AF_INET]172.28.192.242:56375, sid=33ef512b 2050ede4"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 VERIFY OK: depth=1, C=AT, ST=Vienna, L=Vienna, O=Some Organisation GmbH, CN=OpenVPN CA, emailAddress=admin@organisation.cyberrange.at"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 VERIFY KU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 Validating certificate extended key usage"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Client Authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 VERIFY EKU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 VERIFY OK: depth=0, CN=jthompson"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 peer info: IV_VER=2.4.4"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 peer info: IV_PLAT=linux"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 peer info: IV_PROTO=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 peer info: IV_NCP=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 peer info: IV_LZ4=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 peer info: IV_LZ4v2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 peer info: IV_LZO=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 peer info: IV_COMP_STUB=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 peer info: IV_COMP_STUBv2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 peer info: IV_TCPNL=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 4096 bit RSA, signature: RSA-SHA256"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 172.28.192.242:56375 [jthompson] Peer Connection Initiated with [AF_INET]172.28.192.242:56375"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 jthompson/172.28.192.242:56375 MULTI_sva: pool returned IPv4=10.9.0.18, IPv6=(Not enabled)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 jthompson/172.28.192.242:56375 MULTI: Learn: 10.9.0.18 -> jthompson/172.28.192.242:56375"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 jthompson/172.28.192.242:56375 MULTI: primary virtual IP for jthompson/172.28.192.242:56375: 10.9.0.18"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 jthompson/172.28.192.242:56375 Outgoing Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 jthompson/172.28.192.242:56375 Outgoing Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 jthompson/172.28.192.242:56375 Incoming Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:00 jthompson/172.28.192.242:56375 Incoming Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:01 jthompson/172.28.192.242:56375 PUSH: Received control message: 'PUSH_REQUEST'"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:07:01 jthompson/172.28.192.242:56375 SENT CONTROL [jthompson]: 'PUSH_REPLY,redirect-gateway def1,block-outside-dns,route 10.9.0.1,topology net30,ping 10,ping-restart 120,ifconfig 10.9.0.18 10.9.0.17,peer-id 3,cipher AES-256-CBC' (status=1)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 TLS: soft reset sec=3438/3438 bytes=9360628/-1 pkts=12052/0"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 VERIFY OK: depth=1, C=AT, ST=Vienna, L=Vienna, O=Some Organisation GmbH, CN=OpenVPN CA, emailAddress=admin@organisation.cyberrange.at"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 VERIFY KU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 Validating certificate extended key usage"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Client Authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 VERIFY EKU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 VERIFY OK: depth=0, CN=jfoster"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 peer info: IV_VER=2.4.4"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 peer info: IV_PLAT=linux"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 peer info: IV_PROTO=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 peer info: IV_LZ4=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 peer info: IV_LZ4v2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 peer info: IV_LZO=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 peer info: IV_COMP_STUB=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 peer info: IV_COMP_STUBv2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 peer info: IV_TCPNL=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 Outgoing Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 Outgoing Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 Incoming Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 Incoming Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:18:24 jfoster/172.28.192.70:37201 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 4096 bit RSA, signature: RSA-SHA256"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:01 172.28.195.110:45464 TLS: Initial packet from [AF_INET]172.28.195.110:45464, sid=2c75e0aa fee2fbbc"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 VERIFY OK: depth=1, C=AT, ST=Vienna, L=Vienna, O=Some Organisation GmbH, CN=OpenVPN CA, emailAddress=admin@organisation.cyberrange.at"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 VERIFY KU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 Validating certificate extended key usage"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Client Authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 VERIFY EKU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 VERIFY OK: depth=0, CN=jthompson"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 peer info: IV_VER=2.4.4"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 peer info: IV_PLAT=linux"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 peer info: IV_PROTO=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 peer info: IV_NCP=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 peer info: IV_LZ4=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 peer info: IV_LZ4v2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 peer info: IV_LZO=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 peer info: IV_COMP_STUB=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 peer info: IV_COMP_STUBv2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 peer info: IV_TCPNL=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 4096 bit RSA, signature: RSA-SHA256"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 172.28.195.110:45464 [jthompson] Peer Connection Initiated with [AF_INET]172.28.195.110:45464"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 jthompson/172.28.195.110:45464 MULTI_sva: pool returned IPv4=10.9.0.22, IPv6=(Not enabled)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 jthompson/172.28.195.110:45464 MULTI: Learn: 10.9.0.22 -> jthompson/172.28.195.110:45464"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 jthompson/172.28.195.110:45464 MULTI: primary virtual IP for jthompson/172.28.195.110:45464: 10.9.0.22"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 jthompson/172.28.195.110:45464 Outgoing Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 jthompson/172.28.195.110:45464 Outgoing Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 jthompson/172.28.195.110:45464 Incoming Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:02 jthompson/172.28.195.110:45464 Incoming Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:03 jthompson/172.28.195.110:45464 PUSH: Received control message: 'PUSH_REQUEST'"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:22:03 jthompson/172.28.195.110:45464 SENT CONTROL [jthompson]: 'PUSH_REPLY,redirect-gateway def1,block-outside-dns,route 10.9.0.1,topology net30,ping 10,ping-restart 120,ifconfig 10.9.0.22 10.9.0.21,peer-id 4,cipher AES-256-CBC' (status=1)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 TLS: Initial packet from [AF_INET]172.28.193.59:54300, sid=b865e91b e307fd4c"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 VERIFY OK: depth=1, C=AT, ST=Vienna, L=Vienna, O=Some Organisation GmbH, CN=OpenVPN CA, emailAddress=admin@organisation.cyberrange.at"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 VERIFY KU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 Validating certificate extended key usage"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Client Authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 VERIFY EKU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 VERIFY OK: depth=0, CN=jmoreno"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 peer info: IV_VER=2.4.4"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 peer info: IV_PLAT=linux"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 peer info: IV_PROTO=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 peer info: IV_NCP=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 peer info: IV_LZ4=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 peer info: IV_LZ4v2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 peer info: IV_LZO=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 peer info: IV_COMP_STUB=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 peer info: IV_COMP_STUBv2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 peer info: IV_TCPNL=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 4096 bit RSA, signature: RSA-SHA256"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 172.28.193.59:54300 [jmoreno] Peer Connection Initiated with [AF_INET]172.28.193.59:54300"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 jmoreno/172.28.193.59:54300 MULTI_sva: pool returned IPv4=10.9.0.26, IPv6=(Not enabled)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 jmoreno/172.28.193.59:54300 MULTI: Learn: 10.9.0.26 -> jmoreno/172.28.193.59:54300"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 jmoreno/172.28.193.59:54300 MULTI: primary virtual IP for jmoreno/172.28.193.59:54300: 10.9.0.26"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 jmoreno/172.28.193.59:54300 Outgoing Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 jmoreno/172.28.193.59:54300 Outgoing Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 jmoreno/172.28.193.59:54300 Incoming Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:26 jmoreno/172.28.193.59:54300 Incoming Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:27 jmoreno/172.28.193.59:54300 PUSH: Received control message: 'PUSH_REQUEST'"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:24:27 jmoreno/172.28.193.59:54300 SENT CONTROL [jmoreno]: 'PUSH_REPLY,redirect-gateway def1,block-outside-dns,route 10.9.0.1,topology net30,ping 10,ping-restart 120,ifconfig 10.9.0.26 10.9.0.25,peer-id 5,cipher AES-256-CBC' (status=1)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:28:15 jmoreno/172.28.193.59:56610 [jmoreno] Inactivity timeout (--ping-restart), restarting"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:28:15 jmoreno/172.28.193.59:56610 SIGUSR1[soft,ping-restart] received, client-instance restarting"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:41:16 jthompson/172.28.195.110:45464 [jthompson] Inactivity timeout (--ping-restart), restarting"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:41:16 jthompson/172.28.195.110:45464 SIGUSR1[soft,ping-restart] received, client-instance restarting"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:05 172.28.193.196:44591 TLS: Initial packet from [AF_INET]172.28.193.196:44591, sid=f2179ef8 9af498c1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 VERIFY OK: depth=1, C=AT, ST=Vienna, L=Vienna, O=Some Organisation GmbH, CN=OpenVPN CA, emailAddress=admin@organisation.cyberrange.at"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 VERIFY KU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 Validating certificate extended key usage"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Client Authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 VERIFY EKU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 VERIFY OK: depth=0, CN=lwright"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 peer info: IV_VER=2.4.4"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 peer info: IV_PLAT=linux"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 peer info: IV_PROTO=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 peer info: IV_NCP=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 peer info: IV_LZ4=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 peer info: IV_LZ4v2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 peer info: IV_LZO=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 peer info: IV_COMP_STUB=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 peer info: IV_COMP_STUBv2=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 peer info: IV_TCPNL=1"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 4096 bit RSA, signature: RSA-SHA256"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 172.28.193.196:44591 [lwright] Peer Connection Initiated with [AF_INET]172.28.193.196:44591"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 lwright/172.28.193.196:44591 MULTI_sva: pool returned IPv4=10.9.0.14, IPv6=(Not enabled)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 lwright/172.28.193.196:44591 MULTI: Learn: 10.9.0.14 -> lwright/172.28.193.196:44591"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 lwright/172.28.193.196:44591 MULTI: primary virtual IP for lwright/172.28.193.196:44591: 10.9.0.14"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 lwright/172.28.193.196:44591 Outgoing Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 lwright/172.28.193.196:44591 Outgoing Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 lwright/172.28.193.196:44591 Incoming Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:06 lwright/172.28.193.196:44591 Incoming Data Channel: Using 160 bit message hash 'SHA1' for HMAC authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:07 lwright/172.28.193.196:44591 PUSH: Received control message: 'PUSH_REQUEST'"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 07:56:07 lwright/172.28.193.196:44591 SENT CONTROL [lwright]: 'PUSH_REPLY,redirect-gateway def1,block-outside-dns,route 10.9.0.1,topology net30,ping 10,ping-restart 120,ifconfig 10.9.0.14 10.9.0.13,peer-id 2,cipher AES-256-CBC' (status=1)"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 08:02:01 jgreen/172.28.192.61:50620 TLS: soft reset sec=3353/3353 bytes=2031504/-1 pkts=4920/0"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 08:02:01 jgreen/172.28.192.61:50620 VERIFY OK: depth=1, C=AT, ST=Vienna, L=Vienna, O=Some Organisation GmbH, CN=OpenVPN CA, emailAddress=admin@organisation.cyberrange.at"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 08:02:01 jgreen/172.28.192.61:50620 VERIFY KU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 08:02:01 jgreen/172.28.192.61:50620 Validating certificate extended key usage"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 08:02:01 jgreen/172.28.192.61:50620 ++ Certificate has EKU (str) TLS Web Client Authentication, expects TLS Web Client Authentication"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 08:02:01 jgreen/172.28.192.61:50620 VERIFY EKU OK"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 08:02:01 jgreen/172.28.192.61:50620 VERIFY OK: depth=0, CN=jgreen"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 08:02:01 jgreen/172.28.192.61:50620 peer info: IV_VER=2.4.4"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 08:02:01 jgreen/172.28.192.61:50620 peer info: IV_PLAT=linux"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 08:02:01 jgreen/172.28.192.61:50620 peer info: IV_PROTO=2"}
+{"timestamp": "", "host": "vpn", "message": "2022-02-08 08:02:01 jgreen/172.28.192.61:50620 peer info: IV_LZ4=1"}

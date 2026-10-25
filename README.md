@@ -199,9 +199,10 @@ python -m benchmarks.run_eval --groups rule,simulated       # 加模拟研判全
 python -m benchmarks.run_eval --groups upstream             # A 组：上游检测器一次性出证据
 python -m benchmarks.run_eval --groups agent+upstream --limit 20   # D 组：Agent + 检测器 + 向量 RAG
 python -m benchmarks.run_eval --groups llm --repeats 3 --limit 20  # C 组：纯 LLM 调查
+python -m benchmarks.run_eval --groups rule --cases-dir benchmarks/cases_real  # 真实日志集
 ```
 
-评测集覆盖 7 类关联/干扰场景，标签只写入 `<case>.json`，工具只能读到 `<case>.jsonl`。指标为结论正确率、关键证据召回、证据精度、误关联、步数、token、完成率与工具报错率；证据精度用于暴露“窗口级证据”召回高但精度低的问题。首版结果与已知限制见 [评测报告](docs/EVAL_REPORT.md)；注意标注规则与证据层同源，结论正确率衡量的是管线一致性而非真实入侵检测能力。
+三类用例集：`cases/`（42 条合成场景）、`cases_hard/`（12 条规则盲区）、`cases_real/`（9 条 **AIT-LDS v2.1 真实日志切片**，标签取自官方逐行标注，数据来源与许可见评测报告 2.3 节）。标签只写入 `<case>.json`，工具只能读到 `<case>.jsonl`。指标为结论正确率、关键证据召回、证据精度、误关联、步数、token、完成率与工具报错率；证据精度用于暴露“窗口级证据”召回高但精度低的问题。首版结果与已知限制见 [评测报告](docs/EVAL_REPORT.md)；注意标注规则与证据层同源，结论正确率衡量的是管线一致性而非真实入侵检测能力。
 
 实施过程中遇到并处理的工程问题（工具参数越界、窗口证据映射、哈希索引不可用、并行改动冲突等）记录在 [工程问题记录](docs/ENGINEERING_ISSUES.md)。
 
